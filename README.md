@@ -1,4 +1,4 @@
-[index (38).html](https://github.com/user-attachments/files/33910508/index.38.html)
+[index (39).html](https://github.com/user-attachments/files/33910910/index.39.html)
 <!doctype html>
 <html lang="et">
 <head>
@@ -21,10 +21,10 @@
 <div id="info">
   <h2>DOKTOR VR</h2>
   <b>Quest:</b> vajuta all <b>ENTER VR</b>.<br>
-  Päästik/haare – võta tööriist (ka kaugelt kiirega). Vii patsiendi õige koha juurde ja hoia.<br>
+  Päästik/haare – võta tööriist. Iga tööriist töötab päriselt: hõõru, keri, kalluta, koputa, lase lahti (kraadiklaas suhu) jne. Kaart ütleb, mida teha.<br>
   Tühja käega: silita looma, kõdita, tee elustamist (vajuta rinda).<br>
   Enne patsienti pese kraanikausis käed! Vasak pulk – liigu.<br>
-  <b>Arvutis:</b> klõpsa ekraanil, hiirega vaatad. WASD liigud. Klõpsa tööriista, siis vaata kehaosa poole. Parem klõps – pane tagasi. Tühja käega klõps patsiendile = silita/kõdita. Klõps kraanikausile = pese käsi. Tühik = rindkere vajutus.
+  <b>Arvutis:</b> klõpsa ekraanil, hiirega vaatad. WASD liigud. Klõpsa tööriista, siis vaata kehaosa poole. Parem klõps – pane tagasi. Tühja käega klõps patsiendile = silita/kõdita. Klõps kraanikausile = pese käsi. Tööriist käes: hoia vasakut nuppu = kalluta/koputa, liiguta hiirt = hõõru. Parem klõps = lase lahti (jääb patsiendile, kui oled õiges kohas). Tühik = rindkere vajutus.
   <br><button id="hideInfo">Peida</button>
 </div>
 <div id="cross"></div>
@@ -156,14 +156,14 @@ function buildTool(id) {
   const white = M('#ffffff'), metal = S.owned.includes('kuld') ? goldM : M('#c8ccd0', { metalness: 0.8, roughness: 0.25 }), cz = (r, l) => new THREE.CylinderGeometry(r, r, l, 12).rotateX(PI / 2);
   const T = (geo, mat, x, y, z) => mesh(geo, mat, x, y, z, g);
   switch (id) {
-    case 'kraadiklaas': T(cz(0.008, 0.14), white, 0, 0, -0.04); T(new THREE.SphereGeometry(0.01, 10, 8), M('#e03030'), 0, 0, -0.11); T(new THREE.BoxGeometry(0.024, 0.012, 0.04), M('#2a6a8a'), 0, 0.008, 0.01); tip.set(0, 0, -0.11); break;
+    case 'kraadiklaas': { T(cz(0.008, 0.14), white, 0, 0, -0.04); T(new THREE.SphereGeometry(0.01, 10, 8), M('#e03030'), 0, 0, -0.11); T(new THREE.BoxGeometry(0.03, 0.014, 0.05), M('#2a6a8a'), 0, 0.008, 0.01); const dc = cnv(128, 64); const dm = new THREE.Mesh(new THREE.PlaneGeometry(0.026, 0.044), new THREE.MeshBasicMaterial({ map: ctex(dc) })); dm.rotation.set(-PI / 2, 0, PI / 2); dm.position.set(0, 0.0152, 0.01); g.add(dm); g.userData.disp = { c: dc, m: dm }; tip.set(0, 0, -0.11); break; }
     case 'stetoskoop': { T(new THREE.CylinderGeometry(0.022, 0.022, 0.012, 20).rotateX(PI / 2), metal, 0, 0, -0.1); const t = new THREE.Mesh(new THREE.TorusGeometry(0.05, 0.006, 8, 24, PI * 1.3), M('#303a44')); t.rotation.x = PI / 2; t.position.set(0, 0, -0.04); g.add(t); T(cz(0.005, 0.06), M('#303a44'), 0, 0, -0.075); tip.set(0, 0, -0.106); break; }
     case 'taskulamp': { T(cz(0.016, 0.13), M('#3a6ac8'), 0, 0, 0); T(new THREE.CylinderGeometry(0.02, 0.016, 0.03, 12).rotateX(PI / 2), metal, 0, 0, -0.075); const l = T(new THREE.CircleGeometry(0.017, 16), new THREE.MeshBasicMaterial({ color: '#fff8c0' }), 0, 0, -0.0905); l.rotation.y = PI; const beam = new THREE.Mesh(new THREE.ConeGeometry(0.08, 0.35, 20, 1, true).rotateX(-PI / 2).translate(0, 0, -0.27), new THREE.MeshBasicMaterial({ color: '#fff8c0', transparent: true, opacity: 0.16, depthWrite: false, side: THREE.DoubleSide })); beam.visible = false; g.add(beam); g.userData.beam = beam; tip.set(0, 0, -0.09); break; }
     case 'vatitups': T(cz(0.004, 0.13), white, 0, 0, -0.03); T(new THREE.SphereGeometry(0.014, 10, 8), M('#ffffff', { roughness: 1 }), 0, 0, -0.1); T(cz(0.018, 0.05), M('#4ab0e0'), 0, 0, 0.05); tip.set(0, 0, -0.1); break;
     case 'plaaster': T(new THREE.BoxGeometry(0.08, 0.004, 0.028), M('#f0c8a0', { roughness: 0.9 }), 0, 0, -0.04); T(new THREE.BoxGeometry(0.028, 0.005, 0.022), white, 0, 0.001, -0.04); tip.set(0, 0, -0.04); break;
     case 'side': T(new THREE.CylinderGeometry(0.03, 0.03, 0.06, 16), M('#ffffff', { roughness: 1 }), 0, 0, -0.05); T(new THREE.CylinderGeometry(0.012, 0.012, 0.062, 10), M('#dddddd'), 0, 0, -0.05); tip.set(0, 0, -0.05); break;
     case 'rohi': T(cz(0.022, 0.07), M('#e868a0'), 0, 0, 0); T(cz(0.014, 0.02), white, 0, 0, -0.045); T(new THREE.BoxGeometry(0.03, 0.03, 0.002), white, 0, 0.0225, 0); tip.set(0, 0, -0.055); break;
-    case 'sustal': T(cz(0.01, 0.08), M('#c8ecff', { transparent: true, opacity: 0.6 }), 0, 0, 0); T(cz(0.006, 0.07), M('#4a90e0'), 0, 0, 0.03); T(cz(0.0012, 0.04), metal, 0, 0, -0.06); T(new THREE.BoxGeometry(0.03, 0.004, 0.006), white, 0, 0, 0.07); tip.set(0, 0, -0.08); break;
+    case 'sustal': { T(cz(0.011, 0.08), M('#c8ecff', { transparent: true, opacity: 0.45 }), 0, 0, 0); const liq = T(new THREE.CylinderGeometry(0.009, 0.009, 0.075, 12).rotateX(PI / 2).translate(0, 0, -0.0375), M('#ffd040', { transparent: true, opacity: 0.85 }), 0, 0, 0.036); liq.scale.z = 0.01; const pl = new THREE.Group(); g.add(pl); mesh(cz(0.004, 0.08), M('#4a90e0'), 0, 0, 0.075, pl); mesh(new THREE.BoxGeometry(0.03, 0.004, 0.006), white, 0, 0, 0.115, pl); mesh(cz(0.009, 0.006), M('#303030'), 0, 0, 0.037, pl); T(cz(0.0012, 0.04), metal, 0, 0, -0.06); g.userData.liq = liq; g.userData.plunger = pl; tip.set(0, 0, -0.08); break; }
     case 'haamer': { T(cz(0.005, 0.15), metal, 0, 0, 0); const h = T(new THREE.ConeGeometry(0.022, 0.05, 3), M('#e04040', { roughness: 0.9 }), 0, 0, -0.08); h.rotation.z = PI / 2; tip.set(0, 0, -0.08); break; }
     case 'rontgen': T(new THREE.BoxGeometry(0.06, 0.035, 0.11), M('#e8eef2'), 0, 0, 0); T(new THREE.BoxGeometry(0.04, 0.002, 0.04), new THREE.MeshBasicMaterial({ color: '#40e080' }), 0, 0.019, 0.02); T(new THREE.BoxGeometry(0.05, 0.03, 0.004), new THREE.MeshBasicMaterial({ color: '#60a0ff' }), 0, 0, -0.057); tip.set(0, 0, -0.06); break;
     case 'mansett': T(new THREE.CylinderGeometry(0.035, 0.035, 0.06, 16, 1, true), M('#3a7ac8', { side: THREE.DoubleSide }), 0, 0, -0.05); T(new THREE.SphereGeometry(0.02, 10, 8), M('#d04040'), 0, -0.01, 0.05); T(cz(0.003, 0.06), M('#333'), 0, -0.01, 0.01); tip.set(0, 0, -0.05); break;
@@ -192,9 +192,14 @@ function placeTools(list, tray, cols, sx, sz) {
 }
 function buildTools() {
   scene.updateMatrixWorld(); placeTools(TOOL_R, ROOM.trayR, 3, 0.2, 0.14); placeTools(TOOL_L, ROOM.trayL, 5, 0.16, 0.15);
+  VIAL = new THREE.Group(); ROOM.trayR.add(VIAL); VIAL.position.set(0.25, 0.875, 0.19); mesh(new THREE.CylinderGeometry(0.018, 0.018, 0.05, 14), M('#e8f4ff', { transparent: true, opacity: 0.5 }), 0, 0.025, 0, VIAL); mesh(new THREE.CylinderGeometry(0.015, 0.015, 0.035, 14), M('#ffd040'), 0, 0.02, 0, VIAL); mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.01, 12), M('#d04040'), 0, 0.055, 0, VIAL);
+  const cart = new THREE.Group(); cart.position.set(0.8, 0, -1.25); cart.rotation.y = -0.6; scene.add(cart); mesh(new THREE.BoxGeometry(0.4, 0.7, 0.35), M('#e8ecef'), 0, 0.35, 0, cart); mesh(new THREE.BoxGeometry(0.32, 0.18, 0.26), M('#f0a020'), 0, 0.79, 0, cart); const scr = mesh(new THREE.PlaneGeometry(0.14, 0.08), new THREE.MeshBasicMaterial({ color: '#103020' }), -0.05, 0.84, 0.131, cart);
+  DEFI_BTN = mesh(new THREE.CylinderGeometry(0.035, 0.035, 0.03, 20).rotateX(PI / 2), M('#e02020', { emissive: '#400000' }), 0.09, 0.8, 0.14, cart); DEFI_BTN.userData.btn = 'defi';
+  const dl = label('DEFIBRILLAATOR', 0.3, '#d06010'); dl.position.set(0, 0.93, 0.14); cart.add(dl); OBST.push([0.55, 1.05, -1.5, -1.0]);
   highlight = new THREE.Sprite(new THREE.SpriteMaterial({ map: GLOW, color: '#ffe060', transparent: true, depthWrite: false, opacity: 0.85 })); highlight.scale.setScalar(0.16); scene.add(highlight);
 }
 const tipWorld = t => t.g.localToWorld(_v.copy(t.tip));
+let VIAL, DEFI_BTN, PUMP = null;
 
 /* ---------- haigused ---------- */
 const NAMES = ['Mia', 'Oskar', 'Liisa', 'Robin', 'Emma', 'Karl', 'Sofia', 'Rasmus', 'Lenna', 'Marten', 'Hanna', 'Joosep', 'Eliise', 'Kaspar'];
@@ -235,7 +240,7 @@ function makePatient() {
   mesh(new THREE.CapsuleGeometry(0.16, 0.22, 6, 16), sh, 0, 0.86, 0, body); mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.08, 10), sk, 0, 1.07, 0, body);
   const head = new THREE.Group(); head.position.set(0, 1.25, 0); body.add(head); mesh(new THREE.SphereGeometry(0.16, 24, 18), sk, 0, 0, 0, head);
   const eyeW = M('#ffffff', { roughness: 0.3 }), eyeB = M('#1a1a2a', { roughness: 0.2 });
-  for (const s of [-1, 1]) { mesh(new THREE.SphereGeometry(0.03, 12, 10), eyeW, s * 0.055, 0.03, 0.135, head); mesh(new THREE.SphereGeometry(0.018, 10, 8), eyeB, s * 0.055, 0.032, 0.158, head); }
+  const eyes = []; for (const s of [-1, 1]) { const eg = new THREE.Group(); eg.position.set(s * 0.055, 0.03, 0.135); head.add(eg); mesh(new THREE.SphereGeometry(0.03, 12, 10), eyeW, 0, 0, 0, eg); mesh(new THREE.SphereGeometry(0.018, 10, 8), eyeB, 0, 0.002, 0.023, eg); eyes.push(eg); }
   const cheekM = new THREE.MeshBasicMaterial({ color: '#ff8a9a', transparent: true, opacity: 0.5 }); for (const s of [-1, 1]) { const c = mesh(new THREE.CircleGeometry(0.028, 16), cheekM, s * 0.095, -0.03, 0.128, head); c.rotation.y = s * 0.6; }
   const mouthM = M('#8a2a2a'); const smile = new THREE.Mesh(new THREE.TorusGeometry(0.035, 0.008, 6, 16, PI), mouthM); smile.position.set(0, -0.065, 0.148); smile.rotation.z = PI; head.add(smile);
   const frown = new THREE.Mesh(new THREE.TorusGeometry(0.03, 0.008, 6, 16, PI), mouthM); frown.position.set(0, -0.085, 0.148); head.add(frown);
@@ -250,7 +255,7 @@ function makePatient() {
   const arms = []; for (const s of [-1, 1]) { const a = new THREE.Group(); a.position.set(s * 0.21, 1.0, 0); body.add(a); cylBetween(new V3(0, 0, 0), new V3(s * 0.04, -0.24, 0.04), 0.045, sh, a); const fa = new THREE.Group(); fa.position.set(s * 0.04, -0.24, 0.04); a.add(fa); cylBetween(new V3(0, 0, 0), new V3(-s * 0.04, -0.06, 0.2), 0.04, sk, fa); mesh(new THREE.SphereGeometry(0.045, 10, 8), sk, -s * 0.04, -0.06, 0.22, fa); arms.push({ a, fa }); }
   const legs = [], hips = []; for (const s of [-1, 1]) { const hip = new THREE.Group(); hip.position.set(s * 0.1, 0.62, 0); body.add(hip); cylBetween(new V3(0, 0, 0), new V3(0, 0, 0.38), 0.065, pants, hip); mesh(new THREE.SphereGeometry(0.066, 12, 10), pants, 0, 0, 0.38, hip); const shin = new THREE.Group(); shin.position.set(0, 0, 0.38); hip.add(shin); cylBetween(new V3(0, 0, 0), new V3(0, -0.5, 0.03), 0.055, sk, shin); mesh(new THREE.BoxGeometry(0.1, 0.07, 0.17), M('#f4f4f4'), 0, -0.53, 0.07, shin); legs.push(shin); hips.push(hip); }
   const wound = (z) => { const g = new THREE.Group(); const zz = ZONES[z]; const n = z === 'polv' ? new V3(0, 0.4, 1).normalize() : new V3(zz[0], 0, zz[2]).normalize(); const pos = new V3(zz[0], zz[1], zz[2]).addScaledVector(n, z === 'polv' ? 0.06 : 0.04); g.position.copy(pos); g.lookAt(pos.clone().add(n)); const r = new THREE.Mesh(new THREE.CircleGeometry(0.03, 16), new THREE.MeshBasicMaterial({ color: '#c82a2a' })); g.add(r); const dirt = new THREE.Mesh(new THREE.CircleGeometry(0.035, 10), new THREE.MeshBasicMaterial({ color: '#6a4a2a', transparent: true, opacity: 0.6 })); dirt.position.z = 0.001; g.add(dirt); const pl = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.035, 0.006), M('#f0c8a0')); pl.position.z = 0.004; pl.visible = false; g.add(pl); body.add(g); return { g, red: r, dirt, pl }; };
-  const p = { root, body, head, arms, legs, hips, cheekM, smile, frown, open, glasses, animal, name: animal ? animal[0] : pick(NAMES), case: cs, step: 0, wrong: 0, t: 0, state: 'toChair', hold: 0, wounds: {}, voice: animal ? 1.45 : 1.15, patience: 1, extras: [] };
+  const p = { root, body, head, arms, legs, hips, eyes, blink: 2, cheekM, smile, frown, open, glasses, animal, name: animal ? animal[0] : pick(NAMES), case: cs, step: 0, wrong: 0, t: 0, state: 'toChair', hold: 0, wounds: {}, voice: animal ? 1.45 : 1.15, patience: 1, extras: [] };
   if (cs.wound) p.wounds[cs.wound] = wound(cs.wound);
   if (cs.shot || cs.thorn) { p.wounds.kasi = wound('kasi'); p.wounds.kasi.dirt.visible = false; if (cs.shot) p.wounds.kasi.red.visible = false; }
   if (cs.thorn) { const th = new THREE.Mesh(new THREE.ConeGeometry(0.008, 0.06, 6), M('#5a3a1a')); th.position.set(0.3, 0.84, 0.06); th.rotation.z = -PI / 2.4; body.add(th); p.thorn = th; }
@@ -259,7 +264,7 @@ function makePatient() {
   p.fever = cs.id === 'palavik'; p.coughing = cs.id === 'koha';
   setFace(p, 'sad'); root.position.copy(DOOR); return p;
 }
-function setFace(p, f) { p.face = f; p.smile.visible = f === 'happy'; p.frown.visible = f === 'sad'; p.open.visible = f === 'aaa'; p.cheekM.color.set(p.fever ? '#ff3030' : '#ff8a9a'); p.cheekM.opacity = p.fever ? 0.8 : 0.5; }
+function setFace(p, f) { p.face = f; p.smile.visible = f === 'happy'; p.frown.visible = f === 'sad' || f === 'closed'; if (f === 'closed') p.frown.scale.set(0.5, 0.3, 1); else p.frown.scale.set(1, 1, 1); p.open.visible = f === 'aaa'; p.cheekM.color.set(p.fever ? '#ff3030' : '#ff8a9a'); p.cheekM.opacity = p.fever ? 0.8 : 0.5; }
 const zoneWorld = (p, z) => { const zz = ZONES[z]; return p.body.localToWorld(_v2.set(zz[0], zz[1], zz[2])); };
 const SEAT = new V3(0, 0, -0.85), DOOR = new V3(-2.7, 0, -2.4);
 
@@ -292,7 +297,7 @@ function drawCard(g, Pn) {
     fit(g, P.name, Pn.W / 2, 140, 52, '#1a3a4a', 560);
     let y = 215; const row = (done, cur, lbl, sub, num) => { g.fillStyle = done ? '#40b040' : cur ? '#3aa0c8' : '#cccccc'; g.beginPath(); g.arc(64, y, 22, 0, PI * 2); g.fill(); txt(g, done ? '✓' : num, 64, y + 2, 28, '#fff', 'center', true); fit(g, lbl, 96, y, 34, done ? '#40a040' : '#1a3a4a', 510, 'left', cur); if (sub) fit(g, sub, 96, y + 34, 24, '#7a8a90', 510, 'left', false); y += 82; };
     row(R.washed || P.state !== 'sit', !R.washed && P.state === 'sit', 'Pese käed', S.easy && !R.washed ? 'kraanikauss on vasakul taga' : null, '0');
-    P.case.steps.forEach((s, i) => { const done = i < P.step, cur = i === P.step && R.washed; const show = S.easy || done; let sub = null; if (show && S.easy) { sub = (s.tool ? TOOLS[s.tool].name : s.special === 'chart' ? 'Silmatabel paremal' : 'Tühjad käed') + (s.zones ? ' → ' + ZONE_NAME[s.zones[0]] : ''); if (cur && s.special === 'cpr') sub += `  (${R.cpr}/${cprNeed()})`; if (cur && s.special === 'chart') sub += `  (${R.chart}/3)`; } row(done, cur, show ? s.label : '???', sub, String(i + 1)); });
+    P.case.steps.forEach((s, i) => { const done = i < P.step, cur = i === P.step && R.washed; const show = S.easy || done; let sub = null; if (show && S.easy) { sub = (s.tool ? TOOLS[s.tool].name : s.special === 'chart' ? 'Silmatabel paremal' : 'Tühjad käed – vajuta rinda') + (s.zones ? ' → ' + ZONE_NAME[s.zones[0]] : '') + (s.tool && HOW[s.tool] ? ': ' + HOW[s.tool] : ''); if (cur && s.special === 'cpr') sub += `  (${R.cpr}/${cprNeed()})`; if (cur && s.special === 'chart') sub += `  (${R.chart}/3)`; } row(done, cur, show ? s.label : '???', sub, String(i + 1)); });
     if (P.state === 'bonus' && !P.gifted) fit(g, 'Boonus: anna kleeps või komm!', Pn.W / 2, y + 10, 32, '#e8a820', 560);
   } else txt(g, Q.length ? 'Patsient tuleb…' : 'Ootan patsienti…', Pn.W / 2, 300, 40, '#7a8a90', 'center');
   Pn.btn(30, Pn.H - 300, 280, 80, 'Lihtne', () => { S.easy = true; save(); }, { on: S.easy }); Pn.btn(330, Pn.H - 300, 280, 80, 'Raske', () => { S.easy = false; save(); }, { on: !S.easy });
@@ -311,14 +316,15 @@ function drawChart(g, Pn) {
   const sizes = [190, 130, 95, 70, 52]; let y = 100;
   CHART.forEach((row, r) => { const s = sizes[r]; const w = row.length * s * 0.95; row.forEach((L, i) => { const x = Pn.W / 2 - w / 2 + i * s * 0.95; Pn.btn(x, y, s * 0.9, s * 0.95, L, () => chartClick(r, L), { line: false, fs: s * 0.8, tc: '#111', bg: 'rgba(255,255,255,0)', r: 10 }); }); y += s + 14; });
 }
-const XR = { on: false, crack: false };
+const XR = { on: false, crack: false, prog: 1 };
 function drawXray(g, Pn) {
   rr(g, 0, 0, Pn.W, Pn.H, 24); g.fillStyle = '#d8dde0'; g.fill(); rr(g, 24, 24, Pn.W - 48, Pn.H - 48, 12); g.fillStyle = XR.on ? '#0a1a2e' : '#2a3038'; g.fill();
   if (!XR.on) { txt(g, 'RÖNTGEN', Pn.W / 2, Pn.H / 2, 60, '#6a7480', 'center', true); return; }
-  g.fillStyle = '#e8f0ff'; g.shadowColor = '#9ac8ff'; g.shadowBlur = 20;
+  g.save(); g.beginPath(); g.rect(0, 0, Pn.W, 24 + (Pn.H - 48) * (XR.prog ?? 1)); g.clip(); g.fillStyle = '#e8f0ff'; g.shadowColor = '#9ac8ff'; g.shadowBlur = 20;
   rr(g, 120, 90, 300, 48, 24); g.fill(); rr(g, 400, 100, 170, 42, 20); g.fill(); rr(g, 400, 158, 170, 34, 17); g.fill();
   for (let i = 0; i < 4; i++) { rr(g, 580, 90 + i * 34, 60, 22, 11); g.fill(); }
   g.beginPath(); g.arc(110, 114, 40, 0, PI * 2); g.fill(); g.shadowBlur = 0;
+  g.restore(); if (XR.prog < 1) { g.fillStyle = '#60c0ff'; g.fillRect(24, 24 + (Pn.H - 48) * XR.prog, Pn.W - 48, 4); return; }
   if (XR.crack) { g.strokeStyle = '#ff3030'; g.lineWidth = 8; g.beginPath(); g.moveTo(480, 92); g.lineTo(470, 110); g.lineTo(492, 124); g.lineTo(478, 146); g.stroke(); txt(g, 'Luumurd!', 485, 260, 56, '#ff6060', 'center', true); }
 }
 function sayP(text, p = P) { if (!p) return; const c = bubble.userData.c, g = c.getContext('2d'); g.clearRect(0, 0, 1024, 256); rr(g, 10, 10, 1004, 190, 60); g.fillStyle = '#ffffff'; g.fill(); g.lineWidth = 8; g.strokeStyle = '#3aa0c8'; g.stroke(); g.beginPath(); g.moveTo(480, 196); g.lineTo(512, 250); g.lineTo(560, 196); g.closePath(); g.fill(); fit(g, text, 512, 105, 62, '#1a3a4a', 940); bubble.material.map.needsUpdate = true; bubble.visible = true; bubble.userData.p = p; if (!speak(text, p.voice + 0.1)) sfx.babble(p.voice); }
@@ -367,8 +373,8 @@ let flashT = 0;
 function applyFx(fx) {
   const p = P, hp = headPos();
   switch (fx) {
-    case 'temp': popup(hp, '39,2 °C – palavik!', '#d04040'); sayP('Mul on palavik…'); break;
-    case 'tempok': popup(hp, '36,6 °C – korras!', '#40a040'); break;
+    case 'temp': TOOLS.kraadiklaas.reading = 39.2; popup(hp, '39,2 °C – palavik!', '#d04040'); sayP('Mul on palavik…'); break;
+    case 'tempok': TOOLS.kraadiklaas.reading = 36.6; popup(hp, '36,6 °C – korras!', '#40a040'); break;
     case 'lungs': sfx.heart(); popup(hp, 'Kopsudes kahiseb…', '#d08020'); break;
     case 'heart': sfx.heart(); popup(hp, 'Tuk-tuk – süda on korras!', '#40a040'); break;
     case 'noheart': popup(hp, 'Süda ei löö! Elusta kiiresti!', '#d04040'); sfx.beep(); break;
@@ -377,12 +383,12 @@ function applyFx(fx) {
     case 'throat': popup(hp, 'Kurk on punane!', '#d04040'); break;
     case 'ear': popup(hp, 'Kõrv on punane!', '#d04040'); break;
     case 'drops': sfx.pop(); popup(hp, 'Tilk-tilk!', '#3aa0c8'); break;
-    case 'clean': sfx.spray(); for (const w of Object.values(p.wounds)) { w.dirt.visible = false; w.red.material.color.set('#e88080'); } popup(hp, 'Puhas!', '#3aa0c8'); break;
+    case 'clean': sfx.spray(); for (const w of Object.values(p.wounds)) { w.dirt.visible = false; w.dirt.material.opacity = 0.6; w.red.material.color.set('#e88080'); } popup(hp, 'Puhas!', '#3aa0c8'); break;
     case 'plaster': for (const w of Object.values(p.wounds)) { w.pl.visible = true; w.red.visible = false; } sfx.pop(); break;
     case 'plaster2': if (p.wounds.kasi) { p.wounds.kasi.pl.visible = true; p.wounds.kasi.red.visible = false; } sfx.pop(); break;
     case 'shot': sfx.pop(); p.scared = false; sayP('Auh! …Polnudki nii hull!'); break;
-    case 'cast': p.cast.visible = true; sfx.spray(); popup(hp, 'Kips on peal!', '#3aa0c8'); break;
-    case 'xray': XR.on = true; XR.crack = true; xray.refresh(); sfx.beep(); popup(hp, 'Vaata röntgenipilti!', '#3aa0c8'); break;
+    case 'cast': p.cast.visible = true; p.cast.scale.y = 1; sfx.spray(); popup(hp, 'Kips on peal!', '#3aa0c8'); break;
+    case 'xray': XR.on = true; XR.crack = true; XR.prog = 1; xray.refresh(); sfx.beep(); popup(hp, 'Vaata röntgenipilti!', '#3aa0c8'); break;
     case 'reflex': p.kick = 0.6; sfx.boing(); popup(hp, 'Hopsti!', '#3aa0c8'); break;
     case 'glasses': p.glasses.visible = true; sayP('Vau! Nüüd näen kõike!'); break;
     case 'jaw': jaw.visible = true; setupTeeth(); popup(hp, 'Hambad on näha – vaata vasakule!', '#3aa0c8'); break;
@@ -392,32 +398,97 @@ function applyFx(fx) {
     case 'med': sfx.good(); p.fever = false; p.coughing = false; sayP(pick(['Mmm, maasikamaitse!', 'Ai kui hea!', 'Juba on parem!'])); setFace(p, 'happy'); break;
   }
 }
-function nextStep() { P.step++; P.hold = -99; sfx.good(); card.refresh(); if (P.step >= P.case.steps.length) cured(); }
+function nextStep() { P.step++; P.hold = -99; P.prog = 0; P.hinted = false; P.spots = null; P.charged = 0; hideSpots(); sfx.good(); card.refresh(); if (P.step >= P.case.steps.length) cured(); }
+const MODE = { kraadiklaas: 'leave', stetoskoop: 'spots', taskulamp: 'aim', vatitups: 'rub', plaaster: 'stick', side: 'rub', rohi: 'tilt', sustal: 'inject', haamer: 'tap', rontgen: 'rub', mansett: 'cuff', prillid: 'stick', pintsetid: 'pull', kamm: 'rub', defi: 'defi' };
+const RUBNEED = { vatitups: 0.45, side: 1.2, rontgen: 0.6, kamm: 0.8 };
+const HOW = { kraadiklaas: 'pane suhu, lase lahti, oota piiksu', stetoskoop: 'kuula kõiki rohelisi punkte', taskulamp: 'suuna valgus sisse', vatitups: 'hõõru haava edasi-tagasi', plaaster: 'vii haavale ja lase lahti', side: 'keri ümber käe ringiratast', rohi: 'kalluta pudelit suu juures', sustal: 'täida viaalist, siis hoia käes', haamer: 'koputa kiiresti põlvele', rontgen: 'libista mööda kätt', mansett: 'pane käele, siis pumpa pirni', prillid: 'vii näole ja lase lahti', pintsetid: 'haara okkast ja tõmba', kamm: 'kammi edasi-tagasi', defi: 'hoia rinnal, siis punane nupp', hambahari: 'hõõru pruune hambaid', puur: 'hoia augu peal' };
+const HINT = { kraadiklaas: 'Pane suhu ja lase lahti!', stetoskoop: 'Kuula kõiki 4 punkti!', taskulamp: 'Suuna valgus sisse!', vatitups: 'Hõõru edasi-tagasi!', plaaster: 'Lase haava peal lahti!', side: 'Keri ümber käe!', rohi: 'Kalluta pudelit!', sustal: 'Täida süstal viaalist!', haamer: 'Koputa kiiresti!', rontgen: 'Libista mööda kätt!', mansett: 'Pane käele ja lase lahti!', prillid: 'Lase näo ees lahti!', pintsetid: 'Haara okkast ja tõmba!', kamm: 'Kammi edasi-tagasi!', defi: 'Hoia rinnal – laadib!' };
+const spotMarks = [];
+function hideSpots() { spotMarks.forEach(m => m.visible = false); }
+function setRing(f) { ringM.geometry.dispose(); ringM.geometry = new THREE.RingGeometry(0.06, 0.075, 32, 1, PI / 2, -Math.max(0.001, f) * PI * 2); }
+function showRing(z, f, col) { ringM.visible = true; ringM.position.copy(zoneWorld(P, z)); ringM.lookAt(camera.getWorldPosition(_v)); setRing(f); ringM.material.color.set(col || '#40d040'); }
+function done(step) { applyFx(step.fx); nextStep(); }
+function nearEar(tp) { return tp.distanceTo(zoneWorld(P, 'korv')) < tp.distanceTo(zoneWorld(P, 'korv2')) ? 'korv' : 'korv2'; }
+function setSyringe(t, v) { t.g.userData.liq.scale.z = Math.max(0.01, v); t.g.userData.plunger.position.z = -0.04 * (1 - v); }
+function rubFx(id, f) {
+  if (id === 'vatitups') for (const w of Object.values(P.wounds)) { w.dirt.material.opacity = 0.6 * (1 - f); }
+  if (id === 'side' && P.cast) { P.cast.visible = true; P.cast.scale.y = Math.max(0.05, f); }
+  if (id === 'rontgen') { XR.on = true; XR.crack = true; const q = Math.floor(f * 10) / 10; if (q !== XR.prog) { XR.prog = q; xray.refresh(); } }
+  if (id === 'kamm') P.extras.forEach((fl, i) => fl.visible = i >= Math.round(f * P.extras.length));
+}
+const rubSnd = { vatitups: () => noise(0.1, 0.12, 2500), side: () => noise(0.12, 0.2, 700), rontgen: () => tone(2200, 2200, 0.03, 'sine', 0.03), kamm: () => noise(0.1, 0.15, 3500) };
+function pour(tp, dir) { let k = 0; for (const c of CONF) { if (c.life > 0) continue; c.p.copy(tp); c.v.copy(dir).multiplyScalar(0.4).add(new V3(rnd(-0.03, 0.03), 0, rnd(-0.03, 0.03))); c.life = 0.25; c.g = 6; if (++k >= 2) break; } }
+function doMode(step, dt, best) {
+  const t = TOOLS[step.tool]; const mode = MODE[step.tool]; if (!t.held) return false;
+  const tp = tipWorld(t).clone(); const inZone = best && best.t === t && step.zones.includes(best.z);
+  if (!P.hinted && HINT[t.id]) { P.hinted = true; popup(headPos(), HINT[t.id], '#3aa0c8'); }
+  switch (mode) {
+    case 'rub': { if (!inZone) return false; P.prog = (P.prog || 0) + Math.min(t.move, 0.05); const f = clamp(P.prog / RUBNEED[t.id], 0, 1); showRing(best.zw, f); rubFx(t.id, f); if (t.move > 0.003) { if (Math.random() < dt * 8) rubSnd[t.id](); haptic(t.held, 0.15, 15); } if (f >= 1) done(step); return true; }
+    case 'aim': { const zn = step.zones[0] === 'korv' ? nearEar(tp) : step.zones[0]; const target = zoneWorld(P, zn).clone(); const dir = new V3(0, 0, -1).applyQuaternion(t.g.getWorldQuaternion(new THREE.Quaternion())); const to = target.clone().sub(tp); if (to.length() < 0.45 && (dir.angleTo(to) < 0.35 || to.length() < 0.05)) { P.prog = (P.prog || 0) + dt; const f = clamp(P.prog / 1.5, 0, 1); showRing(zn, f); if (f >= 1) done(step); } else ringM.visible = false; return true; }
+    case 'tilt': { const ear = step.zones.includes('korv'); const zn = ear ? nearEar(tp) : 'suu'; if (tp.distanceTo(zoneWorld(P, zn)) > 0.13) { ringM.visible = false; if (t.held === 'desk') t.g.rotation.x = 0.25; return !!inZone; } const dir = new V3(0, 0, -1).applyQuaternion(t.g.getWorldQuaternion(new THREE.Quaternion())); if (t.held === 'desk') t.g.rotation.x = R.deskUse ? -1.1 : 0.25; const tilted = dir.y < -0.3 || (t.held === 'desk' && R.deskUse); if (tilted) { P.prog = (P.prog || 0) + dt; pour(tp, dir); if (Math.random() < dt * 2.5) tone(300, 200, 0.12, 'sine', 0.12); } const f = clamp((P.prog || 0) / 1.5, 0, 1); showRing(zn, f, tilted ? '#40d040' : '#ffb020'); if (f >= 1) { if (t.held === 'desk') t.g.rotation.x = 0.25; done(step); } return true; }
+    case 'tap': { if (!inZone) { t.wasIn = false; return false; } const fast = t.speed > 0.5 || (t.held === 'desk' && R.deskTap); R.deskTap = false; if (!t.wasIn && fast) { t.wasIn = true; done(step); } else { t.wasIn = true; showRing(best.zw, 0.05, '#ffb020'); } return true; }
+    case 'spots': { if (!P.spots) { const belly = P.case.id === 'koht'; const pts = belly ? [[-0.06, 0.78], [0.06, 0.78], [0, 0.72], [0, 0.84]] : [[-0.065, 0.99], [0.065, 0.99], [-0.06, 0.88], [0.06, 0.88]]; P.spots = pts.map(([x, y], i) => { let m = spotMarks[i]; if (!m) { m = new THREE.Mesh(new THREE.RingGeometry(0.012, 0.02, 20), new THREE.MeshBasicMaterial({ color: '#40e060', depthTest: false, transparent: true, side: THREE.DoubleSide })); m.renderOrder = 21; scene.add(m); spotMarks[i] = m; } m.material.color.set('#ffb020'); return { p: new V3(x, y, 0.172), t: 0, done: false, m }; }); sayP(belly ? 'Kõht koriseb…' : 'Hingan sisse… ja välja…'); }
+      let all = true; for (const sp of P.spots) { const w = P.body.localToWorld(sp.p.clone()); sp.m.visible = true; sp.m.position.copy(w); sp.m.lookAt(camera.getWorldPosition(_v)); if (sp.done) continue; all = false; if (tp.distanceTo(w) < 0.045) { sp.t += dt; if (sp.t > 0.5) { sp.done = true; sp.m.material.color.set('#40e060'); tone(70, 50, 0.12, 'sine', 0.5); tone(60, 45, 0.1, 'sine', 0.4, 0.18); haptic(t.held, 0.5, 60); } } }
+      if (all) done(step); else ringM.visible = false; return true; }
+    case 'inject': { if (!t.filled) { const vp = VIAL.getWorldPosition(new V3()).add(new V3(0, 0.05, 0)); if (tp.distanceTo(vp) < 0.07) { t.fill = (t.fill || 0) + dt; setSyringe(t, t.fill); if (Math.random() < dt * 5) tone(500 + t.fill * 400, 600, 0.05, 'sine', 0.03); if (t.fill >= 1) { t.filled = true; sfx.pop(); popup(headPos(), 'Süstal täis! Nüüd käsivarde.', '#3aa0c8'); } } return !!inZone; }
+      if (!inZone) return false; P.prog = (P.prog || 0) + dt; const f = clamp(P.prog / 1.6, 0, 1); setSyringe(t, 1 - f); showRing(best.zw, f); haptic(t.held, 0.1, 15); if (f >= 1) { t.filled = false; t.fill = 0; done(step); } return true; }
+    case 'pull': { if (!P.thorn) return false; if (!P.thornHeld) { const th = P.thorn.getWorldPosition(new V3()); if (tp.distanceTo(th) < 0.045) { P.thornHeld = true; P.thornStart = tp.clone(); sfx.click(); haptic(t.held, 0.4, 40); sayP('Ai-ai…'); } else return !!inZone; }
+      const d = tp.distanceTo(P.thornStart); P.thorn.position.copy(P.body.worldToLocal(tp.clone())); const f = clamp(d / 0.1, 0, 1); showRing('kasi', f); if (f >= 1) { P.thorn.visible = false; done(step); } return true; }
+    case 'defi': { if (P.charged) { showRing('rind', 1, (R.time * 4 % 1) < 0.5 ? '#ff3030' : '#ffb020'); return true; } if (!inZone) { P.prog = 0; return false; } P.prog = (P.prog || 0) + dt; const f = clamp(P.prog / 2, 0, 1); showRing('rind', f, '#ffb020'); if (Math.random() < dt * 12) tone(400 + f * 1400, 420 + f * 1400, 0.04, 'sine', 0.05); if (f >= 1) { P.charged = R.time; popup(headPos(), 'Laetud! Kõik eemale – vajuta PUNAST nuppu!', '#d04040'); sfx.beep(); } return true; }
+    case 'leave': case 'stick': case 'cuff': { if (!inZone) return false; showRing(best.zw, 1, '#ffb020'); return true; }
+  }
+  return false;
+}
+function pressDefi() { if (!P || P.state !== 'sit') { sfx.beep(); return; } const step = P.case.steps[P.step]; if (step && step.tool === 'defi' && P.charged) { applyFx('shock'); nextStep(); } else { sfx.bad(); popup(DEFI_BTN.getWorldPosition(new V3()).add(new V3(0, 0.2, 0)), 'Enne laadi: hoia elektroodi rinnal', '#d08020'); } }
+function startCuff() { P.pumps = 0; PUMP = new THREE.Group(); const b = mesh(new THREE.SphereGeometry(0.03, 14, 10), M('#d03030', { roughness: 0.5 }), 0, 0, 0, PUMP); b.scale.y = 1.4; b.userData.btn = 'pump'; PUMP.position.set(0.36, 0.72, 0.2); P.body.add(PUMP); cylBetween(new V3(0.25, 0.83, 0.05), new V3(0.36, 0.75, 0.2), 0.003, M('#333'), P.body); popup(headPos(), 'Nüüd pumpa punast pirni!', '#3aa0c8'); }
+function pump() { if (!P || !PUMP || P.pumps >= 6) return; P.pumps++; noise(0.15, 0.3, 300); PUMP.children[0].scale.set(0.8, 1.1, 0.8); setTimeout(() => PUMP && PUMP.children[0].scale.set(1, 1.4, 1), 150); popup(zoneWorld(P, 'kasi').clone().add(new V3(0, 0.25, 0)), `${P.pumps * 30} mmHg`, '#3a7ac8');
+  if (P.pumps >= 6) { popup(headPos(), 'Lasen õhku välja…', '#3a7ac8'); noise(1.4, 0.15, 900); P.deflate = 1.6; } }
+function updateCuff(dt) { if (!P || !(P.deflate > 0)) return; P.deflate -= dt; if (P.deflate > 0) return; if (P.state !== 'sit') return; const step = P.case.steps[P.step]; if (step && step.tool === 'mansett') { freeTool(TOOLS.mansett); removePump(); done(step); } }
+function removePump() { if (PUMP) { PUMP.parent && PUMP.parent.remove(PUMP); PUMP = null; } }
+function attachTool(t) { P.body.attach(t.g); t.attached = true; t.home = false; t.returning = undefined; }
+function freeTool(t) { if (!t.attached) return; t.attached = false; scene.attach(t.g); t.returning = 0; t.home = false; }
+function freeAll() { for (const t of Object.values(TOOLS)) freeTool(t); removePump(); if (P) P.thermo = null; }
+function onRelease(t) {
+  if (!P) return false; const tp = tipWorld(t).clone(); const near = z => tp.distanceTo(zoneWorld(P, z)) < ZONES[z][3] + 0.05;
+  if (P.state === 'bonus' && !P.gifted && ((t.id === 'kleeps' && (near('kasi') || near('rind'))) || (t.id === 'komm' && (near('kasi') || near('suu'))))) { gift(t.id); return false; }
+  const step = P.state === 'sit' && P.case.steps[P.step]; if (!step || step.tool !== t.id || !R.washed || !step.zones || !step.zones.some(near)) return false;
+  const mode = MODE[t.id];
+  if (mode === 'stick') { done(step); return false; }
+  if (mode === 'leave') { attachTool(t); P.thermo = { t0: R.time, done: false, target: P.case.id === 'palavik' ? 39.2 : 36.6 }; setFace(P, 'closed'); sayP('Mmm-mmm…'); return true; }
+  if (mode === 'cuff') { attachTool(t); startCuff(); return true; }
+  return false;
+}
+function updateThermo() {
+  const t = TOOLS.kraadiklaas, d = t.g.userData.disp; let val = null;
+  if (P && P.thermo) { const e = R.time - P.thermo.t0; val = Math.min(P.thermo.target, 35 + e / 4 * (P.thermo.target - 35)); if (e >= 4 && !P.thermo.done) { P.thermo.done = true; for (let i = 0; i < 3; i++) tone(2400, 2400, 0.08, 'square', 0.05, i * 0.15); popup(headPos(), 'Piiks! Võta kraadiklaas välja.', '#3aa0c8'); } }
+  else if (t.reading) val = t.reading;
+  const txtv = val ? val.toFixed(1) + '°' : '--.-'; if (d.last === txtv) return; d.last = txtv; const g = d.c.getContext('2d'); g.fillStyle = '#c8e0c0'; g.fillRect(0, 0, 128, 64); txt(g, txtv, 64, 34, 46, '#102010', 'center', true); d.m.material.map.needsUpdate = true;
+}
 function treat(dt) {
-  if (!P || !['sit', 'bonus'].includes(P.state)) { ringM.visible = false; return; }
+  for (const t of Object.values(TOOLS)) { if (!t.held) { t.lastTip = null; t.move = 0; t.speed = 0; continue; } const tp = tipWorld(t).clone(); t.move = t.lastTip ? tp.distanceTo(t.lastTip) : 0; t.speed = t.move / Math.max(dt, 1e-3); t.lastTip = tp; }
+  updateThermo();
+  if (!P || !['sit', 'bonus'].includes(P.state)) { ringM.visible = false; hideSpots(); return; }
   const step = P.state === 'sit' ? P.case.steps[P.step] : null;
   let best = null, bd = 9;
   for (const t of Object.values(TOOLS)) { if (!t.held) continue; const tp = tipWorld(t).clone(); for (const z in ZONES) { const d = tp.distanceTo(zoneWorld(P, z)); if (d < ZONES[z][3] + 0.02 && d < bd) { bd = d; best = { t, z: z.replace('2', ''), zw: z }; } } }
   const lampNear = TOOLS.taskulamp.held && !P.lying && tipWorld(TOOLS.taskulamp).distanceTo(zoneWorld(P, 'suu')) < 0.25;
-  if (lampNear && P.face !== 'aaa') { P.prevFace = P.face; setFace(P, 'aaa'); sfx.aaa(); } else if (!lampNear && P.face === 'aaa') setFace(P, P.prevFace || 'sad');
+  if (!P.thermo) { if (lampNear && P.face !== 'aaa') { P.prevFace = P.face; setFace(P, 'aaa'); sfx.aaa(); } else if (!lampNear && P.face === 'aaa') setFace(P, P.prevFace || 'sad'); }
   if (P.case.shot && P.step < 2 && TOOLS.sustal.held && tipWorld(TOOLS.sustal).distanceTo(zoneWorld(P, 'rind')) < 0.45) { if (!P.scared) { P.scared = true; sayP('Oi-oi, ma kardan! Ma ei vaata!'); } } else if (P.scared && !TOOLS.sustal.held) P.scared = false;
+  if (P.state === 'bonus') { if (best && ['kleeps', 'komm'].includes(best.t.id)) showRing(best.zw, 1, '#ffb020'); else ringM.visible = false; return; }
+  if (step && step.tool && !step.special && R.washed && doMode(step, dt, best)) return;
   if (!best) { P.hold = 0; ringM.visible = false; return; }
-  if (P.state === 'bonus') { if ((best.t.id === 'kleeps' && ['rind', 'kasi'].includes(best.z)) || (best.t.id === 'komm' && ['suu', 'kasi'].includes(best.z))) gift(best.t.id); return; }
   const ok = step && step.tool === best.t.id && step.zones && step.zones.includes(best.z);
-  ringM.visible = true; ringM.position.copy(zoneWorld(P, best.zw)); ringM.lookAt(camera.getWorldPosition(_v));
+  if (ok && !R.washed) { showRing(best.zw, 1, '#ffb020'); if (R.time - R.washMsg > 4) { R.washMsg = R.time; sayP('Doktor, pese enne käed!'); } return; }
+  if (ok) { ringM.visible = false; return; }
   if (P.holdKey !== best.t.id + best.z) { P.holdKey = best.t.id + best.z; P.hold = 0; P.wrongShown = false; }
-  if (!R.washed && ok) { ringM.material.color.set('#ffb020'); if (R.time - R.washMsg > 4) { R.washMsg = R.time; sayP('Doktor, pese enne käed!'); } return; }
-  P.hold += dt; const f = clamp(P.hold / 0.9, 0, 1);
-  ringM.geometry.dispose(); ringM.geometry = new THREE.RingGeometry(0.06, 0.075, 32, 1, PI / 2, -f * PI * 2 + 0.001); ringM.material.color.set(ok ? '#40d040' : '#ff6060');
-  if (f < 1) { if (Math.random() < dt * 8) haptic(best.t.held, 0.15, 20); return; }
-  if (ok) { applyFx(step.fx); haptic(best.t.held, 0.6, 80); nextStep(); }
-  else if (!P.wrongShown) { P.wrongShown = true; P.wrong++; sfx.bad(); sayP(pick(['Hmm, see ei aita…', 'Kõdi teeb!', 'Kas see on ikka õige?'])); if (S.easy && step) setTimeout(() => P && P.state === 'sit' && sayP(`Proovi: ${step.tool ? TOOLS[step.tool].name : step.label}`), 1400); }
+  P.hold += dt; showRing(best.zw, clamp(P.hold / 0.9, 0, 1), '#ff6060');
+  if (P.hold >= 0.9 && !P.wrongShown) { P.wrongShown = true; P.wrong++; sfx.bad(); sayP(pick(['Hmm, see ei aita…', 'Kõdi teeb!', 'Kas see on ikka õige?'])); if (S.easy && step) setTimeout(() => P && P.state === 'sit' && sayP(`Proovi: ${step.tool ? TOOLS[step.tool].name : step.label}`), 1400); }
 }
 function updateSpecial(dt) {
   if (!P || P.state !== 'sit' || !R.washed) return; const step = P.case.steps[P.step]; if (!step || !step.special) return;
   if (step.special === 'brush' || step.special === 'drill') {
     const tool = TOOLS[step.tool]; if (!tool.held) return; const tp = tipWorld(tool).clone(); const brush = step.special === 'brush';
-    for (const t of TEETH) { if (!(brush ? t.dirty : t.holeOn)) continue; if (t.t.getWorldPosition(_v2).distanceTo(tp) < 0.04) { t.work += dt; if (Math.random() < dt * 6) brush ? sfx.brush() : sfx.drill(); haptic(tool.held, 0.2, 20); if (brush && Math.random() < dt * 15) bubbles(tp, 1);
+    for (const t of TEETH) { if (!(brush ? t.dirty : t.holeOn)) continue; if (t.t.getWorldPosition(_v2).distanceTo(tp) < 0.04) { t.work += brush ? Math.min(tool.move || 0, 0.03) * 5 : dt; if (Math.random() < dt * 6) brush ? sfx.brush() : sfx.drill(); haptic(tool.held, 0.2, 20); if (brush && Math.random() < dt * 15) bubbles(tp, 1);
       if (t.work > 0.6) { t.work = 0; if (brush) { t.dirty = false; t.spot.visible = false; } else { t.holeOn = false; t.hole.visible = false; t.t.material.color.set('#e0ecff'); } sfx.pop(); } } }
     if (!TEETH.some(t => brush ? t.dirty : t.holeOn)) { popup(headPos(), brush ? 'Hambad säravad!' : 'Augud parandatud!', '#40a040'); if (!brush) { sayP('Hammas ei valuta enam!'); setFace(P, 'happy'); } nextStep(); }
   }
@@ -438,10 +509,10 @@ function chartClick(row, L) {
 function cured() {
   const stars = S.easy ? 3 : Math.max(1, 3 - P.wrong); S.cured++; S.stars += stars; S.wallet += stars; save(); score.refresh(); shop.refresh();
   P.fever = false; setFace(P, 'happy'); sayP(`Aitäh, doktor! ${'★'.repeat(stars)}`); sfx.win(); sfx.coin(); confetti(zoneWorld(P, 'rind').clone().add(new V3(0, 0.6, 0)));
-  P.state = 'done'; P.t = 0; P.hug = 1.2; R.washed = false; jaw.visible = false; XR.on = false; XR.crack = false; xray.refresh();
+  freeAll(); P.state = 'done'; P.t = 0; P.hug = 1.2; R.washed = false; jaw.visible = false; XR.on = false; XR.crack = false; xray.refresh();
 }
 function gift(id) { if (P.gifted) return; P.gifted = true; S.stars++; S.wallet++; save(); score.refresh(); shop.refresh(); sfx.coin(); sfx.giggle(); sayP(id === 'kleeps' ? 'Jee, kleeps! Aitäh!' : 'Mmm, komm! Aitäh!'); confetti(headPos()); P.hug = 1.2; if (id === 'kleeps') { const s = TOOLS.kleeps.g.children[0].clone(); s.position.set(0.07, 0.98, 0.17); s.rotation.set(0, 0, 0); s.scale.setScalar(1.3); P.body.add(s); } popup(headPos(), '+1 ★ boonus', '#e8a820'); P.t = 0; card.refresh(); }
-function leave() { if (!P) return; P.state = 'leave'; P.t = 0; P.lying = false; bubble.visible = false; jaw.visible = false; XR.on = false; xray.refresh(); card.refresh(); }
+function leave() { if (!P) return; freeAll(); hideSpots(); P.state = 'leave'; P.t = 0; P.lying = false; bubble.visible = false; jaw.visible = false; XR.on = false; xray.refresh(); card.refresh(); }
 function poke(z, hand) {
   if (!P || !['sit', 'done', 'bonus'].includes(P.state) || P.lying) return; if (R.time - (P.pokeT || -9) < 1.2) return; P.pokeT = R.time;
   if ((z === 'otsmik' || z === 'korv') && P.animal) { sfx.purr(); popup(headPos(), '♥ Nurr-nurr', '#e04a8a'); setFace(P, 'happy'); haptic(hand, 0.3, 200); }
@@ -474,8 +545,9 @@ function updatePatients(dt) {
     if (p.lying) { lyingPose(p); if (p.press > 0) { p.press -= dt; p.body.scale.set(1, 1, 1 - p.press * 0.5); } else p.body.scale.set(1, 1, 1); if (p.jolt > 0) { p.jolt -= dt; p.body.position.y += Math.sin(p.jolt * 60) * 0.02; } }
     else {
       if (p.wake > 0) { p.wake -= dt; sitPose(p); }
-      p.head.rotation.y = Math.sin(R.time * 0.7) * 0.15; p.head.rotation.x = Math.sin(R.time * 0.5) * 0.05;
-      if (p.coughing && p.state === 'sit') { p.cough = (p.cough ?? 2) - dt; if (p.cough < 0) { p.cough = rnd(2.5, 4); sfx.cough(); p.coughT = 0.4; } }
+      { const cl = p.body.worldToLocal(camera.getWorldPosition(new V3())).sub(new V3(0, 1.25, 0)); const yaw = clamp(Math.atan2(cl.x, cl.z), -0.7, 0.7), pitch = clamp(-Math.atan2(cl.y, Math.hypot(cl.x, cl.z)), -0.45, 0.45); p.head.rotation.y += (yaw - p.head.rotation.y) * Math.min(1, dt * 3); p.head.rotation.x += (pitch - p.head.rotation.x) * Math.min(1, dt * 3); }
+      p.blink -= dt; const bl = p.blink < 0.12 ? 0.1 : 1; p.eyes.forEach(e => e.scale.y = bl); if (p.blink < 0) p.blink = rnd(2, 5);
+      if (p.coughing && p.state === 'sit' && !TOOLS.stetoskoop.held) { p.cough = (p.cough ?? 2) - dt; if (p.cough < 0) { p.cough = rnd(2.5, 4); sfx.cough(); p.coughT = 0.4; } }
       let rx = 0; if (p.coughT > 0) { p.coughT -= dt; rx = Math.sin(p.coughT * 25) * 0.08; }
       if (p.tickle > 0) { p.tickle -= dt; p.body.rotation.z = Math.sin(p.tickle * 40) * 0.05; } else p.body.rotation.z = 0;
       if (p.kick > 0) { p.kick -= dt; p.legs[1].rotation.x = -Math.sin((0.6 - p.kick) / 0.6 * PI); } else p.legs[1].rotation.x = 0;
@@ -510,8 +582,11 @@ function updateWash(dt) {
 const rig = new THREE.Group(); rig.position.set(0, 0, 0.45); scene.add(rig); rig.add(camera);
 const ray = new THREE.Raycaster(); const ctrls = [];
 function ctrlRay(c, o, d) { _m.identity().extractRotation(c.matrixWorld); o.setFromMatrixPosition(c.matrixWorld); d.set(0, 0, -1).applyMatrix4(_m).normalize(); }
-function grab(t, holder, hand) { if (t.held) return; t.held = hand; t.home = false; holder.add(t.g); t.g.position.set(0, 0, -0.02); t.g.quaternion.identity(); if (hand === 'desk') { t.g.position.set(0.18, -0.2, -0.4); t.g.rotation.set(0.25, 0.25, 0); } sfx.grab(); haptic(hand, 0.4, 40); if (t.g.userData.beam) t.g.userData.beam.visible = true; }
-function release(t) { if (!t || !t.held) return; t.held = null; scene.attach(t.g); t.returning = 0; sfx.drop(); if (t.g.userData.beam) t.g.userData.beam.visible = false; }
+function grab(t, holder, hand) { if (t.held) return;
+  if (t.attached) { t.attached = false; if (t.id === 'kraadiklaas' && P && P.thermo) { const st0 = P.case.steps[P.step]; if (P.thermo.done && st0 && st0.tool === 'kraadiklaas') { P.thermo = null; setFace(P, 'sad'); done(st0); } else { P.thermo = null; setFace(P, 'sad'); popup(headPos(), 'Liiga vara! Oota piiksu.', '#d08020'); } } if (t.id === 'mansett') { removePump(); if (P) { P.pumps = 0; P.deflate = 0; } } }
+  if (t.id === 'kraadiklaas' && !(P && P.thermo)) t.reading = null;
+  t.held = hand; t.home = false; holder.add(t.g); t.g.position.set(0, 0, -0.02); t.g.quaternion.identity(); if (hand === 'desk') { t.g.position.set(0.18, -0.2, -0.4); t.g.rotation.set(0.25, 0.25, 0); } sfx.grab(); haptic(hand, 0.4, 40); if (t.g.userData.beam) t.g.userData.beam.visible = true; }
+function release(t) { if (!t || !t.held) return; const stay = onRelease(t); t.held = null; if (t.g.userData.beam) t.g.userData.beam.visible = false; if (stay) { sfx.drop(); return; } scene.attach(t.g); t.returning = 0; sfx.drop(); if (t.g.userData.beam) t.g.userData.beam.visible = false; }
 function nearestTool(pos, maxD) { let best = null, bd = maxD; for (const t of Object.values(TOOLS)) { if (t.held) continue; const d = t.g.getWorldPosition(_v).distanceTo(pos); if (d < bd) { bd = d; best = t; } } return best; }
 function tryGrab(c) {
   const o = new V3(), d = new V3(); ctrlRay(c, o, d); ray.set(o, d); ray.far = 5; const ui = ray.intersectObjects(UIT, false)[0]; if (ui) { ui.object.userData.panel.click(ui.uv); return; }
@@ -523,14 +598,26 @@ function buildControllers() {
   const f = new XRControllerModelFactory();
   for (let i = 0; i < 2; i++) {
     const c = renderer.xr.getController(i); c.userData = {}; const gr = renderer.xr.getControllerGrip(i);
-    c.addEventListener('connected', e => { c.userData.hand = e.data.handedness; c.userData.src = e.data; });
+    c.addEventListener('connected', e => { c.userData.hand = e.data.handedness; c.userData.src = e.data; if (!gr.userData.glove) { gr.userData.glove = makeGlove(e.data.handedness === 'left' ? -1 : 1); gr.add(gr.userData.glove); c.userData.glove = gr.userData.glove; } });
     c.addEventListener('disconnected', () => { c.userData.src = null; });
-    const down = () => { initAudio(); tryGrab(c); }, up = () => { if (c.userData.tool) { release(c.userData.tool); c.userData.tool = null; } };
+    const down = () => { initAudio(); if (touchButton(c)) return; tryGrab(c); }, up = () => { if (c.userData.tool) { release(c.userData.tool); c.userData.tool = null; } };
     c.addEventListener('selectstart', down); c.addEventListener('selectend', up); c.addEventListener('squeezestart', down); c.addEventListener('squeezeend', up);
     const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints([new V3(), new V3(0, 0, -1)]), new THREE.LineBasicMaterial({ color: '#3aa0c8', transparent: true, opacity: 0.6 })); c.add(line); c.userData.line = line;
-    rig.add(c); gr.add(f.createControllerModel(gr)); rig.add(gr); ctrls.push(c);
+    rig.add(c); rig.add(gr); ctrls.push(c);
   }
 }
+function makeGlove(side) {
+  const g = new THREE.Group(); const gm = M('#6aaee8', { roughness: 0.45 }); const palm = mesh(new THREE.BoxGeometry(0.075, 0.028, 0.09), gm, 0, -0.01, 0.03, g); palm.scale.set(1, 1, 1);
+  const fingers = []; for (let i = 0; i < 4; i++) { const f = new THREE.Group(); f.position.set(-0.027 + i * 0.018, -0.01, -0.015); g.add(f); mesh(new THREE.CapsuleGeometry(0.008, 0.045 - Math.abs(i - 1.5) * 0.006, 4, 8).rotateX(PI / 2).translate(0, 0, -0.03), gm, 0, 0, 0, f); fingers.push(f); }
+  const th = new THREE.Group(); th.position.set(side * 0.04, -0.012, 0.03); g.add(th); mesh(new THREE.CapsuleGeometry(0.009, 0.035, 4, 8).rotateX(PI / 2).translate(0, 0, -0.025), gm, 0, 0, 0, th); th.rotation.y = side * 0.6; fingers.push(th);
+  const cuff = mesh(new THREE.CylinderGeometry(0.04, 0.042, 0.03, 14).rotateX(PI / 2), gm, 0, -0.01, 0.085, g);
+  g.rotation.x = -0.5; g.userData.fingers = fingers; return g;
+}
+function updateGloves(dt) { for (const c of ctrls) { const gl = c.userData.glove; if (!gl) continue; const curl = c.userData.tool ? 1.1 : 0.15; gl.userData.fingers.forEach((f, i) => { if (i < 4) f.rotation.x += (-curl - f.rotation.x) * Math.min(1, dt * 12); }); } }
+function touchButton(c) { const cp = new V3().setFromMatrixPosition(c.matrixWorld); const o = new V3(), d = new V3(); ctrlRay(c, o, d); ray.set(o, d); ray.far = 3; const objs = [DEFI_BTN]; if (PUMP) objs.push(PUMP.children[0]); for (const b of objs) { if (b.getWorldPosition(new V3()).distanceTo(cp) < 0.09) { pressBtn(b); return true; } } const h = ray.intersectObjects(objs, false)[0]; if (h && !c.userData.tool) { pressBtn(h.object); return true; } return false; }
+function pressBtn(b) { if (b.userData.btn === 'defi') { b.position.z -= 0.008; setTimeout(() => b.position.z += 0.008, 150); pressDefi(); } else if (b.userData.btn === 'pump') pump(); }
+let btnNear = new Map();
+function updateButtonsTouch() { for (const c of ctrls) { if (!c.userData.src) continue; const cp = new V3().setFromMatrixPosition(c.matrixWorld); const objs = [DEFI_BTN]; if (PUMP) objs.push(PUMP.children[0]); for (const b of objs) { const k = c.id + '_' + b.id; const n = b.getWorldPosition(new V3()).distanceTo(cp) < 0.05; if (n && !btnNear.get(k)) pressBtn(b); btnNear.set(k, n); } } }
 let deskTool = null; const deskHand = new THREE.Group(); camera.add(deskHand);
 const cvs = renderer.domElement; cvs.addEventListener('contextmenu', e => e.preventDefault());
 function deskRay() { const o = new V3(), d = new V3(); camera.getWorldPosition(o); camera.getWorldDirection(d); return [o, d]; }
@@ -538,19 +625,22 @@ cvs.addEventListener('mousedown', e => {
   initAudio(); if (document.pointerLockElement !== cvs) { cvs.requestPointerLock?.(); return; }
   const [o, d] = deskRay(); ray.set(o, d); ray.far = 6;
   if (e.button === 2) { if (deskTool) { release(deskTool); deskTool = null; } return; }
+  { const objs = [DEFI_BTN]; if (PUMP) objs.push(PUMP.children[0]); const hb = ray.intersectObjects(objs, false)[0]; if (hb) { pressBtn(hb.object); return; } }
   const ui = ray.intersectObjects(UIT, false)[0]; if (ui) { ui.object.userData.panel.click(ui.uv); return; }
   const hits = ray.intersectObjects(Object.values(TOOLS).filter(t => !t.held).map(t => t.hit), false);
-  if (hits[0]) { if (deskTool) release(deskTool); deskTool = TOOLS[hits[0].object.userData.tool]; grab(deskTool, deskHand, 'desk'); return; }
+  if (hits[0] && (!deskTool || hits[0].distance < 1.2 || TOOLS[hits[0].object.userData.tool].attached)) { if (deskTool) release(deskTool); deskTool = TOOLS[hits[0].object.userData.tool]; grab(deskTool, deskHand, 'desk'); return; }
   if (ray.intersectObject(ROOM.sinkHit, false)[0]) { R.deskWash = 1.8; return; }
+  if (deskTool) { R.deskUse = true; R.deskTap = true; return; }
   if (!deskTool && P) { const h = ray.intersectObject(P.body, true)[0]; if (h) { let bz = null, bd = 9; for (const z in ZONES) { const dd = h.point.distanceTo(zoneWorld(P, z)); if (dd < bd) { bd = dd; bz = z.replace('2', ''); } } if (bd < 0.2) poke(bz, 'desk'); } }
 });
+addEventListener('mouseup', e => { if (e.button === 0) R.deskUse = false; });
 addEventListener('mousemove', e => { if (document.pointerLockElement !== cvs || renderer.xr.isPresenting) return; rig.rotation.y -= e.movementX * 0.0022; camera.rotation.x = clamp(camera.rotation.x - e.movementY * 0.0022, -1.3, 1.2); });
 const keys = {};
 addEventListener('keydown', e => { initAudio(); const n = parseInt(e.key); if (n >= 1 && n <= 9) { const t = TOOLS[TOOL_LIST[n - 1][0]]; if (deskTool) release(deskTool); deskTool = t; grab(t, deskHand, 'desk'); } if (e.key === 'Escape' && deskTool) { release(deskTool); deskTool = null; } if (e.code === 'Space') { e.preventDefault(); if (!keys.Space) { const s = P && P.state === 'sit' && P.case.steps[P.step]; if (s && s.special === 'cpr' && R.washed) cprPush('desk'); } } keys[e.code] = true; });
 addEventListener('keyup', e => keys[e.code] = false);
 function deskAim() {
   if (!deskTool || renderer.xr.isPresenting) return;
-  const [o, d] = deskRay(); ray.set(o, d); ray.far = 2.5; const targets = []; if (P) targets.push(P.body); if (jaw.visible) targets.push(jaw);
+  const [o, d] = deskRay(); ray.set(o, d); ray.far = 2.5; const targets = [VIAL]; if (P) targets.push(P.body); if (jaw.visible) targets.push(jaw);
   const hits = ray.intersectObjects(targets, true);
   if (hits[0]) { const tgt = hits[0].point.clone().addScaledVector(d, -0.01); deskTool.g.position.copy(deskHand.worldToLocal(tgt.clone())).sub(deskTool.tip.clone().applyQuaternion(deskTool.g.quaternion)); }
   else deskTool.g.position.set(0.18, -0.2, -0.4);
@@ -566,7 +656,7 @@ function updateMove(dt) {
   if (!blocked(nx, nz)) { rig.position.x = nx; rig.position.z = nz; } else if (!blocked(nx, rig.position.z)) rig.position.x = nx; else if (!blocked(rig.position.x, nz)) rig.position.z = nz;
 }
 function updateTools(dt) {
-  for (const t of Object.values(TOOLS)) { if (t.held || t.home) continue; t.returning += dt * 3; t.g.position.lerp(t.slot, clamp(t.returning, 0, 1)); t.g.quaternion.slerp(t.slotQ, clamp(t.returning, 0, 1)); if (t.returning >= 1) { t.home = true; t.g.position.copy(t.slot); t.g.quaternion.copy(t.slotQ); } }
+  for (const t of Object.values(TOOLS)) { if (t.held || t.home || t.attached) continue; t.returning += dt * 3; t.g.position.lerp(t.slot, clamp(t.returning, 0, 1)); t.g.quaternion.slerp(t.slotQ, clamp(t.returning, 0, 1)); if (t.returning >= 1) { t.home = true; t.g.position.copy(t.slot); t.g.quaternion.copy(t.slotQ); } }
   highlight.visible = false;
   if (S.easy && P && ['sit', 'bonus'].includes(P.state)) {
     let pos = null, sc = 0.15;
@@ -595,9 +685,9 @@ document.body.appendChild(VRButton.createButton(renderer, { optionalFeatures: ['
 renderer.xr.addEventListener('sessionstart', () => { initAudio(); rig.position.set(0, 0, 0.05); camera.position.set(0, 0, 0); camera.rotation.set(0, 0, 0); $('info').style.display = 'none'; $('cross').style.display = 'none'; if (deskTool) { release(deskTool); deskTool = null; } });
 renderer.xr.addEventListener('sessionend', () => { rig.position.set(0, 0, 0.45); camera.position.set(0, 1.55, 0); $('cross').style.display = ''; });
 const clock = new THREE.Clock(); let acc = 0;
-function step(dt) { R.time += dt; updateMove(dt); deskAim(); updatePatients(dt); scene.updateMatrixWorld(); treat(dt); updateSpecial(dt); updateHands(); updateWash(dt); updateTools(dt); updateConfetti(dt); updatePointers(); music(dt); acc += dt; if (acc > 0.5) { acc = 0; if (P && P.case.steps[P.step]?.special === 'cpr') card.refresh(); } }
+function step(dt) { R.time += dt; updateMove(dt); deskAim(); updatePatients(dt); scene.updateMatrixWorld(); treat(dt); updateCuff(dt); updateGloves(dt); updateButtonsTouch(); updateSpecial(dt); updateHands(); updateWash(dt); updateTools(dt); updateConfetti(dt); updatePointers(); music(dt); acc += dt; if (acc > 0.5) { acc = 0; if (P && P.case.steps[P.step]?.special === 'cpr') card.refresh(); } }
 renderer.setAnimationLoop(() => { const dt = Math.min(clock.getDelta(), 0.05); step(dt); renderer.render(scene, camera); });
-window.G = { S, R, TOOLS, TEETH, CASES, VET, get P() { return P; }, Q, grab, release, deskHand, step, camera, rig, sim: s => { for (let t = 0; t < s; t += 0.05) step(0.05); }, zoneWorld, cprPush, chartClick, buy, makePatient, setP: p => { P = p; } };
+window.G = { S, R, TOOLS, TEETH, CASES, VET, get P() { return P; }, Q, grab, release, deskHand, step, camera, rig, sim: s => { for (let t = 0; t < s; t += 0.05) step(0.05); }, zoneWorld, cprPush, chartClick, buy, makePatient, pump, pressDefi, get VIAL() { return VIAL; }, setP: p => { P = p; } };
 </script>
 </body>
 </html>
