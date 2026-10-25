@@ -1,5 +1,4 @@
-[Uploading index (52).html…]()
-<!doctype html>
+[Uploading index (53).html…]()<!doctype html>
 <html lang="et">
 <head>
 <meta charset="utf-8">
@@ -1302,7 +1301,7 @@ function drawBoard() {
   if (!list.length) ctx.fillText('Keegi pole veel võitnud', 384, 180);
   list.forEach(([n, c], i) => { ctx.textAlign = 'left'; ctx.fillText((i + 1) + '. ' + n, 110, 140 + i * 44); ctx.textAlign = 'right'; ctx.fillText(c + ' kroon' + (c > 1 ? 'i' : ''), 660, 140 + i * 44); });
   ctx.textAlign = 'center'; ctx.fillStyle = '#22a35a'; ctx.font = 'bold 34px system-ui';
-  ctx.fillText(net.on && net.peers.size ? 'Mängu alustab: ' + nameOf(net.hostId) : 'Vajuta ALUSTA või astu ringile', 384, 400);
+  ctx.fillText(net.on && net.peers.size ? 'Mängijaid ' + humanIds().length + '/' + MAX_HUMANS + ' · alustab: ' + nameOf(net.hostId) : 'Vajuta ALUSTA või astu ringile', 384, 400);
   B.tex.needsUpdate = true;
 }
 
@@ -2353,7 +2352,7 @@ async function startOnline(code) {
   let mod;
   try { mod = await import(TRYSTERO_URL); }
   catch (e) { setStatus('Võrguteeki ei saanud laadida. Ava mäng GitHub Pages lingilt ja kontrolli internetti.'); return false; }
-  net.id = mod.selfId; net.on = true;
+  net.id = mod.selfId; net.on = true; net.isHost = true; net.hostId = net.id; net.hostSince = Date.now(); net.hostHs = 0;
   const room = mod.joinRoom({ appId: 'kukerpall-vr-emil-v2' }, 'ruum-' + code);
   net.room = room;
   for (const n of ['pose', 'host', 'tile', 'fin', 'req', 'out', 'grab', 'emote', 'item']) net[n] = act(room, n);
@@ -2363,10 +2362,24 @@ async function startOnline(code) {
     else if (d.k === 'gone') { const bn = bananas.find(b => b.id === d.id); if (bn && !bn.gone) { bn.gone = true; trackGroup.remove(bn.g); } }
     else if (d.k === 'drop') addDrop(d.x, d.y, d.z, d.vx, d.vz, d.c);
   });
-  onRoom(room, 'onPeerJoin', id => { ensurePeer(id); recomputeHost(true); });
-  onRoom(room, 'onPeerLeave', id => { removePeer(id); recomputeHost(false); });
+  onRoom(room, 'onPeerJoin', id => { ensurePeer(id); updateHud(); });
+  onRoom(room, 'onPeerLeave', id => onPeerGone(id));
   net.pose.on((d, id) => { const p = ensurePeer(id); if (p.name !== d.n || p.color !== d.c || p.hat !== d.h || p.costume !== (d.u || 0) || p.lv !== (d.lv || 1)) rebuildPeerAvatar(p, d); p.d = d; p.last = now(); });
-  net.host.on((d, id) => { if (id === net.hostId && !net.isHost) onHostState(d); });
+  net.host.on((d, id) => {
+    const hs = d.hs || Infinity;
+    if (net.isHost) {
+      // kaks juhti: juhiks jääb see, kes on kauem juht olnud (liitus varem)
+      const older = hs < net.hostSince || (hs === net.hostSince && id < net.id);
+      if (!older) return;
+      net.isHost = false; net.hostId = id; bots.forEach(b => scene.remove(b.mesh)); bots = []; net.hasOffset = false;
+    } else if (id !== net.hostId) {
+      if (!(hs < (net.hostHs || Infinity))) return;
+      net.hostId = id; net.hasOffset = false;
+    }
+    net.hostHs = hs;
+    if (d.sh.members && d.sh.members.length >= MAX_HUMANS && !d.sh.members.includes(net.id)) { roomFull(); return; }
+    onHostState(d);
+  });
   net.tile.on(d => { if (d.r === show.rid) shakeTile(d.i, false); });
   net.fin.on((d, id) => { if (net.isHost && d.r === show.rid) recordFinish(id, d.t); });
   net.out.on((d, id) => { if (net.isHost && d.r === show.rid) hostOut(id); });
@@ -2377,13 +2390,13 @@ async function startOnline(code) {
   });
   net.grab.on((d, id) => { if (d.on) markGrab(d.t); applyGrab(d.t, d.g || id, !!d.on, d.th || null, d.hp || null); });
   net.emote.on((d, id) => { const p = net.peers.get(id); if (p && p.avatar) setBubble(p.avatar, EMOTES[d.e] || '👋'); });
-  recomputeHost(false);
+  updateHud();
   return true;
 }
 function ensurePeer(id) {
   let p = net.peers.get(id);
   if (!p) {
-    p = { id, name: '…', color: 0xaaaaaa, hat: 0, costume: 0, d: null, last: now(), avatar: makeHuman(0xaaaaaa, '…', 0), gl: makeGlove(0x5a3e2b), gr: makeGlove(0x5a3e2b), pos: new V3(0, -50, 0) };
+    p = { id, name: '…', color: 0xaaaaaa, hat: 0, costume: 0, d: null, last: now(), joinT: now(), avatar: makeHuman(0xaaaaaa, '…', 0), gl: makeGlove(0x5a3e2b), gr: makeGlove(0x5a3e2b), pos: new V3(0, -50, 0) };
     scene.add(p.gl); scene.add(p.gr); p.gl.visible = p.gr.visible = false; p.avatar.visible = false;
     net.peers.set(id, p);
   }
@@ -2398,15 +2411,35 @@ function removePeer(id) {
   const p = net.peers.get(id); if (!p) return;
   scene.remove(p.avatar); scene.remove(p.gl); scene.remove(p.gr); net.peers.delete(id);
 }
-function humanIds() { return [net.id, ...[...net.peers.values()].filter(p => p.d).map(p => p.id)].sort(); }
-function recomputeHost(joined) {
-  const ids = [net.id, ...net.peers.keys()].sort();
-  const was = net.isHost;
-  net.hostId = ids[0]; net.isHost = net.hostId === net.id;
-  if (net.isHost && !was) { clearRemoteBots(); show.easy = wantEasy; enterLobby(); }
-  if (!net.isHost) { bots.forEach(b => scene.remove(b.mesh)); bots = []; net.hasOffset = false; }
+const MAX_HUMANS = 8;
+function membersNow() {   // juht: esimesed 8 liitujat (liitumise järjekorras)
+  return [net.id, ...[...net.peers.values()].filter(p => p.d).sort((a, b) => a.joinT - b.joinT).map(p => p.id)].slice(0, MAX_HUMANS);
+}
+function humanIds() {
+  if (!net.on) return [net.id];
+  if (net.isHost) return membersNow().sort();
+  const m = show.members && show.members.length ? show.members.filter(id => id === net.id || net.peers.has(id)) : [net.id, ...[...net.peers.values()].filter(p => p.d).map(p => p.id)];
+  return m.slice().sort();
+}
+function onPeerGone(id) {
+  removePeer(id);
+  if (net.on && id === net.hostId && !net.isHost) {
+    // juht lahkus: uueks juhiks saab järgmine liitunu (kõigil sama nimekiri)
+    const order = (show.members || []).filter(x => x !== id && (x === net.id || net.peers.has(x)));
+    const next = order[0] || net.id;
+    if (next === net.id) becomeHost(); else { net.hostId = next; net.hostHs = Infinity; net.hasOffset = false; }
+  }
   updateHud();
 }
+function becomeHost() { net.isHost = true; net.hostId = net.id; net.hostSince = Date.now(); clearRemoteBots(); show.easy = wantEasy; enterLobby(); }
+function roomFull() {
+  try { net.room && net.room.leave && net.room.leave(); } catch (e) {}
+  net.on = false;
+  const e = document.getElementById('loadErr');
+  if (e) { e.style.display = 'block'; e.innerHTML = '<h2 style="color:#ff3d8b;margin-top:0">Ruum on täis</h2><p>Selles ruumis on juba ' + MAX_HUMANS + ' mängijat.</p><p>Vali teine ruumi kood ja proovi uuesti.</p><p><button onclick="location.reload()" style="font-size:18px;padding:12px 20px;border:0;border-radius:12px;background:#22c55e;color:#fff;font-weight:800">Tagasi menüüsse</button></p>'; }
+  showMsg('Ruum on täis', [MAX_HUMANS + ' mängijat on juba sees', 'Vali teine kood'], 99, true);
+}
+
 
 // --- PEREMEES: show juhtimine ---
 const newId = () => Math.random().toString(36).slice(2, 8);
@@ -2718,7 +2751,7 @@ function hostBroadcast(dt) {
   if (!net.on || net.peers.size === 0) return;
   hostSendT -= dt; if (hostSendT > 0) return; hostSendT = 1 / 15;
   net.host.send({
-    ht: now(), sh: show,
+    ht: now(), hs: net.hostSince, sh: (show.members = membersNow(), show),
     b: bots.map(b => [r2(b.pos.x), r2(b.pos.y), r2(b.pos.z), r2(b.mesh.rotation.y), r2(Math.hypot(b.vel.x, b.vel.z)), b.visible ? 1 : 0, b.duckT > 0 ? 1 : 0]),
   });
 }
@@ -3121,7 +3154,7 @@ function updateHud() {
   if (isTouch) { hud.innerHTML = '<b>' + (TR ? TR.name : '') + '</b>' + (net.on ? ' · ruum ' + roomCode + ' · ' + humanIds().length + ' inimest' : ''); return; }
   const n = humanIds().length;
   hud.innerHTML = '<b>Kukerpall VR</b> · ' + (TR ? TR.name : '') + '<br>' +
-    (net.on ? 'Ruum <b>' + roomCode + '</b> · inimesi ' + n + (net.isHost ? ' · sina juhid' : '') : 'Üksi robotitega') +
+    (net.on ? 'Ruum <b>' + roomCode + '</b> · inimesi ' + n + '/' + MAX_HUMANS + (net.isHost ? ' · sina juhid' : '') : 'Üksi robotitega') +
     (show.easy ? ' · lihtne' : '') +
     '<br><small>Klõpsa ekraanil · WASD + hiir · tühik · E = haara · 1–4 emotikon · M = muusika' + (show.stage === 'lobby' ? ' · Enter = alusta' : '') + '</small>';
 }
