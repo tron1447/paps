@@ -1,4 +1,4 @@
-[index (45).html](https://github.com/user-attachments/files/33927460/index.45.html)<!doctype html>
+[Uploading index (46).html…]()<!doctype html>
 <html lang="et">
 <head>
 <meta charset="utf-8">
@@ -25,7 +25,7 @@ button.big{flex:1;min-width:150px;font-size:17px;font-weight:700;padding:13px;bo
 #status{margin-top:10px;font-size:14px;min-height:18px}
 #hud{position:fixed;left:12px;top:12px;background:var(--card);padding:8px 12px;border-radius:12px;font-size:13px;line-height:1.45;max-width:360px;display:none;z-index:5}
 details{font-size:13px;margin-top:10px}
-canvas{touch-action:none;display:block}
+canvas{touch-action:none;display:block;position:fixed;left:0;top:0}
 @media (max-height:480px){#stick{width:110px;height:110px;left:16px;bottom:16px}#knob{left:32px;top:32px;width:46px;height:46px}#tJump{width:80px;height:80px;right:18px;bottom:18px}#tGrab{width:60px;height:60px;right:110px;bottom:14px}#tEmote{width:50px;height:50px;right:30px;bottom:110px}#startBtn{font-size:16px;padding:10px 18px;top:8px}#hud{font-size:12px;padding:5px 9px;top:6px;left:6px}}
 #touch{display:none;position:fixed;inset:0;pointer-events:none;z-index:6;user-select:none;-webkit-user-select:none}
 #touch.on{display:block}
@@ -36,6 +36,7 @@ canvas{touch-action:none;display:block}
 #tGrab{right:136px;bottom:30px;width:72px;height:72px;background:var(--blue)}
 #tEmote{right:40px;bottom:146px;width:60px;height:60px;background:#f59e0b;font-size:24px}
 #tDuck{right:220px;bottom:30px;width:72px;height:72px;background:#8b5cf6;font-size:13px;display:none}
+#fsBtn{display:none;position:fixed;right:12px;bottom:200px;z-index:8;width:48px;height:48px;font-size:24px;border:0;border-radius:12px;background:rgba(29,27,58,.6);color:#fff}
 #shopBtn{display:none;position:fixed;right:12px;top:12px;z-index:8;font-size:16px;font-weight:800;padding:10px 16px;border:0;border-radius:14px;background:#f59e0b;color:#fff;cursor:pointer}
 #shop{display:none;position:fixed;inset:0;z-index:30;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;background:rgba(0,0,0,.25);overflow:auto}
 #shop.on{display:flex}#shop .card{background:var(--card);border-radius:22px;padding:18px 20px;max-width:460px;width:100%;margin:auto}
@@ -90,6 +91,7 @@ small{opacity:.8}
 </div></div>
 <div id="hud"></div>
 <button id="shopBtn">🛒 Pood</button>
+<button id="fsBtn" title="Täisekraan">⛶</button>
 <div id="shop"><div class="card">
   <h2 style="margin:0 0 4px;color:var(--pink)">Pood</h2>
   <p id="coinsLbl" style="margin:0 0 10px;font-weight:700"></p>
@@ -146,6 +148,7 @@ function fitScreen() {   // telefoni pööramisel kohanda pilt kogu ekraanile
   if (Math.abs(w - fitW) < 1 && Math.abs(h - fitH) < 1) return;
   fitW = w; fitH = h;
   camera.aspect = w / h; camera.updateProjectionMatrix(); renderer.setSize(w, h);
+  renderer.domElement.style.width = w + 'px'; renderer.domElement.style.height = h + 'px';
 }
 addEventListener('resize', fitScreen);
 addEventListener('orientationchange', () => { setTimeout(fitScreen, 150); setTimeout(fitScreen, 600); });
@@ -2482,6 +2485,7 @@ function updateHud() {
   $('tDuck').style.display = TR && TR.hasHigh ? 'block' : 'none';
   $('startBtn').style.display = !vrNow && net.isHost && show.stage === 'lobby' ? 'block' : 'none';
   $('shopBtn').style.display = !vrNow && show.stage === 'lobby' ? 'block' : 'none';
+  $('fsBtn').style.display = isTouch && !vrNow && !document.fullscreenElement ? 'block' : 'none';
   $('buildBar').classList.toggle('on', isTouch && !vrNow && !!buildAimCache);
   if (isTouch) { hud.innerHTML = '<b>' + (TR ? TR.name : '') + '</b>' + (net.on ? ' · ruum ' + roomCode + ' · ' + humanIds().length + ' inimest' : ''); return; }
   const n = humanIds().length;
@@ -2525,7 +2529,7 @@ function renderShop() {
 }
 function openShop() { renderShop(); $('shop').classList.add('on'); if (document.pointerLockElement) document.exitPointerLock(); }
 $('shopClose').onclick = () => { $('shop').classList.remove('on'); renderPickers(); };
-$('shopBtn').onclick = openShop; $('menuShop').onclick = openShop;
+$('shopBtn').onclick = openShop; $('fsBtn').onclick = goFullscreen; $('menuShop').onclick = openShop;
 renderPickers();
 const params = new URLSearchParams(location.search);
 let savedName = ''; try { savedName = localStorage.getItem('kp_name') || ''; } catch (e) {}
@@ -2548,7 +2552,18 @@ $('online').onclick = async () => {
   const ok = await startOnline(roomCode);
   if (ok) startGame(true);
 };
+function goFullscreen() {   // telefonis: täisekraan + horisontaalne, et brauseri ribad kaoksid
+  if (!isTouch) return;
+  const el = document.documentElement;
+  try {
+    const r = el.requestFullscreen ? el.requestFullscreen({ navigationUI: 'hide' }) : el.webkitRequestFullscreen ? el.webkitRequestFullscreen() : null;
+    if (r && r.then) r.then(() => { try { screen.orientation && screen.orientation.lock && screen.orientation.lock('landscape').catch(() => {}); } catch (e) {} setTimeout(fitScreen, 300); }).catch(() => {});
+  } catch (e) {}
+  setTimeout(fitScreen, 300); setTimeout(fitScreen, 900);
+}
+document.addEventListener('fullscreenchange', () => { fitW = 0; setTimeout(fitScreen, 100); setTimeout(fitScreen, 500); });
 function startGame(online) {
+  goFullscreen();
   started = true; $('menu').style.display = 'none';
   pitch = 0; camera.rotation.set(0, 0, 0);
   if (!online) { net.on = false; net.isHost = true; }
