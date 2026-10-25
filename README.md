@@ -1,5 +1,4 @@
-[Uploading index (54).html…]()
-<!doctype html>
+[index (55).html](https://github.com/user-attachments/files/33931484/index.55.html)<!doctype html>
 <html lang="et">
 <head>
 <meta charset="utf-8">
@@ -119,7 +118,7 @@ small{opacity:.8}
     <button class="big" id="online">Mängi sõpradega</button>
     <button class="big" id="practiceBtn" style="background:#22c55e">Harjuta 🎓</button>
     <button class="big" id="levelsBtn" style="background:#8b5cf6">Tasemed ⭐ (30)</button>
-    <button class="big" id="coopBtn" style="background:#0ea5e9">Koostöö 🤝</button>
+    <button class="big" id="coopBtn" style="background:#0ea5e9">Koostöö sõpradega 🤝</button>
     <button class="big" id="dailyBtn" style="background:#e8590c">📅 Päeva väljakutse</button>
   </div>
   <div id="status"></div>
@@ -132,7 +131,7 @@ small{opacity:.8}
   <b>Pealtvaatajana:</b> F / nupp / päästik = viska pall rajale.<br>
   <b>VR pulgaga:</b> vasak pulk = liigu, A/X = hüppa, muu sama.</p></details>
   <p><small><b>Telefonis:</b> vasak ring = liigu, lohista ekraani = vaata ringi, nupud = hüppa / haara / emotikon.<br>
-  <b>Alustamine:</b> üksi mängides vajuta „Alusta” või astu rohelisele ringile. Sõpradega mängides alustab <b>esimene ruumi tulnud mängija</b>. Ootesaalis saab juht valida ka <b>🤝 Koostöö</b> (K) – kõik peavad koos finišisse jõudma.<br>
+  <b>Alustamine:</b> üksi mängides vajuta „Alusta” või astu rohelisele ringile. Sõpradega mängides alustab <b>esimene ruumi tulnud mängija</b>. <b>Koostöö sõpradega 🤝</b> peamenüüs avab sama koodiga koostööruumi <b>ilma robotiteta</b> – juht vajutab ALUSTA ja kõik peavad koos finišisse jõudma (tavaruumis K).<br>
   <b>Liigad:</b> edasi pääsedes ja võites saad karikaid 🏆 – Pronksist Meistrini. Iga päev järjest mängides kasvab päevaboonus 🔥.</small></p>
 </div></div>
 <div id="hud"></div>
@@ -373,6 +372,7 @@ function twistLine() { return show.tw && TWISTS[show.tw] ? 'Üllatus: ' + TWISTS
 const SURVIVAL = { areen: 1, plaadid: 1, noor: 1, boss: 1 };
 const TEAM = { pall: 1, munad: 1 };
 const TEAM_COLORS = [0x2f9bff, 0xff3b3b], TEAM_NAMES = ['Sinine', 'Punane'];
+let wantCoop = false;
 let myName = 'Mängija', loco = 'arms', roomCode = '', musicOn = true, wantEasy = false, wantBots = true;
 const HUMAN_COLORS = [0xff3d8b, 0x2f9bff, 0x22c55e, 0xf59e0b, 0x8b5cf6, 0x06b6d4, 0xef4444, 0xfacc15];
 const HATS = ['Puudub', 'Müts', 'Kõrvad', 'Sarv', 'Lill', 'Propeller', 'Võlurimüts', 'Kokamüts', 'Viikingisarved'];
@@ -994,8 +994,9 @@ function startCoop(cl) {   // koostöörežiim: kõik koos läbi mitme koostöö
   if (cl === 1) { show.ct = 0; if (net.on) pushFeed('🤝 Koostöö algab! Kõik peavad finišisse jõudma'); }
   show.mode = 'coop'; show.cl = cl; show.tw = ''; show.weather = ''; show.rt = 'race'; show.ti = COOPS[cl - 1]; show.rn = cl; show.final = false;
   show.boss = null; show.teams = {}; show.gates = [0, 0, 0, 0]; show.ok = 0; show.lt = 0;
-  const hs = humanIds(), helpers = bots.slice(0, Math.max(0, 4 - hs.length));
-  show.part = [...hs, ...helpers.map(b => b.id)]; show.alive = show.part.slice(); show.inR = show.part.slice(); show.q = []; show.fo = []; show.quota = 99; show.lastOut = [];
+  const hs = humanIds();
+  // koostöös on ainult inimesed, robotid ei osale
+  show.part = hs.slice(); show.alive = show.part.slice(); show.inR = show.part.slice(); show.q = []; show.fo = []; show.quota = 99; show.lastOut = [];
   show.rid = newId(); show.stage = 'intro'; show.sa = T() + 5; show.ea = 0; hostOnly.claims = {};
 }
 function coopTick(t) {
@@ -1425,7 +1426,7 @@ function drawBoard() {
   const B = TR && TR.board; if (!B) return;
   const names = new Set([...Object.keys(show.crowns || {}), ...Object.keys(show.pts || {})]);
   const list = [...names].map(n => [n, (show.crowns || {})[n] || 0, (show.pts || {})[n] || 0]).sort((a, b) => b[1] - a[1] || b[2] - a[2]).slice(0, 6);
-  const key = JSON.stringify(list) + net.hostId + net.peers.size;
+  const key = JSON.stringify(list) + net.hostId + net.peers.size + (show.coopRoom ? 'c' : '');
   if (key === B.key) return; B.key = key;
   const ctx = B.cv.getContext('2d');
   ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, 768, 420);
@@ -1434,7 +1435,7 @@ function drawBoard() {
   if (!list.length) ctx.fillText('Keegi pole veel võitnud', 384, 180);
   list.forEach(([n, c, pt], i) => { ctx.fillStyle = i === 0 ? '#e8590c' : '#1d1b3a'; ctx.textAlign = 'left'; ctx.fillText((i + 1) + '. ' + n, 80, 136 + i * 43); ctx.textAlign = 'right'; ctx.fillText('👑' + c + '   ⭐' + pt, 690, 136 + i * 43); });
   ctx.textAlign = 'center'; ctx.fillStyle = '#22a35a'; ctx.font = 'bold 34px system-ui';
-  ctx.fillText(net.on && net.peers.size ? 'Mängijaid ' + humanIds().length + '/' + MAX_HUMANS + ' · alustab: ' + nameOf(net.hostId) : 'Vajuta ALUSTA või astu ringile', 384, 400);
+  ctx.fillText(net.on && net.peers.size ? 'Mängijaid ' + humanIds().length + '/' + MAX_HUMANS + ' · alustab: ' + nameOf(net.hostId) : (show.coopRoom ? 'Koostöö: vajuta ALUSTA' : 'Vajuta ALUSTA või astu ringile'), 384, 400);
   B.tex.needsUpdate = true;
 }
 
@@ -2592,7 +2593,7 @@ function onPeerGone(id) {
   }
   updateHud();
 }
-function becomeHost() { net.isHost = true; net.hostId = net.id; net.hostSince = Date.now(); clearRemoteBots(); show.easy = wantEasy; enterLobby(); }
+function becomeHost() { wantCoop = !!show.coopRoom; net.isHost = true; net.hostId = net.id; net.hostSince = Date.now(); clearRemoteBots(); show.easy = wantEasy; enterLobby(); }
 function roomFull() {
   try { net.room && net.room.leave && net.room.leave(); } catch (e) {}
   net.on = false;
@@ -2617,12 +2618,14 @@ function enterLobby() {
   show.mode = ''; show.tw = '';
   show.stage = 'lobby'; show.rt = 'lobby'; show.ti = 0; show.rid = newId(); show.part = []; show.alive = []; show.inR = []; show.q = []; show.fo = []; show.tails = []; show.lastOut = [];
   show.easy = wantEasy;
-  show.bots = !net.on || wantBots;     // üksi mängides on robotid alati
+  show.coopRoom = wantCoop ? 1 : 0;
+  show.bots = !wantCoop && (!net.on || wantBots);     // üksi mängides on robotid alati (v.a koostööruum)
   const n = show.bots ? Math.max(3, 10 - humanIds().length) : 0;
   if (bots.length !== n) makeBots(n);
   bots.forEach((b, i) => { b.visible = true; b.mesh.visible = true; b.pos.set(rnd(-6, 6), 0.3, rnd(-6, 6)); b.vel.set(0, 0, 0); b.finished = false; b.grabbing = null; b.grabbedBy = null; });
   hostOnly.padT = 0;
 }
+function hostStart() { if (show.coopRoom) startCoop(1); else startShow(); }
 function startShow() {
   show.sid = newId(); show.rn = 0; show.winner = ''; hostOnly.falls = {}; hostOnly.prevType = ''; hostOnly.thr = {}; hostOnly.fast = null; show.aw = []; show.mode = '';
   if (net.on) pushFeed('🎬 Show algab! ' + humanIds().length + ' inimest' + (bots.length ? ' + ' + bots.length + ' robotit' : ''));
@@ -2772,7 +2775,7 @@ function hostTick(dt) {
     const onPad = pad && Math.hypot(player.pos.x - pad.x, player.pos.z - pad.z) < 1.8 && player.pos.y < 1.5;
     show.ready = onPad ? 1 : 0;
     hostOnly.padT = onPad ? hostOnly.padT + dt : 0;
-    if (hostOnly.padT > 1.5) startShow();
+    if (hostOnly.padT > 1.5) hostStart();
     return;
   }
   if (show.stage === 'intro' && t > show.sa) show.stage = 'play';
@@ -3111,7 +3114,7 @@ addEventListener('keydown', e => {
   if (e.code === 'KeyR' && show.mode === 'levels') { startLevel(show.level); return; }
   if (e.code === 'Enter' && show.mode === 'levels' && show.stage === 'lvdone') { startLevel(show.level + 1); return; }
   if (e.code === 'KeyR' && net.isHost) { if (show.stage === 'trenn') { makeBots(0); } enterLobby(); }
-  if (e.code === 'Enter' && show.stage === 'lobby' && net.isHost) startShow();
+  if (e.code === 'Enter' && show.stage === 'lobby' && net.isHost) hostStart();
   if (e.code === 'KeyM') setMusic(!musicOn);
   if (e.code === 'KeyP' && show.stage === 'lobby') openShop();
   if (e.code === 'KeyK' && started && net.isHost && show.stage === 'lobby') startCoop(1);
@@ -3183,7 +3186,7 @@ document.getElementById('bBuild').onclick = () => doBuild(false);
 document.getElementById('dropBtn').onclick = () => spectatorDrop();
 document.getElementById('bDel').onclick = () => doBuild(true);
 document.getElementById('bType').onclick = () => cycleBuildType();
-document.getElementById('startBtn').onclick = () => { audioInit(); if (started && net.isHost && show.stage === 'lobby') startShow(); };
+document.getElementById('startBtn').onclick = () => { audioInit(); if (started && net.isHost && show.stage === 'lobby') hostStart(); };
 let pitch = 0;
 addEventListener('mousemove', e => {
   if (document.pointerLockElement !== renderer.domElement) return;
@@ -3351,7 +3354,8 @@ function updateHud() {
   $('touch').classList.toggle('on', isTouch && !vrNow);
   $('tDuck').style.display = TR && TR.hasHigh ? 'block' : 'none';
   $('startBtn').style.display = !vrNow && net.isHost && show.stage === 'lobby' ? 'block' : 'none';
-  $('coopStart').style.display = !vrNow && net.isHost && show.stage === 'lobby' ? 'block' : 'none';
+  $('coopStart').style.display = !vrNow && net.isHost && show.stage === 'lobby' && !show.coopRoom ? 'block' : 'none';
+  $('startBtn').textContent = show.coopRoom ? '🤝 ALUSTA KOOSTÖÖD' : '▶ ALUSTA MÄNGU';
   $('shopBtn').style.display = !vrNow && show.stage === 'lobby' ? 'block' : 'none';
   $('lvMenuBtn').style.display = !vrNow && show.mode === 'levels' ? 'block' : 'none';
   $('fsBtn').style.display = isTouch && !vrNow && !document.fullscreenElement ? 'block' : 'none';
@@ -3419,9 +3423,15 @@ function readMenu() {
   const gsel = document.querySelector('input[name=gfx]:checked'); if (gsel && gsel.value !== gfx) setGfx(gsel.value);
   audioInit();
 }
-$('solo').onclick = () => { readMenu(); startGame(false); };
+$('solo').onclick = () => { readMenu(); wantCoop = false; startGame(false); };
 $('practiceBtn').onclick = () => startPractice();
-$('coopBtn').onclick = () => { readMenu(); startGame(false); startCoop(1); };
+$('coopBtn').onclick = async () => {   // koostööruum sõpradega (ilma robotiteta), sama ruumikood
+  readMenu(); wantCoop = true;
+  roomCode = $('code').value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '') || randomCode();
+  $('code').value = roomCode;
+  const ok = await startOnline(roomCode);
+  if (ok) startGame(true); else { wantCoop = true; startGame(false); startCoop(1); }
+};
 $('dailyBtn').onclick = () => { readMenu(); startLevel(0); };
 $('lvDaily').onclick = () => startLevel(0);
 $('coopStart').onclick = () => { audioInit(); if (started && net.isHost && show.stage === 'lobby') startCoop(1); };
@@ -3432,7 +3442,7 @@ $('lvRetry').onclick = () => startLevel(show.level);
 $('lvList').onclick = () => { $('lvDone').classList.remove('on'); openLevelSelect(); };
 $('lvMenuBtn').onclick = () => openLevelSelect();
 $('online').onclick = async () => {
-  readMenu();
+  readMenu(); wantCoop = false;
   roomCode = $('code').value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '') || randomCode();
   $('code').value = roomCode;
   const ok = await startOnline(roomCode);
@@ -3543,17 +3553,17 @@ function drawMenu() {
     if (!M.inGame) {
       row('Kood', 610); mBtn(230, 610, 250, 62, roomCode + '  ✎', () => openKeyboard('code'));
       mBtn(495, 610, 489, 62, 'Robotid ka (sõpradega)', () => { wantBots = !wantBots; }, { on: wantBots });
-      mBtn(40, 695, 460, 86, 'Mängi robotitega', () => { syncHtml(); closeVrMenu(); startGame(false); }, { big: '#2f9bff' });
-      mBtn(524, 695, 460, 86, 'Mängi sõpradega', () => vrOnline(), { big: '#ff3d8b' });
+      mBtn(40, 695, 460, 86, 'Mängi robotitega', () => { wantCoop = false; syncHtml(); closeVrMenu(); startGame(false); }, { big: '#2f9bff' });
+      mBtn(524, 695, 460, 86, 'Mängi sõpradega', () => { wantCoop = false; vrOnline(); }, { big: '#ff3d8b' });
       mBtn(40, 20, 230, 64, 'Harjuta 🎓', () => { syncHtml(); closeVrMenu(); startPractice(); }, { big: '#22c55e' });
-      mBtn(282, 20, 230, 64, 'Koostöö 🤝', () => { syncHtml(); closeVrMenu(); startGame(false); startCoop(1); }, { big: '#0ea5e9' });
+      mBtn(282, 20, 230, 64, 'Koostöö 🤝', () => { wantCoop = true; vrOnline(); }, { big: '#0ea5e9' });
       mBtn(524, 20, 230, 64, 'Tasemed ⭐', () => { syncHtml(); M.screen = 'levels'; }, { big: '#8b5cf6' });
       mBtn(670, 120, 314, 62, '📅 Päeva rada', () => { syncHtml(); closeVrMenu(); startLevel(0); }, { big: '#e8590c' });
     } else {
       x.fillStyle = '#556'; x.font = '28px system-ui'; x.textAlign = 'left'; x.fillText(net.on ? 'Ruum ' + roomCode + ' · ' + humanIds().length + ' inimest' : 'Üksi robotitega', 40, 640);
       mBtn(40, 695, 460, 86, 'Sulge menüü', () => closeVrMenu(), { big: '#22c55e' });
       mBtn(524, 695, 460, 86, '⏏ Peamenüüsse', () => { if (now() < exitArm) exitToMenu(); else { exitArm = now() + 3; M.status = 'Vajuta uuesti, et lahkuda ruumist'; } }, { big: '#e03131' });
-      if (net.isHost && show.stage === 'lobby') mBtn(524, 610, 460, 70, '🤝 Alusta koostööd', () => { closeVrMenu(); startCoop(1); }, { big: '#0ea5e9' });
+      if (net.isHost && show.stage === 'lobby') mBtn(524, 610, 460, 70, show.coopRoom ? '🤝 Alusta koostööd' : '🤝 Koostöö (kõik koos)', () => { closeVrMenu(); startCoop(1); }, { big: '#0ea5e9' });
       if (show.mode === 'levels') { mBtn(40, 610, 460, 70, 'Tasemete valik', () => { M.screen = 'levels'; }, { big: '#8b5cf6' }); mBtn(524, 610, 460, 70, 'Alusta uuesti ↻', () => startLevel(show.level), { big: '#f59e0b' }); }
     }
     if (M.status) { x.fillStyle = '#d6336c'; x.font = 'bold 28px system-ui'; x.textAlign = 'center'; x.fillText(M.status, MW / 2, 800); }
@@ -3621,6 +3631,7 @@ async function vrOnline() {
   syncHtml(); vrMenu.status = 'Ühendan ruumiga ' + roomCode + ' …'; drawMenu();
   const ok = await startOnline(roomCode);
   if (ok) { closeVrMenu(); startGame(true); }
+  else if (wantCoop) { closeVrMenu(); startGame(false); startCoop(1); }
   else { vrMenu.status = 'Ei saanud ühendust – ava mäng GitHubi lingilt'; drawMenu(); }
 }
 function menuHit(i) {
@@ -3914,7 +3925,7 @@ renderer.setAnimationLoop(() => {
     let line = TR.name;
     if (show.stage === 'lobby') {
       if (buildAimCache) line = 'Rajaehitaja · ' + (renderer.xr.isPresenting ? 'parem päästik = ehita, vasak = kustuta, B = tüüp' : isTouch ? 'nupud all' : 'F = ehita, G = kustuta, T = tüüp') + ' (' + BUILD_TYPES[buildType] + ')';
-      else line = 'Ootesaal · ' + (net.isHost ? (renderer.xr.isPresenting ? 'Astu rohelisele ringile, et alustada' : 'Vajuta ALUSTA, kui kõik on kohal') : 'Ootame, kuni ' + nameOf(net.hostId) + ' alustab');
+      else line = (show.coopRoom ? '🤝 Koostööruum' : 'Ootesaal') + ' · ' + (net.isHost ? (renderer.xr.isPresenting ? 'Astu rohelisele ringile, et alustada' : 'Vajuta ALUSTA, kui kõik on kohal') : 'Ootame, kuni ' + nameOf(net.hostId) + ' alustab');
     } else if (show.mode === 'levels') {
       const rec = show.level ? prog.levels[show.level] : (prog.daily && prog.daily.day === dayKey() ? prog.daily : null);
       line = (show.level ? 'Tase ' + show.level : '📅 Päeva väljakutse') + ' · ' + (show.stage === 'lvdone' ? myFinishTime.toFixed(1) : tau.toFixed(1)) + ' s' + (rec ? ' · rekord ' + rec.t + ' s' : '') + ' · 3⭐ alla ' + (TR.par || 40) + ' s';
