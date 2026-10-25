@@ -1,12 +1,13 @@
-[Uploading index (46).html…]()<!doctype html>
+[Uploading index (48).html…]()
+<!doctype html>
 <html lang="et">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>Kukerpall VR</title>
 <style>
 :root{--ink:#1d1b3a;--card:rgba(255,255,255,.95);--pink:#ff3d8b;--blue:#2f9bff}
-html,body{margin:0;height:100%;overflow:hidden;background:#8fd3ff;font-family:system-ui,sans-serif;color:var(--ink)}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;overscroll-behavior:none;background:#1d1b3a;font-family:system-ui,sans-serif;color:var(--ink)}
 #menu{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;z-index:10;overflow:auto}
 #menu .card{background:var(--card);border-radius:22px;padding:20px 22px;max-width:440px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,.18);margin:auto}
 #menu h1{margin:0 0 4px;font-size:30px;color:var(--pink)}
@@ -25,17 +26,18 @@ button.big{flex:1;min-width:150px;font-size:17px;font-weight:700;padding:13px;bo
 #status{margin-top:10px;font-size:14px;min-height:18px}
 #hud{position:fixed;left:12px;top:12px;background:var(--card);padding:8px 12px;border-radius:12px;font-size:13px;line-height:1.45;max-width:360px;display:none;z-index:5}
 details{font-size:13px;margin-top:10px}
-canvas{touch-action:none;display:block;position:fixed;left:0;top:0}
-@media (max-height:480px){#stick{width:110px;height:110px;left:16px;bottom:16px}#knob{left:32px;top:32px;width:46px;height:46px}#tJump{width:80px;height:80px;right:18px;bottom:18px}#tGrab{width:60px;height:60px;right:110px;bottom:14px}#tEmote{width:50px;height:50px;right:30px;bottom:110px}#startBtn{font-size:16px;padding:10px 18px;top:8px}#hud{font-size:12px;padding:5px 9px;top:6px;left:6px}}
-#touch{display:none;position:fixed;inset:0;pointer-events:none;z-index:6;user-select:none;-webkit-user-select:none}
+canvas{touch-action:none;display:block;position:fixed;left:0;top:0;width:100vw!important;height:100vh!important;height:100dvh!important}
+#menu{background:#8fd3ff}
+
+#touch{display:none;position:fixed;left:0;top:0;width:100vw;height:100vh;height:100dvh;pointer-events:none;z-index:6;user-select:none;-webkit-user-select:none}
 #touch.on{display:block}
-#stick{position:absolute;left:24px;bottom:28px;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,.28);border:3px solid rgba(255,255,255,.7);pointer-events:auto;touch-action:none}
+#stick{position:absolute;left:calc(24px + env(safe-area-inset-left));bottom:calc(28px + env(safe-area-inset-bottom));width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,.28);border:3px solid rgba(255,255,255,.7);pointer-events:auto;touch-action:none}
 #knob{position:absolute;left:45px;top:45px;width:50px;height:50px;border-radius:50%;background:rgba(255,255,255,.9)}
 .tb{position:absolute;pointer-events:auto;touch-action:none;border:0;border-radius:50%;font-weight:800;color:#fff;font-size:16px;box-shadow:0 4px 12px rgba(0,0,0,.2)}
-#tJump{right:28px;bottom:36px;width:96px;height:96px;background:var(--pink)}
-#tGrab{right:136px;bottom:30px;width:72px;height:72px;background:var(--blue)}
-#tEmote{right:40px;bottom:146px;width:60px;height:60px;background:#f59e0b;font-size:24px}
-#tDuck{right:220px;bottom:30px;width:72px;height:72px;background:#8b5cf6;font-size:13px;display:none}
+#tJump{right:calc(28px + env(safe-area-inset-right));bottom:calc(36px + env(safe-area-inset-bottom));width:96px;height:96px;background:var(--pink)}
+#tGrab{right:calc(136px + env(safe-area-inset-right));bottom:calc(30px + env(safe-area-inset-bottom));width:72px;height:72px;background:var(--blue)}
+#tEmote{right:calc(40px + env(safe-area-inset-right));bottom:calc(146px + env(safe-area-inset-bottom));width:60px;height:60px;background:#f59e0b;font-size:24px}
+#tDuck{right:calc(220px + env(safe-area-inset-right));bottom:calc(30px + env(safe-area-inset-bottom));width:72px;height:72px;background:#8b5cf6;font-size:13px;display:none}
 #fsBtn{display:none;position:fixed;right:12px;bottom:200px;z-index:8;width:48px;height:48px;font-size:24px;border:0;border-radius:12px;background:rgba(29,27,58,.6);color:#fff}
 #shopBtn{display:none;position:fixed;right:12px;top:12px;z-index:8;font-size:16px;font-weight:800;padding:10px 16px;border:0;border-radius:14px;background:#f59e0b;color:#fff;cursor:pointer}
 #shop{display:none;position:fixed;inset:0;z-index:30;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;background:rgba(0,0,0,.25);overflow:auto}
@@ -47,10 +49,31 @@ canvas{touch-action:none;display:block;position:fixed;left:0;top:0}
 #bBuild{background:#22c55e}#bDel{background:#ef4444}
 #startBtn{display:none;position:fixed;left:50%;top:14px;transform:translateX(-50%);z-index:8;font-size:20px;font-weight:800;padding:14px 26px;border:0;border-radius:16px;background:#22c55e;color:#fff;box-shadow:0 6px 18px rgba(0,0,0,.2);cursor:pointer}
 small{opacity:.8}
+@media (max-height:480px){
+#menu{align-items:flex-start}#menu .card{display:flex;flex-direction:column;padding:12px 16px}#menu h1{font-size:22px}#menu p{font-size:12px;margin:2px 0 6px}#playRow{order:-1;margin-bottom:4px}#playRow button.big{margin-top:6px;padding:10px;font-size:15px}#menu label.t{margin:6px 0 2px}
+#stick{width:110px;height:110px;left:calc(14px + env(safe-area-inset-left));bottom:calc(14px + env(safe-area-inset-bottom))}#knob{left:32px;top:32px;width:46px;height:46px}
+#tJump{width:76px;height:76px;right:calc(16px + env(safe-area-inset-right));bottom:calc(16px + env(safe-area-inset-bottom))}
+#tGrab{width:58px;height:58px;right:calc(102px + env(safe-area-inset-right));bottom:calc(12px + env(safe-area-inset-bottom))}
+#tDuck{width:58px;height:58px;right:calc(170px + env(safe-area-inset-right));bottom:calc(12px + env(safe-area-inset-bottom))}
+#tEmote{width:48px;height:48px;right:calc(28px + env(safe-area-inset-right));bottom:calc(102px + env(safe-area-inset-bottom))}
+#fsBtn{bottom:auto;top:56px;width:40px;height:40px;font-size:20px}
+#shopBtn{font-size:13px;padding:7px 11px;top:6px}
+#startBtn{font-size:16px;padding:10px 18px;top:8px}#hud{font-size:12px;padding:5px 9px;top:6px;left:6px;max-width:45vw}
+#buildBar{bottom:8px}.tb2{padding:9px 10px;font-size:12px}
+}
 </style>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
 </head>
 <body>
+<div id="loadErr" style="display:none;position:fixed;inset:0;z-index:99;background:#1d1b3a;color:#fff;font:16px system-ui;padding:24px;box-sizing:border-box;overflow:auto"></div>
+<script>
+(function () {
+  function show(msg) { var e = document.getElementById('loadErr'); if (!e) return; e.style.display = 'block'; e.innerHTML = '<h2 style="color:#ff3d8b;margin-top:0">Mäng ei laadinud</h2><p>' + msg + '</p><p><b>Proovi nii:</b><br>1. Ava mäng <b>Chrome\'is</b> GitHub Pages lingilt (https://...github.io/...), mitte failina telefonist.<br>2. Kontrolli, et internet töötab (mäng laadib 3D-mootori internetist).<br>3. Lae leht uuesti.</p><p style="opacity:.7;font-size:13px">Aadress: ' + location.href + '</p>'; }
+  if (location.protocol === 'file:' || location.protocol === 'content:') setTimeout(function () { if (!window.__kpLoaded) show('Fail on avatud otse seadmest (' + location.protocol + '). Nii ei saa mäng 3D-mootorit laadida.'); }, 2500);
+  setTimeout(function () { if (!window.__kpLoaded) show('Mängu kood ei käivitunud 10 sekundi jooksul.'); }, 10000);
+  window.addEventListener('error', function (ev) { if (!window.__kpLoaded) show('Viga: ' + (ev.message || 'skript ei laadinud')); }, true);
+})();
+</script>
 <div id="menu"><div class="card">
   <h1>Kukerpall VR</h1>
   <p>Takistusradade peomäng robotite ja sõpradega. Arvutis ja VR-is saab mängida koos – kõik avavad sama lingi ja panevad sama ruumi koodi.</p>
@@ -75,7 +98,7 @@ small{opacity:.8}
     <label><input type="radio" name="gfx" value="ilus"> Ilus (varjud)</label>
     <label><input type="radio" name="gfx" value="kiire"> Kiire (kui mäng hakib)</label>
   </div>
-  <div class="row">
+  <div class="row" id="playRow">
     <button class="big" id="solo">Mängi robotitega</button>
     <button class="big" id="online">Mängi sõpradega</button>
   </div>
@@ -83,8 +106,8 @@ small{opacity:.8}
   <p id="statLine" style="font-size:13px;margin:8px 0 0"></p>
   <button class="big" id="menuShop" style="background:#f59e0b;width:100%;margin-top:8px">🛒 Pood (kostüümid, mütsid, värvid)</button>
   <details><summary><b>Juhtimine</b></summary>
-  <p><b>Arvutis:</b> klõpsa ekraanil või lohista hiirega, WASD liigu, nooled pööra, tühik = hüppa, C = kükita, E (hoia) = haara, 1–4 = emotikonid, P = pood, Enter = alusta, R = tagasi ootesaali (ainult juht). Rajaehitajas: F ehita, G kustuta, T tüüp.<br>
-  <b>VR kätega:</b> lükka kätega vastu maad ja seinu, vehi hooga, et hüpata. Parem pulk vasak/parem = pööra, <b>üles/alla = maapinna kõrgus</b>. Grip = haara. Käsi üle pea ja lehvita = „Tere!”. Pulgavajutus = emotikon. <b>Y = VR-menüü</b> (nimi, värv, müts, seaded). B (hoia) = tagasi ootesaali.<br>
+  <p><b>Arvutis:</b> klõpsa ekraanil või lohista hiirega, WASD liigu, nooled pööra, tühik = hüppa, C = kükita, E (hoia) = haara, lase lahti = viska sõber ette, 1–4 = emotikonid, P = pood, Enter = alusta, R = tagasi ootesaali (ainult juht). Rajaehitajas: F ehita, G kustuta, T tüüp.<br>
+  <b>VR kätega:</b> lükka kätega vastu maad ja seinu, vehi hooga, et hüpata. Parem pulk vasak/parem = pööra, <b>üles/alla = maapinna kõrgus</b>. Grip = haara, <b>vehi ja lase lahti = viska sõber</b> (aitab üle aukude). Batuudil saab liikuda ka pulgaga. Käsi üle pea ja lehvita = „Tere!”. Pulgavajutus = emotikon. <b>Y = VR-menüü</b> (nimi, värv, müts, seaded). B (hoia) = tagasi ootesaali.<br>
   <b>VR pulgaga:</b> vasak pulk = liigu, A/X = hüppa, muu sama.</p></details>
   <p><small><b>Telefonis:</b> vasak ring = liigu, lohista ekraani = vaata ringi, nupud = hüppa / haara / emotikon.<br>
   <b>Alustamine:</b> üksi mängides vajuta „Alusta” või astu rohelisele ringile. Sõpradega mängides alustab <b>esimene ruumi tulnud mängija</b>.</small></p>
@@ -112,6 +135,7 @@ small{opacity:.8}
 import * as THREE from 'three';
 import { VRButton } from 'three/addons/webxr/VRButton.js';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+window.__kpLoaded = true;
 const TRYSTERO_URL = 'https://cdn.jsdelivr.net/npm/trystero@0.25.0/+esm';
 
 // =====================================================================
@@ -122,7 +146,7 @@ try { gfx = localStorage.getItem('kp_gfx') || 'ilus'; } catch (e) {}
 const HEADSET = typeof navigator !== 'undefined' && /OculusBrowser|Quest|Pico|Wolvic|VR/i.test(navigator.userAgent || '');
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(gfx === 'ilus' ? Math.min(devicePixelRatio, 2) : 1);
-renderer.setSize(innerWidth, innerHeight);
+renderer.setSize(innerWidth, innerHeight, false);
 renderer.shadowMap.enabled = gfx === 'ilus';
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.xr.enabled = true;
@@ -144,11 +168,12 @@ camera.position.set(0, 1.6, 0);
 let fitW = 0, fitH = 0;
 function fitScreen() {   // telefoni pööramisel kohanda pilt kogu ekraanile
   if (renderer.xr.isPresenting) return;
-  const w = (window.visualViewport && visualViewport.width) || innerWidth, h = (window.visualViewport && visualViewport.height) || innerHeight;
-  if (Math.abs(w - fitW) < 1 && Math.abs(h - fitH) < 1) return;
+  // võta suurus sellest, kui suur lõuend ekraanil päriselt on (CSS venitab selle kogu ekraanile)
+  const c = renderer.domElement;
+  const w = Math.round(c.clientWidth || innerWidth), h = Math.round(c.clientHeight || innerHeight);
+  if (!w || !h || (Math.abs(w - fitW) < 1 && Math.abs(h - fitH) < 1)) return;
   fitW = w; fitH = h;
-  camera.aspect = w / h; camera.updateProjectionMatrix(); renderer.setSize(w, h);
-  renderer.domElement.style.width = w + 'px'; renderer.domElement.style.height = h + 'px';
+  camera.aspect = w / h; camera.updateProjectionMatrix(); renderer.setSize(w, h, false);
 }
 addEventListener('resize', fitScreen);
 addEventListener('orientationchange', () => { setTimeout(fitScreen, 150); setTimeout(fitScreen, 600); });
@@ -1335,7 +1360,7 @@ function stepEntity(e, dt) {
   }
   const so = e.standingOn;
   if (so && so.ramp) { const dir = Math.sign(so.zBot - so.zTop); e.vel.z += dir * 7 * dt; }
-  if (so && so.bounce && !e.holding) { e.vel.y = BOUNCE; e.onGround = false; if (e.isPlayer) { sfx('bounce'); clearHands(); } if (nearPlayer(e)) puff(e.pos, 0xffd43b, 8, 2.2, 0.6, 0.3); }
+  if (so && so.bounce && !e.holding) { e.vel.y = BOUNCE; e.onGround = false; if (e.isPlayer) { sfx('bounce'); clearHands(); e.bounceT = 2.5; } if (nearPlayer(e)) puff(e.pos, 0xffd43b, 8, 2.2, 0.6, 0.3); }
   if (e.onGround && !wasGround && prevY - e.pos.y > -0.01 && nearPlayer(e) && !(so && so.bounce)) puff(e.pos, 0xffffff, e.isPlayer ? 5 : 3, 1.0, 0.45, 0.4);
   if (so && so.tile && show.stage !== 'intro') shakeTile(so.idx, true);
   if (e.isPlayer && e.onGround && !wasGround && !so?.bounce) sfx('tap');
@@ -1474,7 +1499,7 @@ function armLocomotion(dt) {
       const c = contactAt(hp);
       if (c) {
         h.touch = true; h.n.copy(c.n); h.solid = c.s; mv.addScaledVector(c.n, c.d); cnt++; buzz(i);
-        if (c.s.bounce) { player.vel.set(0, BOUNCE, 0); h.touch = false; cnt--; sfx('bounce'); }
+        if (c.s.bounce) { player.vel.set(0, BOUNCE, 0); player.bounceT = 2.5; h.touch = false; cnt--; sfx('bounce'); }
       }
     }
   });
@@ -1531,18 +1556,29 @@ function nameOf(id) {
   if (id.startsWith('#')) return 'Robot ' + (parseInt(id.slice(2)) + 1);
   const p = net.peers.get(id); return p ? p.name : '?';
 }
-function applyGrab(targetId, byId, on) {
+function applyGrab(targetId, byId, on, th) {
   const until = on ? now() + 0.6 : 0;
   if (on) markGrab(targetId);
-  if (targetId === net.id) { player.grabbedBy = on ? { by: byId, until } : null; if (on && !player._grabMsg) { showToast(nameOf(byId) + ' haaras sind!', 1.2); player._grabMsg = 1; } if (!on) player._grabMsg = 0; return; }
-  if (net.isHost) { const b = bots.find(b => b.id === targetId); if (b) b.grabbedBy = on ? { by: byId, until } : null; }
+  const thr = th && th.length === 3 ? new V3(th[0], th[1], th[2]) : null;
+  if (thr && thr.length() > 10) thr.setLength(10);
+  if (targetId === net.id) {
+    player.grabbedBy = on ? { by: byId, until } : null;
+    if (on && !player._grabMsg) { showToast(nameOf(byId) + ' haaras sind!', 1.2); player._grabMsg = 1; }
+    if (!on) player._grabMsg = 0;
+    if (!on && thr) { player.vel.copy(thr); player.onGround = false; player.standingOn = null; player.knock = 0.25; player.bounceT = 2; clearHands(); sfx('bounce'); showToast(nameOf(byId) + ' viskas sind! 🚀', 1.4); }
+    return;
+  }
+  if (net.isHost) { const b = bots.find(b => b.id === targetId); if (b) { b.grabbedBy = on ? { by: byId, until } : null; if (!on && thr) { b.vel.copy(thr); b.onGround = false; b.standingOn = null; b.knock = 0.4; } } }
 }
-function sendGrab(targetId, on) {
+function sendGrab(targetId, on, th) {
   if (targetId === net.id) return;
   const isLocalBot = net.isHost && targetId.startsWith('#');
-  if (isLocalBot) applyGrab(targetId, net.id, on);
-  else if (net.on && net.peers.size) net.grab.send({ t: targetId, g: net.id, on: on ? 1 : 0 });
+  if (th) { sfx('jump'); showToast('Viskasid: ' + nameOf(targetId) + ' 🚀', 1.2); }
+  if (isLocalBot) applyGrab(targetId, net.id, on, th);
+  else if (net.on && net.peers.size) net.grab.send({ t: targetId, g: net.id, on: on ? 1 : 0, th: th || 0 });
 }
+const handVel = [new V3(), new V3()], handPrev = [new V3(), new V3()];
+let pcGrabT = 0;
 function grabEffect(e, dt) {
   e.speedMul = 1;
   if (!e.grabbedBy) return;
@@ -1561,13 +1597,18 @@ function updateGrabs(dt, buttons) {
     for (let i = 0; i < 2; i++) {
       const pressed = buttons[i];
       grips[i].getWorldPosition(tmpA);
+      handVel[i].lerp(tmpC.copy(tmpA).sub(handPrev[i]).divideScalar(Math.max(dt, 1e-3)), 0.5); handPrev[i].copy(tmpA);
       if (pressed && !grabHold[i]) {
         let best = null, bd = 0.55;
         for (const o of others) { const d = bodyCenter(o.pos, tmpB).distanceTo(tmpA); if (d < bd) { bd = d; best = o; } }
         if (best) { grabHold[i] = best.id; sfx('grab'); buzz(i, 0.6, 40); sendGrab(best.id, true); }
       } else if (grabHold[i]) {
         const tp = posOf(grabHold[i]);
-        if (!pressed || !tp || bodyCenter(tp, tmpB).distanceTo(tmpA) > 1.8) { sendGrab(grabHold[i], false); grabHold[i] = null; }
+        if (!pressed || !tp || bodyCenter(tp, tmpB).distanceTo(tmpA) > 1.8) {
+          // vehkimisega lahti lastes viskad sõbra käe liikumise suunas
+          const v = handVel[i], th = !pressed && v.length() > 1.3 ? [r2(v.x * 2.2), r2(Math.max(3, v.y * 2.2 + 3)), r2(v.z * 2.2)] : null;
+          sendGrab(grabHold[i], false, th); grabHold[i] = null;
+        }
         else if (resend) sendGrab(grabHold[i], true);
       }
     }
@@ -1580,10 +1621,16 @@ function updateGrabs(dt, buttons) {
         const dx = o.pos.x - player.pos.x, dz = o.pos.z - player.pos.z, d = Math.hypot(dx, dz);
         if (d < bd && Math.abs(o.pos.y - player.pos.y) < 1.2 && (dx * fw.x + dz * fw.z) / (d || 1) > 0.2) { bd = d; best = o; }
       }
-      if (best) { pcGrab = best.id; sfx('grab'); sendGrab(best.id, true); }
+      if (best) { pcGrab = best.id; pcGrabT = 0; sfx('grab'); sendGrab(best.id, true); }
     } else if (pcGrab) {
       const tp = posOf(pcGrab);
-      if (!pressed || !tp || tp.distanceTo(player.pos) > 2.2) { sendGrab(pcGrab, false); pcGrab = null; }
+      pcGrabT += dt;
+      if (!pressed || !tp || tp.distanceTo(player.pos) > 2.2) {
+        // lahti lastes viskad sõbra ette ja üles (kui hoidsid vähemalt pool sekundit)
+        camera.getWorldDirection(fw); fw.y = 0; fw.normalize();
+        const th = !pressed && pcGrabT > 0.5 ? [r2(fw.x * 6.5), 6, r2(fw.z * 6.5)] : null;
+        sendGrab(pcGrab, false, th); pcGrab = null;
+      }
       else if (resend) sendGrab(pcGrab, true);
     }
   }
@@ -1837,7 +1884,7 @@ async function startOnline(code) {
     if (d.k === 'fall') hostOnly.falls[id] = (hostOnly.falls[id] || 0) + 1;
     if ((d.k === 'build' || d.k === 'del') && show.stage === 'lobby') applyBuild(d.cx | 0, d.cz | 0, d.t | 0, d.k === 'del');
   });
-  net.grab.on((d, id) => { if (d.on) markGrab(d.t); applyGrab(d.t, d.g || id, !!d.on); });
+  net.grab.on((d, id) => { if (d.on) markGrab(d.t); applyGrab(d.t, d.g || id, !!d.on, d.th || null); });
   net.emote.on((d, id) => { const p = net.peers.get(id); if (p && p.avatar) setBubble(p.avatar, EMOTES[d.e] || '👋'); });
   recomputeHost(false);
   return true;
@@ -2382,7 +2429,12 @@ function handleInput(dt, canMove) {
   mvIn.set(0, 0, 0).addScaledVector(fw, my).addScaledVector(rt, mx); if (mvIn.length() > 1) mvIn.normalize();
   const arms = session && loco === 'arms';
   if (arms) {
-    if (canMove) armLocomotion(dt); else { clearHands(); steer(player, 0, 0, dt); }
+    if (canMove) {
+      armLocomotion(dt);
+      // batuudil ja batuudihüppe/viske ajal saab liikuda ka pulgaga
+      const onBounce = (player.standingOn && player.standingOn.bounce) || (player.bounceT || 0) > 0;
+      if (onBounce && !player.holding && (mx || my)) steer(player, mvIn.x * player.speed, mvIn.z * player.speed, dt);
+    } else { clearHands(); steer(player, 0, 0, dt); }
   } else {
     player.holding = false;
     steer(player, canMove ? mvIn.x * player.speed : 0, canMove ? mvIn.z * player.speed : 0, dt);
@@ -2822,6 +2874,8 @@ renderer.setAnimationLoop(() => {
   if (show.rid !== loadedRid) loadForShow();
   updateWorld(dt, false);
   emoteCd -= dt;
+  player.bounceT = Math.max(0, (player.bounceT || 0) - dt);
+  if (player.onGround && !(player.standingOn && player.standingOn.bounce)) player.bounceT = Math.min(player.bounceT, 0.2);
 
   const t = T();
   const stageKey = show.rid + show.stage;
