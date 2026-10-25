@@ -1,5 +1,4 @@
-[Uploading index (48).html…]()
-<!doctype html>
+[index (49).html](https://github.com/user-attachments/files/33928371/index.49.html)<!doctype html>
 <html lang="et">
 <head>
 <meta charset="utf-8">
@@ -44,6 +43,8 @@ canvas{touch-action:none;display:block;position:fixed;left:0;top:0;width:100vw!i
 #shop.on{display:flex}#shop .card{background:var(--card);border-radius:22px;padding:18px 20px;max-width:460px;width:100%;margin:auto}
 .it{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;border-radius:12px;background:#f1f3f8;margin:6px 0;font-size:15px}
 .it button{border:0;border-radius:10px;padding:8px 12px;font-weight:700;color:#fff;cursor:pointer;min-width:96px}
+#dropBtn{display:none;position:fixed;left:50%;transform:translateX(-50%);bottom:14px;z-index:7;border:0;border-radius:14px;padding:12px 18px;font-weight:800;color:#fff;background:#ff3d8b;font-size:15px}
+#shieldGlow{display:none;position:fixed;inset:0;pointer-events:none;z-index:4;box-shadow:inset 0 0 60px 20px rgba(80,200,255,.55)}
 #buildBar{display:none;position:fixed;left:50%;transform:translateX(-50%);bottom:12px;z-index:7;gap:8px}
 #buildBar.on{display:flex}.tb2{border:0;border-radius:14px;padding:12px 14px;font-weight:800;color:#fff;background:#495057;font-size:14px}
 #bBuild{background:#22c55e}#bDel{background:#ef4444}
@@ -101,6 +102,7 @@ small{opacity:.8}
   <div class="row" id="playRow">
     <button class="big" id="solo">Mängi robotitega</button>
     <button class="big" id="online">Mängi sõpradega</button>
+    <button class="big" id="practiceBtn" style="background:#22c55e">Harjuta 🎓</button>
   </div>
   <div id="status"></div>
   <p id="statLine" style="font-size:13px;margin:8px 0 0"></p>
@@ -108,11 +110,14 @@ small{opacity:.8}
   <details><summary><b>Juhtimine</b></summary>
   <p><b>Arvutis:</b> klõpsa ekraanil või lohista hiirega, WASD liigu, nooled pööra, tühik = hüppa, C = kükita, E (hoia) = haara, lase lahti = viska sõber ette, 1–4 = emotikonid, P = pood, Enter = alusta, R = tagasi ootesaali (ainult juht). Rajaehitajas: F ehita, G kustuta, T tüüp.<br>
   <b>VR kätega:</b> lükka kätega vastu maad ja seinu, vehi hooga, et hüpata. Parem pulk vasak/parem = pööra, <b>üles/alla = maapinna kõrgus</b>. Grip = haara, <b>vehi ja lase lahti = viska sõber</b> (aitab üle aukude). Batuudil saab liikuda ka pulgaga. Käsi üle pea ja lehvita = „Tere!”. Pulgavajutus = emotikon. <b>Y = VR-menüü</b> (nimi, värv, müts, seaded). B (hoia) = tagasi ootesaali.<br>
+  <b>Tassimine:</b> hoia haaramist kauem – sõber tõstetakse üles (VR-is järgib ta su kätt). Lase hooga lahti = viska.<br>
+  <b>Pealtvaatajana:</b> F / nupp / päästik = viska pall rajale.<br>
   <b>VR pulgaga:</b> vasak pulk = liigu, A/X = hüppa, muu sama.</p></details>
   <p><small><b>Telefonis:</b> vasak ring = liigu, lohista ekraani = vaata ringi, nupud = hüppa / haara / emotikon.<br>
   <b>Alustamine:</b> üksi mängides vajuta „Alusta” või astu rohelisele ringile. Sõpradega mängides alustab <b>esimene ruumi tulnud mängija</b>.</small></p>
 </div></div>
 <div id="hud"></div>
+<div id="shieldGlow"></div>
 <button id="shopBtn">🛒 Pood</button>
 <button id="fsBtn" title="Täisekraan">⛶</button>
 <div id="shop"><div class="card">
@@ -122,6 +127,7 @@ small{opacity:.8}
   <p style="font-size:13px;margin:10px 0 0">Münte saad rajalt korjates, finišis, edasi pääsedes ja krooni võites.</p>
   <button class="big" id="shopClose" style="background:#22c55e;width:100%">Sulge</button>
 </div></div>
+<button id="dropBtn">🎳 VISKA PALL RAJALE</button>
 <div id="buildBar"><button class="tb2" id="bBuild">EHITA</button><button class="tb2" id="bDel">KUSTUTA</button><button class="tb2" id="bType">TÜÜP: Kast</button></div>
 <button id="startBtn">▶ ALUSTA MÄNGU</button>
 <div id="touch">
@@ -317,7 +323,7 @@ const show = { sid: '', stage: 'lobby', rn: 0, rt: 'lobby', ti: 0, rid: '', sa: 
   tails: [], winner: '', easy: false, crowns: {}, final: false, lastOut: [], quota: 0, ready: 0 };
 const hostOnly = { padT: 0, falls: {}, immune: {}, prevType: '', tailTimer: 0, grabbedAt: {}, ballPos: new THREE.Vector3(), ballV: new THREE.Vector3(), goalT: 0, eggs: [], carry: {}, stealCd: {} };
 const S = () => show.easy ? 0.65 : 1;
-const SURVIVAL = { areen: 1, plaadid: 1, noor: 1 };
+const SURVIVAL = { areen: 1, plaadid: 1, noor: 1, boss: 1 };
 const TEAM = { pall: 1, munad: 1 };
 const TEAM_COLORS = [0x2f9bff, 0xff3b3b], TEAM_NAMES = ['Sinine', 'Punane'];
 let myName = 'Mängija', loco = 'arms', roomCode = '', musicOn = true, wantEasy = false, wantBots = true;
@@ -342,29 +348,66 @@ try {
   const c = localStorage.getItem('kp_color'); if (c !== null) myColor = parseInt(c) || myColor;
 } catch (e) {}
 const ownsHat = i => i < FREE_HATS || owned.includes('h' + i);
+const PETS = ['Puudub', 'Kutsikas', 'Kassipoeg', 'Robotike', 'Tibu'];
+let myPet = 0;
+try { myPet = parseInt(localStorage.getItem('kp_pet') || '0') || 0; } catch (e) {}
+SHOP.push(
+  { id: 'p1', type: 'pet', val: 1, name: 'Lemmik: Kutsikas', price: 60, lv: 2 }, { id: 'p2', type: 'pet', val: 2, name: 'Lemmik: Kassipoeg', price: 60, lv: 2 },
+  { id: 'p3', type: 'pet', val: 3, name: 'Lemmik: Robotike', price: 80, lv: 3 }, { id: 'p4', type: 'pet', val: 4, name: 'Lemmik: Tibu', price: 50, lv: 2 });
+SHOP.forEach(it => { if (it.type === 'costume') it.lv = it.lv || 3; if (it.id === 'h8') it.lv = 4; });
+if (myPet && !owned.includes('p' + myPet)) myPet = 0;
+prog.xp = prog.xp || 0;
+const levelOf = xp => 1 + Math.floor(Math.sqrt(xp / 40));
+const myLevel = () => levelOf(prog.xp);
+function addXp(n) {
+  const before = myLevel(); prog.xp += n; saveProg();
+  if (myLevel() > before) { setTimeout(() => { sfx('fanfare'); showToast('TASE ' + myLevel() + '! 🎉 Uued asjad poes', 2.5); }, 400); }
+}
+const QUEST_POOL = [
+  { id: 'coin', text: 'Korja 20 münti', goal: 20 }, { id: 'qual', text: 'Pääse 3 korda edasi', goal: 3 }, { id: 'fin', text: 'Jõua 2 korda finišisse', goal: 2 },
+  { id: 'throw', text: 'Viska kedagi 3 korda', goal: 3 }, { id: 'box', text: 'Ava 4 boonuskasti', goal: 4 }, { id: 'crown', text: 'Võida kroon', goal: 1 },
+  { id: 'carry', text: 'Tassi kedagi 2 korda', goal: 2 }, { id: 'pad', text: 'Vajuta 2 nuppu (boss/värav)', goal: 2 },
+];
+function ensureQuests() {
+  const today = new Date().toDateString();
+  if (prog.day === today && Array.isArray(prog.quests) && prog.quests.length) return;
+  const pool = QUEST_POOL.slice().sort(() => Math.random() - 0.5).slice(0, 3);
+  prog.day = today; prog.quests = pool.map(q => ({ id: q.id, n: 0, done: false })); saveProg();
+}
+ensureQuests();
+function questText(q) { const d = QUEST_POOL.find(x => x.id === q.id); return d ? (q.done ? '✓ ' : '') + d.text + ' (' + Math.min(q.n, d.goal) + '/' + d.goal + ')' : ''; }
+function questTick(id, n = 1) {
+  ensureQuests();
+  const q = prog.quests.find(x => x.id === id && !x.done); if (!q) return;
+  const d = QUEST_POOL.find(x => x.id === id); q.n += n;
+  if (q.n >= d.goal) { q.done = true; setTimeout(() => { addCoins(20, 'ülesanne tehtud!'); addXp(50); showToast('✅ ' + d.text + ' – tehtud! +20 🪙', 2.5); }, 700); }
+  saveProg();
+}
 if (!ownsHat(myHat)) myHat = 1;
 if (myCostume && !owned.includes('k' + myCostume)) myCostume = 0;
 function saveProg() {
   try {
     localStorage.setItem('kp_coins', String(coins)); localStorage.setItem('kp_owned', JSON.stringify(owned));
     localStorage.setItem('kp_costume', String(myCostume)); localStorage.setItem('kp_stats', JSON.stringify(prog));
-    localStorage.setItem('kp_hat', String(myHat)); localStorage.setItem('kp_color', String(myColor));
+    localStorage.setItem('kp_hat', String(myHat)); localStorage.setItem('kp_color', String(myColor)); localStorage.setItem('kp_pet', String(typeof myPet === 'number' ? myPet : 0));
   } catch (e) {}
 }
 function addCoins(n, why) { coins += n; saveProg(); showToast('+' + n + ' 🪙 ' + (why || ''), 1.6); sfx('coin'); }
 function shopState(it) {
   const has = owned.includes(it.id);
-  const using = has && ((it.type === 'hat' && myHat === it.val) || (it.type === 'color' && myColor === it.val) || (it.type === 'costume' && myCostume === it.val));
+  const using = has && ((it.type === 'hat' && myHat === it.val) || (it.type === 'color' && myColor === it.val) || (it.type === 'costume' && myCostume === it.val) || (it.type === 'pet' && myPet === it.val));
   return { has, using };
 }
 function shopClick(it) {
   const st = shopState(it);
   if (!st.has) {
+    if (it.lv && myLevel() < it.lv) { showToast('Vaja taset ' + it.lv + ' (sul ' + myLevel() + ')', 1.6); sfx('hit'); return false; }
     if (coins < it.price) { showToast('Vaja ' + it.price + ' 🪙 – sul on ' + coins, 1.6); sfx('hit'); return false; }
     coins -= it.price; owned.push(it.id); sfx('fanfare');
   }
   if (it.type === 'hat') myHat = st.using ? 1 : it.val;
   else if (it.type === 'color') myColor = st.using ? HUMAN_COLORS[0] : it.val;
+  else if (it.type === 'pet') myPet = st.using ? 0 : it.val;
   else myCostume = st.using ? 0 : it.val;
   saveProg(); if (typeof renderPickers === 'function') renderPickers(); if (typeof renderShop === 'function') renderShop();
   return true;
@@ -449,7 +492,7 @@ function setMusic(on) { musicOn = on; if (musicGain) musicGain.gain.value = on ?
 const trackGroup = new THREE.Group(); scene.add(trackGroup);
 let TR = null;
 function newTR(kind, name) {
-  return { kind, name, solids: [], movers: [], sweepers: [], tiles: [], balls: [], pendulums: [], spinners: [], convs: [], blinks: [], rollers: [], winds: [], fans: [], coins: [], cps: [], wps: [], finishZ: -90,
+  return { kind, name, solids: [], movers: [], sweepers: [], tiles: [], balls: [], pendulums: [], spinners: [], convs: [], blinks: [], rollers: [], winds: [], fans: [], coins: [], boxes: [], gates: [], pads: [], cps: [], wps: [], finishZ: -90,
     outY: -6, gooY: -6, spawn: raceSpawn, center: new V3(0, 0, -12) };
 }
 function raceSpawn(i, n, out) { out.set(-4 + (i % 5) * 2, 0.3, 1.0 + Math.floor(i / 5) * 1.3); }
@@ -788,6 +831,94 @@ TRACKS.push(
     ];
   } },
 );
+TRACKS.push({ name: 'Koostöörada', coop: true, build() {
+  box(0, 0, 0, 10, 1, 10, C.green); arch(4.5, 0, 0x22c55e);
+  box(0, 0, -14, 10, 1, 18, C.blue);
+  gate(0, -20, [[-3.5, -12], [3.5, -12]]);
+  box(0, 0, -33, 10, 1, 20, C.purple);
+  box(0, 1.2, -26.5, 1.6, 1.2, 1.2, C.red, { move: { axis: 'x', amp: 3.5, speed: 1.4, phase: 0 }, pusher: true });
+  gate(1, -40, [[-3.5, -32], [3.5, -32]]);
+  box(0, 0, -48, 10, 1, 10, C.yellow);
+  TR.finishZ = -46; finishDeco(-46, 0);
+  cp(99, 0, 0, 1.5); cp(-21, 0, 0, -24);
+  TR.wps = [{ x: 0, z: -6, wide: 2 }, { gate: 0, x: 0, z: -18 }, { x: 0, z: -24, wide: 3 }, { gate: 1, x: 0, z: -38 }, { x: 0, z: -44, wide: 3 }, { x: 0, z: -49, wide: 3 }];
+  const sg = textSprite('Seiske KAHEKESI nuppudel!', 3.4, '#fff', 'rgba(255,92,92,.95)'); sg.position.set(0, 4.2, -19.6); trackGroup.add(sg);
+} });
+function gate(k, z, plates) {
+  const w = box(0, 3, z, 10, 3, 0.6, C.red); w.gateBase = w.mesh.position.y;
+  const pl = plates.map(([x, pz]) => ({ x, z: pz, s: cyl(x, 0.1, pz, 1.0, 0.2, C.yellow) }));
+  TR.gates.push({ k, wall: w, plates: pl, z });
+}
+function gateOpen(k) { return T() < ((show.gates || [])[k] || 0); }
+function gateVisual(dt, t) {
+  const all = [{ p: player.pos }, ...allOthers().map(o => ({ p: o.pos }))];
+  for (const gt of TR.gates) {
+    const open = gateOpen(gt.k);
+    gt.wall.active = !open;
+    const target = open ? gt.wall.gateBase - 3.2 : gt.wall.gateBase;
+    gt.wall.mesh.position.y += (target - gt.wall.mesh.position.y) * Math.min(1, dt * 5);
+    gt.plates.forEach(pl => { const occ = all.some(o => Math.hypot(o.p.x - pl.x, o.p.z - pl.z) < 1.05 && o.p.y < 1); pl.s.mesh.material = mat(occ ? 0x22c55e : C.yellow); if (occ && !pl.was && Math.hypot(player.pos.x - pl.x, player.pos.z - pl.z) < 1.05) questTick('pad'); pl.was = occ; });
+    if (open && !gt.wasOpen) { sfx('ding'); showToast('Värav avanes! 🚪', 1.3); }
+    gt.wasOpen = open;
+  }
+}
+function gateHostTick(t) {
+  if (!TR.gates.length || show.stage !== 'play') return;
+  for (const gt of TR.gates) {
+    const occ = gt.plates.every(pl => show.part.some(id => { const p = posOf(id); return p && Math.hypot(p.x - pl.x, p.z - pl.z) < 1.05 && p.y < 1; }));
+    if (occ || show.part.length < 2) show.gates[gt.k] = Math.round((t + 6) * 10) / 10;
+  }
+}
+const PRACTICE = [
+  { id: 'move', text: '1. Liigu edasi (WASD / joystick / VR-is lükka kätega maad)' },
+  { id: 'jump', text: '2. Hüppa üle madala müüri (tühik / HÜPPA / VR: lükka hooga üles)' },
+  { id: 'duck', text: '3. Kükita kollase lati alt läbi (C / KÜKITA / vasak päästik)' },
+  { id: 'grab', text: '4. Haara robotist kinni (E / HAARA / grip)' },
+  { id: 'throw', text: '5. Viska robot: hoia kinni ja lase hooga lahti' },
+  { id: 'bounce', text: '6. Hüppa batuudil' },
+  { id: 'coin', text: '7. Korja münt' },
+  { id: 'box', text: '8. Ava ? boonuskast' },
+];
+let practice = {};
+function practiceDone(id) {
+  if (show.stage !== 'trenn' || practice[id]) return;
+  practice[id] = true; sfx('ding'); puff(player.pos, 0x22c55e, 10, 2, 0.5, 1);
+  const left = PRACTICE.filter(p => !practice[p.id]);
+  showToast(left.length ? '✓ Tubli! Järgmine: ' + left[0].text.slice(3, 40) : '🎉 Kõik harjutused tehtud!', 2);
+  if (!left.length) { addXp(30); setTimeout(() => showMsg('Valmis!', ['Oskad nüüd kõike!', renderer.xr.isPresenting ? 'Y-menüüst: Mängi robotitega' : 'Vajuta R, et minna päris mängu'], 5), 800); }
+}
+function practiceLine() { const n = PRACTICE.find(p => !practice[p.id]); return n ? 'Harjutus ' + PRACTICE.filter(p => practice[p.id]).length + '/' + PRACTICE.length + ' · ' + n.text : '🎉 Kõik tehtud! ' + (renderer.xr.isPresenting ? 'Y-menüü → Mängi' : 'R = päris mäng'); }
+function practiceTick() {
+  if (player.pos.z < -4) practiceDone('move');
+  if (player.pos.z < -8.6 && practice.move) practiceDone('jump');
+  if (player.pos.z < -14.6 && practice.jump) practiceDone('duck');
+  if ((pcGrab && pcGrab.startsWith('#')) || grabHold.some(g => g && g.startsWith('#'))) practiceDone('grab');
+  if (player.bounceT > 0 && player.pos.z < -24) practiceDone('bounce');
+}
+function buildTrenn() {
+  box(0, 0, -20, 8, 1, 50, 0xb3e5fc);
+  [-4.2, 4.2].forEach(x => box(x, 0.5, -20, 0.4, 0.5, 50, 0xffffff));
+  const sign = (t, z, c) => { const sp = textSprite(t, 3.4, '#fff', c); sp.position.set(0, 3.2, z); trackGroup.add(sp); };
+  sign('1. Liigu edasi', -1, 'rgba(47,155,255,.95)');
+  box(0, 0.6, -8, 7.6, 0.6, 0.4, C.orange); sign('2. Hüppa üle', -6.5, 'rgba(255,169,77,.95)');
+  box(0, 1.6, -14, 7.6, 0.4, 0.4, 0xffd43b); sign('3. Kükita alt läbi', -12.5, 'rgba(250,204,21,.95)');
+  TR.dummyPos = new V3(0, 0.3, -20); sign('4.–5. Haara ja viska robotit', -18, 'rgba(139,92,246,.95)');
+  box(0, 0.25, -27, 3, 0.5, 3, C.orange, { bounce: true }); sign('6. Batuut', -25.5, 'rgba(255,61,139,.95)');
+  addCoin(0, 1.2, -32); addCoin(-1.5, 1.2, -32.5); addCoin(1.5, 1.2, -32.5); sign('7. Mündid', -30.5, 'rgba(34,197,94,.95)');
+  addBox(0, 1.1, -37); sign('8. Boonuskast', -35.5, 'rgba(240,140,0,.95)');
+  sign('Valmis? Vajuta R', -42, 'rgba(29,27,58,.9)');
+  TR.spawn = (i, n, out) => out.set(0, 0.3, 2);
+  TR.outY = -6;
+}
+function startPractice() {
+  readMenu(); started = true; $('menu').style.display = 'none'; goFullscreen();
+  pitch = 0; camera.rotation.set(0, 0, 0);
+  net.on = false; net.isHost = true; practice = {};
+  makeBots(1); bots[0].speed = 0;
+  show.stage = 'trenn'; show.rt = 'trenn'; show.ti = 0; show.rid = newId(); show.part = []; show.alive = [];
+  updateHud();
+  setTimeout(() => showMsg('Harjutusväljak', ['Tee harjutused läbi järjest', 'Ülal on alati järgmine ülesanne'], 4), 300);
+}
 function pendulum(z, speed, phase) {   // kiikuv kuul üle silla
   const piv = new V3(0, 6, z), len = 5.2, R = 0.8;
   const frame = new THREE.Group(); frame.position.set(0, 0, z);
@@ -826,6 +957,18 @@ const ARENAS = {
     const a = sweeper(0, -12, 0, 9, 0, 1); a.angleFn = t => accelAngle(t * S(), 0.9, 0.03, 2.8);
     const b = sweeper(0, -12, 0, 9, 0, 1, 0, { height: 1.15, high: true }); b.angleFn = t => 2.2 - accelAngle(t * S(), 0.6, 0.02, 2.0); b.activeFn = t => t > 10;
     TR.spawn = (i, n, out) => { const half = i % 2, k = Math.floor(i / 2), m = Math.ceil(n / 2); const ang = 0.8 + (k + 0.5) / Math.max(1, m) * (Math.PI - 1.6) + half * Math.PI; out.set(Math.cos(ang) * 6, 0.3, -12 - Math.sin(ang) * 6); };
+  } },
+  boss: { name: 'Bossivoor', desc: 'Hiidrobot ründab! Seiske kõigil 4 nupul, et ta limasse lükata. Hoidu meteooridest!', build() {
+    cyl(0, 0, -12, 12, 1, C.purple); cyl(0, 2, -12, 2.2, 3, 0x495057);
+    const bm = makeBot(0x7c3aed, 0); bm.scale.setScalar(4); bm.position.set(0, 2, -12); trackGroup.add(bm); TR.bossMesh = bm;
+    const sw = sweeper(0, -12, 0, 12, 0, 1); sw.angleFn = t => accelAngle(t * S(), 0.45, 0.015, 1.6); sw.activeFn = t => t > 5;
+    [0.785, 2.356, 3.927, 5.498].forEach((a, i) => {
+      const x = Math.cos(a) * 9, z = -12 + Math.sin(a) * 9;
+      const pd = cyl(x, 0.12, z, 1.3, 0.24, 0xff5c5c); TR.pads.push({ s: pd, x, z, i });
+      const lb = textSprite('NUPP ' + (i + 1), 1.4, '#fff', 'rgba(255,92,92,.9)'); lb.position.set(x, 1.6, z); trackGroup.add(lb);
+    });
+    TR.meteors = {};
+    TR.spawn = (i, n, out) => { const ang = i / Math.max(1, n) * Math.PI * 2 + 0.4; out.set(Math.cos(ang) * 6, 0.3, -12 + Math.sin(ang) * 6); };
   } },
   magi: { name: 'Mäe tipp', desc: 'Ronige tippu ja püsige seal – iga sekund tipus annab punkti!', build() {
     cyl(0, 0, -12, 9.5, 1, C.green); cyl(0, 0.6, -12, 6.5, 1.6, C.yellow); cyl(0, 1.2, -12, 4.5, 2.2, C.orange); cyl(0, 1.8, -12, 2.6, 2.8, C.pink);
@@ -998,18 +1141,23 @@ function buildCustom() {
 TRACKS.push({ name: 'Teie rada', custom: true, build: buildCustom });
 function drawStatBoard() {
   const B = TR && TR.board2; if (!B) return;
-  const key = coins + JSON.stringify(prog) + myName;
+  const key = coins + JSON.stringify(prog) + myName + myPet;
   if (key === B.key) return; B.key = key;
   const x = B.cv.getContext('2d');
   x.fillStyle = '#ffffff'; x.fillRect(0, 0, 640, 480);
   x.fillStyle = '#2f9bff'; x.font = 'bold 50px system-ui'; x.textAlign = 'center'; x.fillText('Sinu statistika', 320, 62);
   x.fillStyle = '#1d1b3a'; x.font = 'bold 32px system-ui'; x.textAlign = 'left';
-  const rows = ['🪙 Mündid: ' + coins, '👑 Kroonid: ' + prog.crowns, '🎮 Mänge: ' + prog.shows, '✅ Edasipääse: ' + prog.qual + ' / ' + prog.rounds];
-  rows.forEach((r, i) => x.fillText(r, 50, 120 + i * 46));
-  x.font = 'bold 26px system-ui'; x.fillStyle = '#555';
-  const best = Object.entries(prog.best || {}).sort((a, b) => a[1] - b[1]).slice(0, 4);
-  x.fillText(best.length ? 'Parimad ajad:' : 'Jõua finišisse, et saada rekord!', 50, 330);
-  best.forEach(([k, v], i) => x.fillText(k + ' – ' + v.toFixed(1) + ' s', 70, 368 + i * 30));
+  const lv = myLevel(), x0 = 40 * (lv - 1) * (lv - 1), x1 = 40 * lv * lv;
+  const rows = ['⭐ Tase ' + lv + '   🪙 ' + coins + '   👑 ' + prog.crowns, '🎮 Mänge ' + prog.shows + '   ✅ Edasi ' + prog.qual + '/' + prog.rounds];
+  rows.forEach((r, i) => x.fillText(r, 40, 118 + i * 44));
+  x.fillStyle = '#e9ecef'; x.fillRect(40, 196, 560, 18); x.fillStyle = '#22c55e'; x.fillRect(40, 196, 560 * Math.min(1, (prog.xp - x0) / Math.max(1, x1 - x0)), 18);
+  ensureQuests();
+  x.fillStyle = '#ff3d8b'; x.font = 'bold 28px system-ui'; x.fillText('Tänased ülesanded (+20 🪙):', 40, 258);
+  x.fillStyle = '#1d1b3a'; x.font = 'bold 25px system-ui';
+  prog.quests.forEach((q, i) => x.fillText(questText(q), 50, 296 + i * 34));
+  const best = Object.entries(prog.best || {}).sort((a, b) => a[1] - b[1]).slice(0, 2);
+  x.fillStyle = '#555'; x.font = 'bold 22px system-ui';
+  if (best.length) x.fillText('Rekordid: ' + best.map(([k, v]) => k + ' ' + v.toFixed(1) + 's').join(' · '), 40, 420);
   B.tex.needsUpdate = true;
 }
 function drawBoard() {
@@ -1049,6 +1197,120 @@ function applyEnv(night) {
   cloudMat.emissiveIntensity = night ? 0.0 : 0.25; cloudMat.color.setHex(night ? 0x4a4f8a : 0xffffff);
   stars.visible = night;
 }
+// ---------- boonuskastid ----------
+const POWERS = [
+  { id: 'kiirus', name: '⚡ Kiirus', t: 4 }, { id: 'hupe', name: '🦘 Superhüpe', t: 6 }, { id: 'kilp', name: '🛡️ Kilp', t: 6 },
+  { id: 'magnet', name: '🧲 Magnet', t: 8 }, { id: 'banaan', name: '🍌 Banaan', t: 0 },
+];
+const boxTex = (() => { const cv = document.createElement('canvas'); cv.width = cv.height = 64; const x = cv.getContext('2d'); x.fillStyle = '#ffd43b'; x.fillRect(0, 0, 64, 64); x.strokeStyle = '#f08c00'; x.lineWidth = 6; x.strokeRect(3, 3, 58, 58); x.fillStyle = '#ffffff'; x.font = 'bold 46px system-ui'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('?', 32, 35); const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; return t; })();
+const boxMat = new THREE.MeshToonMaterial({ map: boxTex, gradientMap: gradTex, emissive: 0x664400, emissiveIntensity: 0.3 });
+const boxGeo = new RoundedBoxGeometry(0.8, 0.8, 0.8, 2, 0.12);
+function addBox(x, y, z) { const m = new THREE.Mesh(boxGeo, boxMat); m.position.set(x, y, z); m.castShadow = true; trackGroup.add(m); TR.boxes.push({ m, x, y, z, back: 0, botBack: 0 }); }
+function placeBoxes(rt) {
+  if (rt !== 'race' || !TR.wps.length) return;
+  [0.3, 0.55, 0.8].forEach(f => {
+    const w = TR.wps[Math.floor(TR.wps.length * f)]; if (!w || w.x === undefined) return;
+    const gt = groundTopAt(w.x, w.z, 50); if (gt > -5) [-1.6, 1.6].forEach(dx => addBox(w.x + dx, gt + 1.1, w.z));
+  });
+}
+function givePower(e, isMe) {
+  const pool = isMe ? POWERS : POWERS.filter(p => p.id !== 'banaan' && p.id !== 'magnet');
+  const pw = pool[Math.floor(Math.random() * pool.length)];
+  if (pw.id === 'banaan') { dropBanana(e); }
+  else { e.pw = pw.id; e.pwT = now() + pw.t; if (pw.id === 'kilp') e.shieldT = now() + pw.t; }
+  if (isMe) { sfx('fanfare'); showToast(pw.name + (pw.t ? ' ' + pw.t + ' s!' : ' – kukkus su taha!'), 1.8); questTick('box'); if (show.stage === 'trenn') practiceDone('box'); }
+}
+const bananas = [];
+let banId = 0;
+const banMat = mat(0xffe066);
+function addBanana(id, x, y, z) {
+  const g = new THREE.Group();
+  const b = new THREE.Mesh(new THREE.TorusGeometry(0.22, 0.07, 6, 14, Math.PI), banMat); b.rotation.x = -Math.PI / 2; g.add(b);
+  const tip = new THREE.Mesh(new THREE.SphereGeometry(0.05, 6, 5), mat(0x6b4f2a)); tip.position.set(0.22, 0, 0); g.add(tip);
+  g.position.set(x, y + 0.06, z); trackGroup.add(g);
+  bananas.push({ id, x, y, z, g, gone: false, t: now() });
+}
+function dropBanana(e) {
+  camera.getWorldDirection(fw); fw.y = 0; fw.normalize();
+  const id = net.id + '-' + (banId++), x = r2(e.pos.x - fw.x * 1.3), z = r2(e.pos.z - fw.z * 1.3), y = r2(e.pos.y);
+  addBanana(id, x, y, z);
+  if (net.on && net.peers.size) net.item.send({ k: 'ban', id, x, y, z, r: show.rid });
+}
+function slipOn(e, bn) {
+  bn.gone = true; trackGroup.remove(bn.g);
+  const a = Math.random() * 6.28; e.vel.set(Math.cos(a) * 5, 4, Math.sin(a) * 5); e.knock = 0.9; e.onGround = false; e.standingOn = null;
+  if (e.isPlayer) { hurt(e); showToast('🍌 Libisesid banaanikoorel!', 1.4); }
+  if (net.on && net.peers.size) net.item.send({ k: 'gone', id: bn.id, r: show.rid });
+}
+// ---------- pealtvaatajate pallid (ja bossi meteoorid kasutavad sama loogikat) ----------
+const drops = [];
+let dropCd = 0;
+const dropGeo = new THREE.SphereGeometry(0.8, 18, 12);
+function addDrop(x, y, z, vx, vz, color) {
+  const m = new THREE.Mesh(dropGeo, mat(color || 0xff3d8b)); m.position.set(x, y, z); m.castShadow = true; trackGroup.add(m);
+  drops.push({ m, pos: new V3(x, y, z), vel: new V3(vx || 0, 0, vz || 0), r: 0.8, born: now() });
+}
+function updateDrops(dt) {
+  for (let i = drops.length - 1; i >= 0; i--) {
+    const d = drops[i];
+    d.vel.y -= G * dt; d.pos.addScaledVector(d.vel, dt);
+    const gt = groundTopAt(d.pos.x, d.pos.z, d.pos.y);
+    if (gt > -50 && d.pos.y - d.r < gt) { d.pos.y = gt + d.r; if (d.vel.y < -3) { puff({ x: d.pos.x, y: gt, z: d.pos.z }, 0xffffff, 5, 2, 0.6, 0.5); sfx('tap'); } d.vel.y = Math.abs(d.vel.y) > 3 ? -d.vel.y * 0.4 : 0; d.vel.x *= 0.995; d.vel.z *= 0.995; }
+    d.m.position.copy(d.pos); d.m.rotation.x += d.vel.z * dt; d.m.rotation.z -= d.vel.x * dt;
+    if (now() - d.born > 7 || d.pos.y < -20) { trackGroup.remove(d.m); drops.splice(i, 1); }
+  }
+}
+function hitDrop(e, d) {
+  if (e.shieldT > now()) return;
+  const dx = e.pos.x - d.pos.x, dz = e.pos.z - d.pos.z, dd = Math.hypot(dx, dz);
+  if (dd < d.r + e.r && e.pos.y < d.pos.y + d.r && e.pos.y + e.h > d.pos.y - d.r && dd > 1e-4) {
+    const nx = dx / dd, nz = dz / dd;
+    e.pos.x = d.pos.x + nx * (d.r + e.r); e.pos.z = d.pos.z + nz * (d.r + e.r);
+    e.vel.set(nx * 6, 5, nz * 6); e.knock = 0.6; e.onGround = false; e.standingOn = null; hurt(e);
+  }
+}
+function aimGround(o, d) {   // kiir maapinnani (pealtvaataja sihib)
+  for (let t = 2; t < 90; t += 0.6) {
+    const x = o.x + d.x * t, y = o.y + d.y * t, z = o.z + d.z * t;
+    const gt = groundTopAt(x, z, y + 0.3);
+    if (gt > -50 && y <= gt + 0.3) return { x, y: gt, z };
+    if (y < -8) return null;
+  }
+  return null;
+}
+function spectatorDrop(i) {
+  if (!spectating || show.stage !== 'play' || dropCd > 0) return;
+  let o, d;
+  if (renderer.xr.isPresenting) { const r = rays[i == null ? 1 : i]; r.c.updateMatrixWorld(true); o = tmpA.setFromMatrixPosition(r.c.matrixWorld).clone(); d = tmpB.set(0, 0, -1).transformDirection(r.c.matrixWorld).clone(); }
+  else { o = camera.getWorldPosition(tmpA).clone(); d = camera.getWorldDirection(tmpB).clone(); }
+  const hit = aimGround(o, d); if (!hit) { showToast('Siht ei ole rajal', 1); return; }
+  dropCd = 3.5; sfx('pop');
+  const vx = rnd(-1, 1), vz = rnd(-1, 1), col = [0xff3d8b, 0x2f9bff, 0xffd43b, 0x22c55e][Math.floor(Math.random() * 4)];
+  addDrop(hit.x, hit.y + 9, hit.z, vx, vz, col);
+  if (net.on && net.peers.size) net.item.send({ k: 'drop', x: r2(hit.x), y: r2(hit.y + 9), z: r2(hit.z), vx: r2(vx), vz: r2(vz), c: col, r: show.rid });
+}
+const RAIN_N = 900;
+const rainGeo = new THREE.BufferGeometry(), rainPos = new Float32Array(RAIN_N * 3);
+for (let i = 0; i < RAIN_N; i++) rainPos.set([rnd(-15, 15), rnd(0, 18), rnd(-15, 15)], i * 3);
+rainGeo.setAttribute('position', new THREE.BufferAttribute(rainPos, 3));
+const rain = new THREE.Points(rainGeo, new THREE.PointsMaterial({ color: 0xa5d8ff, size: 0.09, transparent: true, opacity: 0.8 }));
+rain.visible = false; rain.frustumCulled = false; scene.add(rain);
+let raining = false;
+function setRain(on) {
+  raining = on; rain.visible = on;
+  envNight = null; applyEnv(!!(TR && TR.night));
+  if (on) {
+    const g = 0x8fa3b8; scene.background = new THREE.Color(g); scene.fog.color.setHex(g); scene.fog.near = 30; scene.fog.far = 140;
+    sky.material.uniforms.top.value.setHex(0x5b6b80); sky.material.uniforms.mid.value.setHex(g); sky.material.uniforms.bot.value.setHex(0x9aa5b1);
+    gooMat.uniforms.fogC.value.setHex(g); sun.intensity = 0.9; hemi.intensity = 0.85; cloudMat.color.setHex(0x9aa5b1);
+  }
+}
+function updateRain(dt) {
+  if (!raining) return;
+  rain.position.set(player.pos.x, player.pos.y - 2, player.pos.z);
+  for (let i = 0; i < RAIN_N; i++) { let y = rainPos[i * 3 + 1] - dt * 16; if (y < 0) y += 18; rainPos[i * 3 + 1] = y; }
+  rainGeo.attributes.position.needsUpdate = true;
+}
 const coinGeo = new THREE.CylinderGeometry(0.28, 0.28, 0.07, 20);
 const coinMat = new THREE.MeshToonMaterial({ color: 0xffd43b, emissive: 0xffa400, emissiveIntensity: 0.35, gradientMap: gradTex });
 function addCoin(x, y, z) { const m = new THREE.Mesh(coinGeo, coinMat); m.rotation.x = Math.PI / 2; m.position.set(x, y, z); m.castShadow = true; trackGroup.add(m); TR.coins.push({ m, taken: false }); }
@@ -1059,19 +1321,22 @@ function placeCoins(rt) {
     for (let i = 0; i < 6; i++) { const a = i / 6 * 6.283, x = Math.cos(a) * 4.5, z = -12 + Math.sin(a) * 4.5, gt = groundTopAt(x, z, 50); if (gt > -5) addCoin(x, gt + 1.0, z); }
   }
 }
-function mapName(rt, ti) { return rt === 'race' ? TRACKS[ti].name : rt === 'lobby' ? 'Ootesaal' : ARENAS[rt].name; }
+function mapName(rt, ti) { return rt === 'race' ? TRACKS[ti].name : rt === 'lobby' ? 'Ootesaal' : rt === 'trenn' ? 'Harjutusväljak' : ARENAS[rt].name; }
 function buildMap(rt, ti) {
   trackGroup.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.isSprite && o.material.map) o.material.map.dispose(); });
   trackGroup.clear();
   geoCache = new Map();
   TR = newTR(rt, mapName(rt, ti));
   if (rt === 'lobby') buildLobby();
+  else if (rt === 'trenn') buildTrenn();
   else if (rt === 'race') TRACKS[ti].build();
   else ARENAS[rt].build();
-  if (rt !== 'lobby') specPlatform();
+  if (rt !== 'lobby' && rt !== 'trenn') specPlatform();
   decorate(rt);
   applyEnv(!!TR.night);
-  if (rt !== 'lobby') placeCoins(rt);
+  if (rt !== 'lobby' && rt !== 'trenn') { placeCoins(rt); placeBoxes(rt); }
+  drops.length = 0; bananas.length = 0;
+  setRain(show.weather === 'vihm' && rt === 'race' && !TR.night);
   if (rt === 'lobby') rebuildBuilder(true);
   goo.position.y = TR.gooY;
   updateWorld(0.016, true);
@@ -1178,6 +1443,43 @@ function setBubble(g, text) {
   sp.material.map = new THREE.CanvasTexture(cv); sp.material.needsUpdate = true;
   sp.visible = true; g.userData.bubT = 2.5;
 }
+function makePet(k) {
+  const g = new THREE.Group();
+  const c = [0, 0xb07040, 0x9aa5b1, 0x74c0fc, 0xffd43b][k] || 0xffffff;
+  if (k === 4) {
+    const b = new THREE.Mesh(new THREE.SphereGeometry(0.16, 12, 10), mat(c)); b.position.y = 0.17; g.add(b);
+    const bk = new THREE.Mesh(new THREE.ConeGeometry(0.04, 0.08, 6), mat(0xff922b)); bk.rotation.x = Math.PI / 2; bk.position.set(0, 0.2, 0.16); g.add(bk);
+  } else if (k === 3) {
+    const b = new THREE.Mesh(new RoundedBoxGeometry(0.28, 0.26, 0.26, 2, 0.05), mat(c)); b.position.y = 0.2; g.add(b);
+    const v = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.08, 0.02), new THREE.MeshBasicMaterial({ color: 0x9ffcff })); v.position.set(0, 0.24, 0.135); g.add(v);
+    const a = new THREE.Mesh(new THREE.SphereGeometry(0.03, 6, 5), new THREE.MeshBasicMaterial({ color: 0xff3d8b })); a.position.y = 0.42; g.add(a);
+  } else {
+    const b = new THREE.Mesh(new THREE.CapsuleGeometry(0.1, 0.18, 4, 10), mat(c)); b.rotation.x = Math.PI / 2; b.position.y = 0.16; g.add(b);
+    const h = new THREE.Mesh(new THREE.SphereGeometry(0.11, 12, 10), mat(c)); h.position.set(0, 0.28, 0.17); g.add(h);
+    [-1, 1].forEach(sd => { const e = new THREE.Mesh(k === 2 ? new THREE.ConeGeometry(0.04, 0.09, 4) : new THREE.SphereGeometry(0.045, 6, 5), mat(k === 1 ? 0x6b4226 : c)); e.position.set(sd * 0.07, 0.38, 0.15); if (k === 1) e.scale.set(0.7, 1.4, 0.7); g.add(e); });
+    const tl = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.015, 0.2, 6), mat(c)); tl.position.set(0, 0.22, -0.2); tl.rotation.x = -0.8; g.add(tl);
+  }
+  shadowAll(g, true, false); scene.add(g); return g;
+}
+const petMeshes = new Map();   // id -> { k, g, ph }
+function petFor(id, k, pos, yaw, dt) {
+  let pm = petMeshes.get(id);
+  if (!k) { if (pm) { scene.remove(pm.g); petMeshes.delete(id); } return; }
+  if (!pm || pm.k !== k) { if (pm) scene.remove(pm.g); pm = { k, g: makePet(k), ph: Math.random() * 6 }; pm.g.position.set(pos.x, pos.y, pos.z); petMeshes.set(id, pm); }
+  const tx = pos.x + Math.sin(yaw + 2.4) * 0.9, tz = pos.z + Math.cos(yaw + 2.4) * 0.9;
+  const g = pm.g, dx = tx - g.position.x, dz = tz - g.position.z, d = Math.hypot(dx, dz);
+  if (d > 6) g.position.set(tx, pos.y, tz);
+  else if (d > 0.15) { g.position.x += dx * Math.min(1, dt * 4); g.position.z += dz * Math.min(1, dt * 4); g.rotation.y = Math.atan2(dx, dz); }
+  pm.ph += dt * (d > 0.3 ? 14 : 3);
+  g.position.y += ((pos.y + Math.abs(Math.sin(pm.ph)) * (d > 0.3 ? 0.12 : 0.03)) - g.position.y) * Math.min(1, dt * 10);
+}
+function updatePets(dt) {
+  camera.getWorldDirection(fw);
+  petFor(net.id, spectating && show.stage === 'play' ? 0 : myPet, player.pos, Math.atan2(fw.x, fw.z), dt);
+  for (const p of net.peers.values()) if (p.d) petFor(p.id, p.d.pt || 0, p.pos, p.avatar.rotation.y, dt);
+  for (const [id] of petMeshes) if (id !== net.id && !net.peers.has(id)) { scene.remove(petMeshes.get(id).g); petMeshes.delete(id); }
+}
+const shieldBubble = new THREE.Mesh(new THREE.SphereGeometry(0.9, 16, 12), new THREE.MeshBasicMaterial({ color: 0x74c0fc, transparent: true, opacity: 0.25, depthWrite: false }));
 function makeGlove(color) {
   const g = new THREE.Group();
   const fist = new THREE.Mesh(new THREE.SphereGeometry(0.07, 14, 10), mat(0x5a3e2b)); fist.scale.set(1, 0.8, 1.2); g.add(fist);
@@ -1320,7 +1622,7 @@ function stepEntity(e, dt) {
     if (so0.conveyor) e.pos.z += so0.conveyor * S() * dt;
   }
   for (const w of TR.winds) if (Math.abs(e.pos.x - w.x) < w.hw + 1 && e.pos.z < w.z0 && e.pos.z > w.z1 && e.pos.y > -1) e.pos.x += w.amp * S() * Math.sin(T() * w.speed) * dt;
-  if (!e.holding) e.vel.y -= G * dt;
+  if (!e.holding && !e.carried) e.vel.y -= G * dt;
   const prevY = e.pos.y;
   e.pos.addScaledVector(e.vel, dt);
   const wasGround = e.onGround;
@@ -1345,7 +1647,7 @@ function stepEntity(e, dt) {
         if (ox > 0 && oz > 0) {
           if (ox < oz) {
             e.pos.x += Math.sign(dx || 1) * ox;
-            if (s.pusher) { e.vel.x = s.vel.x * 1.4 + Math.sign(dx || 1) * 1.5; e.knock = 0.35; if (e.isPlayer && Math.abs(s.vel.x) > 0.5) hurt(e); } else e.vel.x = 0;
+            if (s.pusher && !(e.shieldT > now())) { e.vel.x = s.vel.x * 1.4 + Math.sign(dx || 1) * 1.5; e.knock = 0.35; if (e.isPlayer && Math.abs(s.vel.x) > 0.5) hurt(e); } else e.vel.x = 0;
           } else { e.pos.z += Math.sign(dz || 1) * oz; e.vel.z = 0; }
         }
       }
@@ -1368,6 +1670,7 @@ function stepEntity(e, dt) {
   for (const sw of TR.sweepers) hitSweeper(e, sw);
   for (const b of TR.balls) hitBall(e, b);
   for (const p of TR.pendulums) {
+    if (e.shieldT > now()) break;
     const dx = e.pos.x - p.pos.x, dz = e.pos.z - p.pos.z, d = Math.hypot(dx, dz);
     if (d < p.r + e.r && e.pos.y < p.pos.y + p.r && e.pos.y + e.h > p.pos.y - p.r) {
       const nx = d > 1e-4 ? dx / d : Math.sign(p.vx) || 1, nz = d > 1e-4 ? dz / d : 0;
@@ -1376,12 +1679,14 @@ function stepEntity(e, dt) {
       hurt(e);
     }
   }
+  for (const b of drops) hitDrop(e, b);
+  for (const bn of bananas) if (!bn.gone && Math.hypot(e.pos.x - bn.x, e.pos.z - bn.z) < 0.6 && Math.abs(e.pos.y - bn.y) < 0.6 && !(e.shieldT > now())) slipOn(e, bn);
   e.knock = Math.max(0, e.knock - dt);
 }
 function nearPlayer(e) { return e.isPlayer || (Math.abs(e.pos.x - player.pos.x) < 30 && Math.abs(e.pos.z - player.pos.z) < 30); }
 function splash(e) { if (nearPlayer(e)) puff({ x: e.pos.x, y: goo.position.y + 0.2, z: e.pos.z }, 0xff5fa2, 12, 2.5, 0.9, 2.5); }
 function hitSweeper(e, sw) {
-  if (!sw.active) return;
+  if (!sw.active || e.shieldT > now()) return;
   if (!(e.pos.y < sw.y + 0.15 && e.pos.y + e.h > sw.y - 0.25)) return;
   const rx = e.pos.x - sw.x, rz = e.pos.z - sw.z;
   if (Math.hypot(rx, rz) > sw.L + 0.6) return;
@@ -1402,7 +1707,7 @@ function hitSweeper(e, sw) {
   }
 }
 function hitBall(e, b) {
-  if (b.r < 0.3) return;
+  if (b.r < 0.3 || e.shieldT > now()) return;
   const dx = e.pos.x - b.pos.x, dz = e.pos.z - b.pos.z, d = Math.hypot(dx, dz);
   if (d < b.r + e.r && e.pos.y < b.pos.y + b.r && e.pos.y + e.h > b.pos.y - b.r && d > 1e-4) {
     const nx = dx / d, nz = dz / d;
@@ -1413,8 +1718,8 @@ function hitBall(e, b) {
 }
 function steer(e, tx, tz, dt) {
   const ice = e.standingOn && e.standingOn.ice;
-  const k = e.knock > 0 ? 1 : (e.onGround ? (ice ? 1.3 : 10) : 2.5);
-  const f = Math.min(1, k * dt), m = e.speedMul || 1;
+  const k = e.knock > 0 ? 1 : (e.onGround ? (ice ? 1.3 : raining ? 3.5 : 10) : 2.5);
+  const f = Math.min(1, k * dt), m = (e.speedMul || 1) * (e.pw === 'kiirus' && e.pwT > now() ? 1.6 : 1);
   e.vel.x += (tx * m - e.vel.x) * f; e.vel.z += (tz * m - e.vel.z) * f;
 }
 function pushApart(a, bx, by, bz) {
@@ -1514,11 +1819,11 @@ function armLocomotion(dt) {
   } else if (wasHolding) {
     tv.set(0, 0, 0); flingBuf.forEach(f => tv.add(f.v));
     if (flingBuf.length) tv.divideScalar(flingBuf.length);
-    if (tv.length() > 0.5) { tv.multiplyScalar(1.3); if (tv.length() > 10) tv.setLength(10); player.vel.copy(tv); }
+    if (tv.length() > 0.5) { const boost = player.pw === 'hupe' && player.pwT > now() ? 1.5 : player.pw === 'kiirus' && player.pwT > now() ? 1.3 : 1; tv.multiplyScalar(1.3 * boost); if (tv.length() > 10 * boost) tv.setLength(10 * boost); player.vel.copy(tv); }
     flingBuf.length = 0;
   } else if (player.onGround) {
     const ice = player.standingOn && player.standingOn.ice;
-    const f = Math.exp(-(ice ? 0.6 : 5) * dt); player.vel.x *= f; player.vel.z *= f;
+    const f = Math.exp(-(ice ? 0.6 : raining ? 1.6 : 5) * dt); player.vel.x *= f; player.vel.z *= f;
   }
   player.holding = holding; wasHolding = holding;
 }
@@ -1556,9 +1861,14 @@ function nameOf(id) {
   if (id.startsWith('#')) return 'Robot ' + (parseInt(id.slice(2)) + 1);
   const p = net.peers.get(id); return p ? p.name : '?';
 }
-function applyGrab(targetId, byId, on, th) {
+function applyGrab(targetId, byId, on, th, hp) {
   const until = on ? now() + 0.6 : 0;
   if (on) markGrab(targetId);
+  const tgt = targetId === net.id ? player : (net.isHost ? bots.find(b => b.id === targetId) : null);
+  if (tgt) {
+    if (on && hp && hp.length === 3 && !(tgt.carryBlock > now())) { if (!tgt.carry) tgt.carryStart = now(); tgt.carry = { p: new V3(hp[0], hp[1], hp[2]), until: now() + 0.35, by: byId }; }
+    else if (!on) tgt.carry = null;
+  }
   const thr = th && th.length === 3 ? new V3(th[0], th[1], th[2]) : null;
   if (thr && thr.length() > 10) thr.setLength(10);
   if (targetId === net.id) {
@@ -1570,17 +1880,30 @@ function applyGrab(targetId, byId, on, th) {
   }
   if (net.isHost) { const b = bots.find(b => b.id === targetId); if (b) { b.grabbedBy = on ? { by: byId, until } : null; if (!on && thr) { b.vel.copy(thr); b.onGround = false; b.standingOn = null; b.knock = 0.4; } } }
 }
-function sendGrab(targetId, on, th) {
+function sendGrab(targetId, on, th, hp) {
   if (targetId === net.id) return;
   const isLocalBot = net.isHost && targetId.startsWith('#');
-  if (th) { sfx('jump'); showToast('Viskasid: ' + nameOf(targetId) + ' 🚀', 1.2); }
-  if (isLocalBot) applyGrab(targetId, net.id, on, th);
-  else if (net.on && net.peers.size) net.grab.send({ t: targetId, g: net.id, on: on ? 1 : 0, th: th || 0 });
+  if (th) { sfx('jump'); showToast('Viskasid: ' + nameOf(targetId) + ' 🚀', 1.2); questTick('throw'); if (show.stage === 'trenn' && targetId.startsWith('#')) practiceDone('throw'); }
+  if (isLocalBot) applyGrab(targetId, net.id, on, th, hp);
+  else if (net.on && net.peers.size) net.grab.send({ t: targetId, g: net.id, on: on ? 1 : 0, th: th || 0, hp: hp || 0 });
+}
+let carryCounted = {};
+function holdPoint(i) {   // kuhu tassitav sõber tõstetakse
+  if (renderer.xr.isPresenting) { grips[i].getWorldPosition(tmpC); return [r2(tmpC.x), r2(tmpC.y - 0.85), r2(tmpC.z)]; }
+  camera.getWorldDirection(fw); fw.y = 0; fw.normalize();
+  return [r2(player.pos.x + fw.x * 0.75), r2(player.pos.y + 1.45), r2(player.pos.z + fw.z * 0.75)];
 }
 const handVel = [new V3(), new V3()], handPrev = [new V3(), new V3()];
 let pcGrabT = 0;
 function grabEffect(e, dt) {
   e.speedMul = 1;
+  e.carried = false;
+  if (e.carry && now() < e.carry.until && !(e.carryBlock > now())) {
+    if (now() - (e.carryStart || now()) > 6) { e.carry = null; e.carryBlock = now() + 1.5; if (e.isPlayer) showToast('Rabelesid lahti! 💪', 1.4); return; }
+    e.pos.lerp(e.carry.p, Math.min(1, dt * 18)); e.vel.set(0, 0, 0); e.speedMul = 0; e.carried = true; e.onGround = false; e.standingOn = null;
+    if (e.isPlayer) clearHands();
+    return;
+  }
   if (!e.grabbedBy) return;
   if (now() > e.grabbedBy.until) { e.grabbedBy = null; return; }
   const gp = posOf(e.grabbedBy.by); if (!gp) return;
@@ -1591,7 +1914,7 @@ function grabEffect(e, dt) {
 const tmpA = new V3(), tmpB = new V3(), tmpC = new V3();
 function updateGrabs(dt, buttons) {
   grabSendT -= dt;
-  const resend = grabSendT <= 0; if (resend) grabSendT = 0.25;
+  const resend = grabSendT <= 0; if (resend) grabSendT = 0.1;
   const others = allOthers();
   if (renderer.xr.isPresenting) {
     for (let i = 0; i < 2; i++) {
@@ -1609,7 +1932,7 @@ function updateGrabs(dt, buttons) {
           const v = handVel[i], th = !pressed && v.length() > 1.3 ? [r2(v.x * 2.2), r2(Math.max(3, v.y * 2.2 + 3)), r2(v.z * 2.2)] : null;
           sendGrab(grabHold[i], false, th); grabHold[i] = null;
         }
-        else if (resend) sendGrab(grabHold[i], true);
+        else if (resend) { sendGrab(grabHold[i], true, null, holdPoint(i)); if (!carryCounted[grabHold[i] + show.rid]) { carryCounted[grabHold[i] + show.rid] = 1; questTick('carry'); } }
       }
     }
   } else {
@@ -1625,13 +1948,17 @@ function updateGrabs(dt, buttons) {
     } else if (pcGrab) {
       const tp = posOf(pcGrab);
       pcGrabT += dt;
-      if (!pressed || !tp || tp.distanceTo(player.pos) > 2.2) {
+      if (!pressed || !tp || tp.distanceTo(player.pos) > 3.2) {
         // lahti lastes viskad sõbra ette ja üles (kui hoidsid vähemalt pool sekundit)
         camera.getWorldDirection(fw); fw.y = 0; fw.normalize();
         const th = !pressed && pcGrabT > 0.5 ? [r2(fw.x * 6.5), 6, r2(fw.z * 6.5)] : null;
         sendGrab(pcGrab, false, th); pcGrab = null;
       }
-      else if (resend) sendGrab(pcGrab, true);
+      else if (resend) {
+        const carrying = pcGrabT > 0.35;   // hoia kauem = tõstad sõbra üles ja tassid
+        sendGrab(pcGrab, true, null, carrying ? holdPoint(0) : null);
+        if (carrying && !carryCounted[pcGrab + show.rid]) { carryCounted[pcGrab + show.rid] = 1; questTick('carry'); }
+      }
     }
   }
 }
@@ -1711,8 +2038,26 @@ function raceAI(b, dt) {
     const lt = wp.liftOff.mesh.position.y + wp.liftOff.hh;
     if (b.standingOn === wp.liftOff && lt < wp.top - 0.25) waiting = true;
     if (b.standingOn !== wp.liftOff && b.onGround && b.pos.y > wp.top - 0.3 && (dist < 1.2 || b.pos.z < p.z)) b.wi++;
-  } else if (dist < 1.2 || b.pos.z < p.z + (wp.wide ? 0.6 : -0.3)) b.wi = Math.min(b.wi + 1, TR.wps.length - 1);
+  } else if (wp.gate === undefined && (dist < 1.2 || b.pos.z < p.z + (wp.wide ? 0.6 : -0.3))) b.wi = Math.min(b.wi + 1, TR.wps.length - 1);
   if (waiting) { steer(b, 0, 0, dt); return; }
+  if (wp.gate !== undefined) {
+    if (gateOpen(wp.gate)) { b.wi++; b.claim = null; return; }
+    const gt = TR.gates.find(g => g.k === wp.gate);
+    if (gt) {
+      hostOnly.claims = hostOnly.claims || {};
+      if (!b.claim || (hostOnly.claims[b.claim.key] || {}).id !== b.id) {
+        b.claim = null;
+        for (const pl of gt.plates) {
+          const key = wp.gate + ':' + pl.x;
+          const c = hostOnly.claims[key];
+          const humanOn = show.part.some(id => isHuman(id) && (() => { const p = posOf(id); return p && Math.hypot(p.x - pl.x, p.z - pl.z) < 1.05; })());
+          if (!humanOn && (!c || c.t < now() - 1)) { hostOnly.claims[key] = { id: b.id, t: now() }; b.claim = { key, pl }; break; }
+        }
+      }
+      if (b.claim) { hostOnly.claims[b.claim.key].t = now(); goTo(b, b.claim.pl.x, b.claim.pl.z, dt, b.speed); return; }
+      goTo(b, b.jit * 3, wp.z + 1.5, dt, b.speed * 0.6); return;
+    }
+  }
   if (wp.blink && b.standingOn !== wp.blink && dist < 3.2 && (!wp.blink.active || wp.blink.blink.left < 0.7)) { steer(b, 0, 0, dt); return; }
   for (const pd of TR.pendulums) {   // oota, kuni kiikuv kuul on eest läinud
     if (b.pos.z > pd.piv.z + 0.9 && b.pos.z - pd.piv.z < 2.6 && Math.abs(pd.pos.x - b.pos.x) < 2.6 && b.onGround) { steer(b, 0, 0, dt); return; }
@@ -1775,6 +2120,13 @@ function sabaAI(b, dt) {
   tx = Math.max(-7.5, Math.min(7.5, tx)); tz = Math.max(-19.5, Math.min(-4.5, tz));
   goTo(b, tx, tz, dt, b.speed * (has ? 0.85 : 0.95));
 }
+function bossAI(b, dt) {
+  const B = show.boss, t = T();
+  if (B) for (const [, x, z, t0] of B.m) if (t0 > t && t0 - t < 1.4 && Math.hypot(b.pos.x - x, b.pos.z - z) < 2.8) { const dx = b.pos.x - x, dz = b.pos.z - z, d = Math.hypot(dx, dz) || 1; goTo(b, b.pos.x + dx / d * 3, b.pos.z + dz / d * 3, dt, b.speed); return; }
+  let best = null, bd = 1e9;
+  if (B) TR.pads.forEach(pd => { if (B.pads[pd.i]) return; const d = Math.hypot(b.pos.x - pd.x, b.pos.z - pd.z); if (d < bd) { bd = d; best = pd; } });
+  if (best && t - show.sa > 13) goTo(b, best.x, best.z, dt, b.speed * 0.85); else areenAI(b, dt);
+}
 function magiAI(b, dt) {
   const d = Math.hypot(b.pos.x, b.pos.z + 12);
   if (d < 2.2 && b.pos.y > 1.7) { b.aiT -= dt; if (b.aiT <= 0) { b.aiT = rnd(0.5, 1.2); const a = rnd(0, 6.28); b.aiTarget.set(Math.cos(a) * 1.2, 0, -12 + Math.sin(a) * 1.2); } goTo(b, b.aiTarget.x, b.aiTarget.z, dt, b.speed * 0.5); }
@@ -1822,6 +2174,7 @@ function lobbyAI(b, dt) {
 }
 function botAI(b, dt) {
   if (show.stage === 'lobby') return lobbyAI(b, dt);
+  if (show.stage === 'trenn') { if (TR.dummyPos && b.pos.distanceTo(TR.dummyPos) > 0.6 && b.onGround && !b.carried) goTo(b, TR.dummyPos.x, TR.dummyPos.z, dt, 1.5); else steer(b, 0, 0, dt); return; }
   if (show.stage === 'intro' || !b.visible) return steer(b, 0, 0, dt);
   if (show.rt === 'race') return raceAI(b, dt);
   if (show.rt === 'areen') return areenAI(b, dt);
@@ -1829,6 +2182,7 @@ function botAI(b, dt) {
   if (show.rt === 'saba') return sabaAI(b, dt);
   if (show.rt === 'noor') return areenAI(b, dt);
   if (show.rt === 'magi') return magiAI(b, dt);
+  if (show.rt === 'boss') return bossAI(b, dt);
   if (show.rt === 'pall') return pallAI(b, dt);
   if (show.rt === 'munad') return munadAI(b, dt);
 }
@@ -1871,10 +2225,16 @@ async function startOnline(code) {
   net.id = mod.selfId; net.on = true;
   const room = mod.joinRoom({ appId: 'kukerpall-vr-emil-v2' }, 'ruum-' + code);
   net.room = room;
-  for (const n of ['pose', 'host', 'tile', 'fin', 'req', 'out', 'grab', 'emote']) net[n] = act(room, n);
+  for (const n of ['pose', 'host', 'tile', 'fin', 'req', 'out', 'grab', 'emote', 'item']) net[n] = act(room, n);
+  net.item.on(d => {
+    if (d.r !== show.rid) return;
+    if (d.k === 'ban') addBanana(d.id, d.x, d.y, d.z);
+    else if (d.k === 'gone') { const bn = bananas.find(b => b.id === d.id); if (bn && !bn.gone) { bn.gone = true; trackGroup.remove(bn.g); } }
+    else if (d.k === 'drop') addDrop(d.x, d.y, d.z, d.vx, d.vz, d.c);
+  });
   onRoom(room, 'onPeerJoin', id => { ensurePeer(id); recomputeHost(true); });
   onRoom(room, 'onPeerLeave', id => { removePeer(id); recomputeHost(false); });
-  net.pose.on((d, id) => { const p = ensurePeer(id); if (p.name !== d.n || p.color !== d.c || p.hat !== d.h || p.costume !== (d.u || 0)) rebuildPeerAvatar(p, d); p.d = d; p.last = now(); });
+  net.pose.on((d, id) => { const p = ensurePeer(id); if (p.name !== d.n || p.color !== d.c || p.hat !== d.h || p.costume !== (d.u || 0) || p.lv !== (d.lv || 1)) rebuildPeerAvatar(p, d); p.d = d; p.last = now(); });
   net.host.on((d, id) => { if (id === net.hostId && !net.isHost) onHostState(d); });
   net.tile.on(d => { if (d.r === show.rid) shakeTile(d.i, false); });
   net.fin.on((d, id) => { if (net.isHost && d.r === show.rid) recordFinish(id, d.t); });
@@ -1884,7 +2244,7 @@ async function startOnline(code) {
     if (d.k === 'fall') hostOnly.falls[id] = (hostOnly.falls[id] || 0) + 1;
     if ((d.k === 'build' || d.k === 'del') && show.stage === 'lobby') applyBuild(d.cx | 0, d.cz | 0, d.t | 0, d.k === 'del');
   });
-  net.grab.on((d, id) => { if (d.on) markGrab(d.t); applyGrab(d.t, d.g || id, !!d.on, d.th || null); });
+  net.grab.on((d, id) => { if (d.on) markGrab(d.t); applyGrab(d.t, d.g || id, !!d.on, d.th || null, d.hp || null); });
   net.emote.on((d, id) => { const p = net.peers.get(id); if (p && p.avatar) setBubble(p.avatar, EMOTES[d.e] || '👋'); });
   recomputeHost(false);
   return true;
@@ -1899,8 +2259,9 @@ function ensurePeer(id) {
   return p;
 }
 function rebuildPeerAvatar(p, d) {
-  scene.remove(p.avatar); p.name = d.n; p.color = d.c; p.hat = d.h; p.costume = d.u || 0;
-  p.avatar = makeHuman(d.c, d.n, d.h, d.u || 0); p.avatar.visible = false;
+  scene.remove(p.avatar); p.name = d.n; p.color = d.c; p.hat = d.h; p.costume = d.u || 0; p.lv = d.lv || 1;
+  p.avatar = makeHuman(d.c, d.n + ' ⭐' + p.lv, d.h, d.u || 0); p.avatar.visible = false;
+  const sb = shieldBubble.clone(); sb.position.y = 0.8; sb.visible = false; p.avatar.add(sb); p.avatar.userData.shield = sb;
 }
 function removePeer(id) {
   const p = net.peers.get(id); if (!p) return;
@@ -1947,8 +2308,8 @@ function pickRound() {
   if ((show.bots && n <= 3) || rn >= 4 || n <= 1 && show.bots) return { rt: ['plaadid', 'areen', 'noor'][Math.floor(Math.random() * 3)], final: true };
   let options;
   if (rn === 1) options = ['race'];
-  else if (rn === 2) options = ['race', 'race', 'saba', 'pall', 'munad', 'magi'];
-  else options = ['areen', 'saba', 'plaadid', 'noor', 'magi', 'pall', 'munad'];
+  else if (rn === 2) options = ['race', 'race', 'saba', 'pall', 'munad', 'magi', 'boss'];
+  else options = ['areen', 'saba', 'plaadid', 'noor', 'magi', 'pall', 'munad', 'boss'];
   options = options.filter(o => o !== hostOnly.prevType || o === 'race');
   return { rt: options[Math.floor(Math.random() * options.length)], final: false };
 }
@@ -1956,9 +2317,14 @@ function nextRound() {
   show.rn++;
   const { rt, final } = pickRound();
   hostOnly.prevType = rt;
-  const NT = TRACKS.filter(t => !t.custom).length, CI = TRACKS.findIndex(t => t.custom);
-  show.rt = rt; show.final = final; show.ti = rt === 'race' ? Math.floor(Math.random() * NT) : 0;
+  const NT = TRACKS.filter(t => !t.custom && !t.coop).length, CI = TRACKS.findIndex(t => t.custom), COOP = TRACKS.findIndex(t => t.coop);
+  const REG = TRACKS.map((tr, i) => i).filter(i => !TRACKS[i].custom && !TRACKS[i].coop);
+  show.rt = rt; show.final = final; show.ti = rt === 'race' ? REG[Math.floor(Math.random() * REG.length)] : 0;
   if (rt === 'race' && (show.blocks || []).length >= 4 && show.rn <= 2 && Math.random() < 0.4) show.ti = CI;
+  else if (rt === 'race' && COOP >= 0 && show.alive.length >= 2 && Math.random() < 0.2) show.ti = COOP;
+  show.weather = rt === 'race' && TRACKS[show.ti] && TRACKS[show.ti].name !== 'Öörada' && Math.random() < 0.25 ? 'vihm' : '';
+  show.gates = [0, 0]; show.boss = null;
+  if (rt === 'boss') { show.boss = { pads: [0, 0, 0, 0], m: [], won: 0 }; hostOnly.padHold = [0, 0, 0, 0]; hostOnly.metT = 0; hostOnly.metId = 0; }
   show.rid = newId(); show.stage = 'intro'; show.sa = T() + 6; show.ea = 0;
   show.part = show.alive.slice(); show.inR = show.alive.slice(); show.q = []; show.fo = []; show.lastOut = [];
   const n = show.part.length;
@@ -2007,6 +2373,7 @@ function endRound() {
   else if (show.rt === 'race') next = P.filter(id => show.q.includes(id) || (show.easy && isHuman(id)));
   else if (show.rt === 'saba' && show.bots) next = P.filter(id => show.tails.includes(id) || (show.easy && isHuman(id)));
   else next = show.inR.slice();
+  if (!next.length && show.rt === 'boss') next = P.slice();   // kõik kukkusid: boss võitis, kõik jätkavad
   if (!next.length) next = P.slice(0, 1);
   if (show.final) {
     let w = next[0];
@@ -2025,6 +2392,7 @@ function crownStage(w) {
 }
 function hostTick(dt) {
   const t = T();
+  if (show.stage === 'trenn') return;
   if (show.stage === 'lobby') {
     // alustada saab ainult juht (esimene mängija): nupp, Enter või ise ringile astumine
     const pad = TR.pad ? TR.pad.mesh.position : null;
@@ -2038,6 +2406,7 @@ function hostTick(dt) {
   if (show.stage === 'play') {
     const tau = t - show.sa;
     if (show.rt === 'race') {
+      gateHostTick(t);
       const hs = show.part.filter(isHuman);
       const humansDone = hs.length > 0 && hs.every(id => show.q.includes(id));
       if (humansDone && !hostOnly.doneAt) hostOnly.doneAt = t;
@@ -2052,6 +2421,28 @@ function hostTick(dt) {
       else for (const id of show.part) { const p = posOf(id); if (p && Math.hypot(p.x, p.z + 12) < 2.7 && p.y > 1.7) show.hill[id] = Math.round(((show.hill[id] || 0) + dt) * 100) / 100; }
     } else if (show.rt === 'pall') {
       if (tau > 75) endRound(); else ballTick(dt, t);
+    } else if (show.rt === 'boss') {
+      const B = show.boss;
+      if (B.won) { if (t > B.won + 3.5) endRound(); }
+      else if (tau > 70 || show.inR.length === 0) endRound();
+      else {
+        hostOnly.metT -= dt;
+        if (hostOnly.metT <= 0 && tau > 2) {
+          hostOnly.metT = Math.max(0.8, 1.8 - tau * 0.012) / S();
+          const onPad = TR.pads.filter(pd => !B.pads[pd.i] && show.inR.some(id => { const p = posOf(id); return p && Math.hypot(p.x - pd.x, p.z - pd.z) < 1.4; }));
+          const tg = onPad.length && Math.random() < 0.35 ? onPad[Math.floor(Math.random() * onPad.length)] : show.inR.length && Math.random() < 0.75 ? posOf(show.inR[Math.floor(Math.random() * show.inR.length)]) : null;
+          const ang = Math.random() * 6.28, rr = Math.random() * 10;
+          const mx = tg ? tg.x + rnd(-1.2, 1.2) : Math.cos(ang) * rr, mz = tg ? tg.z + rnd(-1.2, 1.2) : -12 + Math.sin(ang) * rr;
+          B.m.push([hostOnly.metId++, r2(mx), r2(mz), Math.round((t + 1.3) * 100) / 100]); if (B.m.length > 10) B.m.shift();
+        }
+        if (tau > 15) TR.pads.forEach(pd => {
+          if (B.pads[pd.i]) return;
+          const on = show.inR.some(id => { const p = posOf(id); return p && Math.hypot(p.x - pd.x, p.z - pd.z) < 1.3 && p.y < 1.2; });
+          hostOnly.padHold[pd.i] = on ? hostOnly.padHold[pd.i] + dt : 0;
+          if (hostOnly.padHold[pd.i] > 3) B.pads[pd.i] = 1;
+        });
+        if (B.pads.every(x => x)) B.won = t;
+      }
     } else if (show.rt === 'munad') {
       if (tau > 60) endRound(); else eggTick(dt, t);
     } else {
@@ -2101,6 +2492,40 @@ function velOf(id) {
   if (id === net.id) return player.vel;
   if (id.startsWith('#')) { const b = bots.find(b => b.id === id); return b ? b.vel : zeroV; }
   const p = net.peers.get(id); return p && p.vel ? p.vel : zeroV;
+}
+function bossVisual(dt, t) {
+  const B = show.boss; if (!B || !TR.pads.length) return;
+  TR.pads.forEach(pd => {
+    const lit = !!B.pads[pd.i];
+    pd.s.mesh.material = mat(lit ? 0x22c55e : 0xff5c5c);
+    if (lit && !pd.wasLit) { pd.wasLit = true; sfx('ding'); puff({ x: pd.x, y: 0.3, z: pd.z }, 0x22c55e, 12, 2, 0.7, 1.5); if (Math.hypot(player.pos.x - pd.x, player.pos.z - pd.z) < 2) questTick('pad'); }
+  });
+  if (TR.bossMesh) {
+    const bm = TR.bossMesh;
+    if (B.won) { const k = t - B.won; bm.position.y = 2 - k * k * 3; bm.rotation.z = Math.min(1.5, k); if (!TR.bossFell && k > 0.1) { TR.bossFell = true; sfx('fanfare'); showToast('BOSS ON LIMAS! 🎉', 3); burst(bm.position); } }
+    else { bm.rotation.y = Math.sin(t * 0.8) * 0.6; bm.position.y = 2 + Math.abs(Math.sin(t * 3)) * 0.15; }
+  }
+  for (const m of B.m) {
+    const [id, x, z, t0] = m; let o = TR.meteors[id];
+    if (!o) {
+      if (t > t0 + 0.5) continue;
+      const ring = new THREE.Mesh(new THREE.RingGeometry(1.9, 2.2, 32), new THREE.MeshBasicMaterial({ color: 0xff3b3b, transparent: true, opacity: 0.8, side: THREE.DoubleSide }));
+      ring.rotation.x = -Math.PI / 2; ring.position.set(x, 0.05, z); trackGroup.add(ring);
+      const ball = new THREE.Mesh(new THREE.SphereGeometry(0.7, 14, 10), mat(0xff6b00)); trackGroup.add(ball);
+      o = TR.meteors[id] = { ring, ball, done: false };
+    }
+    if (o.done) continue;
+    const left = t0 - t;
+    o.ring.scale.setScalar(0.6 + 0.4 * Math.max(0, Math.min(1, 1 - left / 1.3)));
+    o.ball.position.set(x, Math.max(0.7, 0.7 + left * left * 8), z);
+    if (left <= 0) {
+      o.done = true; trackGroup.remove(o.ring); trackGroup.remove(o.ball);
+      puff({ x, y: 0.4, z }, 0xff922b, 14, 4, 0.9, 1.5); if (Math.hypot(player.pos.x - x, player.pos.z - z) < 14) sfx('hit');
+      const hitE = e => { if (e.shieldT > now()) return; const dx = e.pos.x - x, dz = e.pos.z - z, d = Math.hypot(dx, dz); if (d < 2.2 && e.pos.y < 2) { const nx = d > 0.01 ? dx / d : 1, nz = d > 0.01 ? dz / d : 0; e.vel.set(nx * 4.5, 4.5, nz * 4.5); e.knock = 0.7; e.onGround = false; e.standingOn = null; hurt(e); } };
+      if (!spectating) hitE(player);
+      if (net.isHost) bots.forEach(b => { if (b.visible) hitE(b); });
+    }
+  }
 }
 function nestZ(tm) { return tm === 0 ? -2.5 : -21.5; }
 function syncEggs() {
@@ -2192,7 +2617,7 @@ function loadForShow() {
   lastCd = -1; hideMsg();
 }
 function participating() {
-  if (show.stage === 'lobby') return true;
+  if (show.stage === 'lobby' || show.stage === 'trenn') return true;
   if (!show.part.includes(net.id)) return false;
   if (SURVIVAL[show.rt] && iAmOut) return false;
   return true;
@@ -2201,6 +2626,7 @@ function placeSelf() {
   clearHands(); player.vel.set(0, 0, 0); player.cp = 0; player.finished = false; player.knock = 0; player.standingOn = null;
   iAmOut = false; myFinishTime = 0; player.grabbedBy = null;
   if (show.stage === 'lobby') { const i = Math.max(0, humanIds().indexOf(net.id)); TR.spawn(i, 10, player.pos); spectating = false; }
+  else if (show.stage === 'trenn') { TR.spawn(0, 1, player.pos); spectating = false; }
   else if (show.part.includes(net.id)) { spawnFor(net.id, player.pos); spectating = false; }
   else { player.pos.set(rnd(-3, 3), 8.6, 16); spectating = true; }
   player.lastSafe.copy(player.pos);
@@ -2221,6 +2647,7 @@ function placeBots() {
   bots.forEach((b, i) => {
     b.vel.set(0, 0, 0); b.finished = false; b.cp = 0; b.wi = 0; b.knock = 0; b.grabbing = null; b.grabbedBy = null; b.aiT = 0; b.standingOn = null;
     if (show.stage === 'lobby') { b.visible = true; b.pos.set(rnd(-6, 6), 0.3, rnd(-6, 6)); }
+    else if (show.stage === 'trenn') { b.visible = true; b.pos.copy(TR.dummyPos || new V3(0, 0.3, -20)); }
     else if (show.part.includes(b.id)) { b.visible = true; spawnFor(b.id, b.pos); }
     else { b.visible = false; b.pos.set(0, -100, 0); }
     b.mesh.visible = b.visible; b.lastSafe.copy(b.pos);
@@ -2231,6 +2658,7 @@ function respawn(e) {
   if (e.isPlayer) clearHands();
   if (e.isPlayer && spectating) { e.pos.set(rnd(-3, 3), 8.6, 16); return; }
   if (show.rt === 'lobby') { e.pos.set(rnd(-3, 3), 0.5, rnd(0, 3)); return; }
+  if (show.rt === 'trenn') { if (e.isPlayer) e.pos.copy(e.lastSafe).add(tmpC.set(0, 0.5, 0)); else e.pos.copy(TR.dummyPos); return; }
   if (show.rt === 'race') {
     if (show.easy && e.isPlayer) { e.pos.copy(e.lastSafe); e.pos.y += 0.5; return; }
     const c = TR.cps[e.cp].pos;
@@ -2265,7 +2693,7 @@ function sendPose(dt) {
   poseT -= dt; if (poseT > 0) return; poseT = 1 / 20;
   camera.getWorldPosition(headW); camera.getWorldDirection(fw);
   const d = { n: myName, c: myColor, h: myHat, p: [r2(player.pos.x), r2(player.pos.y), r2(player.pos.z)], y: r2(Math.atan2(fw.x, fw.z)),
-    hd: [r2(headW.x), r2(headW.y), r2(headW.z)], v: renderer.xr.isPresenting ? 1 : 0, s: spectating ? 1 : 0, k: player.ducking ? 1 : 0, u: myCostume };
+    hd: [r2(headW.x), r2(headW.y), r2(headW.z)], v: renderer.xr.isPresenting ? 1 : 0, s: spectating ? 1 : 0, k: player.ducking ? 1 : 0, u: myCostume, pt: myPet, sh: player.shieldT > now() ? 1 : 0, lv: myLevel() };
   if (renderer.xr.isPresenting) {
     grips[0].getWorldPosition(lW); grips[1].getWorldPosition(rW);
     d.l = [r2(lW.x), r2(lW.y), r2(lW.z)]; d.rr = [r2(rW.x), r2(rW.y), r2(rW.z)];
@@ -2287,6 +2715,7 @@ function updatePeers(dt) {
     p.gl.visible = p.gr.visible = !!(d.v && d.l);
     if (d.v && d.l) { p.gl.position.lerp(tmpB.set(d.l[0], d.l[1], d.l[2]), k); p.gr.position.lerp(tmpB.set(d.rr[0], d.rr[1], d.rr[2]), k); }
     p.avatar.userData.duck = !!d.k;
+    if (p.avatar.userData.shield) p.avatar.userData.shield.visible = !!d.sh;
     tickExtras(p.avatar, p.id, dt);
   }
   for (const rb of remoteBots) {
@@ -2306,11 +2735,11 @@ addEventListener('keydown', e => {
   if (document.activeElement && document.activeElement.tagName === 'INPUT') return;
   keys[e.code] = true;
   if (!started) return;
-  if (e.code === 'KeyR' && net.isHost) enterLobby();
+  if (e.code === 'KeyR' && net.isHost) { if (show.stage === 'trenn') { makeBots(0); } enterLobby(); }
   if (e.code === 'Enter' && show.stage === 'lobby' && net.isHost) startShow();
   if (e.code === 'KeyM') setMusic(!musicOn);
   if (e.code === 'KeyP' && show.stage === 'lobby') openShop();
-  if (e.code === 'KeyF') doBuild(false);
+  if (e.code === 'KeyF') { if (spectating) spectatorDrop(); else doBuild(false); }
   if (e.code === 'KeyG') doBuild(true);
   if (e.code === 'KeyT' && buildAimCache) cycleBuildType();
   const em = ['Digit1', 'Digit2', 'Digit3', 'Digit4'].indexOf(e.code); if (em >= 0) doEmote(em);
@@ -2366,6 +2795,7 @@ const touchIn = { mx: 0, my: 0, jump: false, grab: false, duck: false };
   document.getElementById('tEmote').addEventListener('pointerdown', e => { e.preventDefault(); if (started) doEmote(emoteI++ % EMOTES.length); });
 })();
 document.getElementById('bBuild').onclick = () => doBuild(false);
+document.getElementById('dropBtn').onclick = () => spectatorDrop();
 document.getElementById('bDel').onclick = () => doBuild(true);
 document.getElementById('bType').onclick = () => cycleBuildType();
 document.getElementById('startBtn').onclick = () => { audioInit(); if (started && net.isHost && show.stage === 'lobby') startShow(); };
@@ -2405,7 +2835,7 @@ function handleInput(dt, canMove) {
   // grip-ide järjekord: grips[0]/[1] vastavad inputSources järjekorrale; kasutame käelisust
   const gripByIndex = [false, false];
   if (session) { let i = 0; for (const src of session.inputSources) { if (i < 2 && src.gamepad) gripByIndex[i] = grip[src.handedness === 'left' ? 0 : 1]; i++; } }
-  if (bDown) { bHold += dt; if (bHold > 1.5 && net.isHost && show.stage !== 'lobby') { enterLobby(); bHold = -99; } } else bHold = 0;
+  if (bDown) { bHold += dt; if (bHold > 1.5 && net.isHost && show.stage !== 'lobby') { if (show.stage === 'trenn') makeBots(0); enterLobby(); bHold = -99; } } else bHold = 0;
 
   if (keys.KeyW || keys.ArrowUp) my += 1; if (keys.KeyS || keys.ArrowDown) my -= 1;
   if (keys.KeyD) mx += 1; if (keys.KeyA) mx -= 1;
@@ -2438,7 +2868,7 @@ function handleInput(dt, canMove) {
   } else {
     player.holding = false;
     steer(player, canMove ? mvIn.x * player.speed : 0, canMove ? mvIn.z * player.speed : 0, dt);
-    if (jump && !jumpWas && player.onGround && canMove) { player.vel.y = JUMP; sfx('jump'); puff(player.pos, 0xffffff, 4, 0.8, 0.4, 0.3); }
+    if (jump && !jumpWas && player.onGround && canMove) { player.vel.y = JUMP * (player.pw === 'hupe' && player.pwT > now() ? 1.45 : 1); sfx('jump'); puff(player.pos, 0xffffff, 4, 0.8, 0.4, 0.3); }
   }
   jumpWas = jump;
 }
@@ -2539,6 +2969,8 @@ function updateHud() {
   $('shopBtn').style.display = !vrNow && show.stage === 'lobby' ? 'block' : 'none';
   $('fsBtn').style.display = isTouch && !vrNow && !document.fullscreenElement ? 'block' : 'none';
   $('buildBar').classList.toggle('on', isTouch && !vrNow && !!buildAimCache);
+  $('dropBtn').style.display = isTouch && !vrNow && spectating && show.stage === 'play' ? 'block' : 'none';
+  $('shieldGlow').style.display = !vrNow && player.shieldT > now() ? 'block' : 'none';
   if (isTouch) { hud.innerHTML = '<b>' + (TR ? TR.name : '') + '</b>' + (net.on ? ' · ruum ' + roomCode + ' · ' + humanIds().length + ' inimest' : ''); return; }
   const n = humanIds().length;
   hud.innerHTML = '<b>Kukerpall VR</b> · ' + (TR ? TR.name : '') + '<br>' +
@@ -2564,17 +2996,18 @@ function renderPickers() {
   });
   if (myCostume) { const b = document.createElement('button'); b.className = 'hat on'; b.textContent = '🎭 ' + COSTUMES[myCostume]; b.onclick = () => { myCostume = 0; saveProg(); renderPickers(); }; $('hats').appendChild(b); }
   const best = Object.entries(prog.best || {}).sort((a, b) => a[1] - b[1]).slice(0, 3).map(([k, v]) => k + ' ' + v.toFixed(1) + ' s').join(', ');
-  $('statLine').innerHTML = '🪙 <b>' + coins + '</b> münti · 👑 ' + prog.crowns + ' krooni · mänge ' + prog.shows + ' · edasipääse ' + prog.qual + '/' + prog.rounds + (best ? '<br>Parimad ajad: ' + best : '');
+  ensureQuests();
+  $('statLine').innerHTML = '⭐ Tase <b>' + myLevel() + '</b> · 🪙 <b>' + coins + '</b> münti · 👑 ' + prog.crowns + ' krooni · mänge ' + prog.shows + ' · edasipääse ' + prog.qual + '/' + prog.rounds + (best ? '<br>Parimad ajad: ' + best : '') + '<br><b>Tänased ülesanded:</b> ' + prog.quests.map(questText).join(' · ');
 }
 function renderShop() {
-  $('coinsLbl').textContent = 'Sul on ' + coins + ' 🪙';
+  $('coinsLbl').textContent = 'Sul on ' + coins + ' 🪙 · tase ' + myLevel();
   $('shopItems').innerHTML = '';
   SHOP.forEach(it => {
     const st = shopState(it), row = document.createElement('div'); row.className = 'it';
-    const lab = document.createElement('span'); lab.textContent = (it.type === 'costume' ? '🎭 ' : it.type === 'hat' ? '🎩 ' : '🎨 ') + it.name; row.appendChild(lab);
-    const b = document.createElement('button');
-    b.textContent = st.using ? 'Kasutusel ✓' : st.has ? 'Kasuta' : it.price + ' 🪙';
-    b.style.background = st.using ? '#1d1b3a' : st.has ? '#22c55e' : coins >= it.price ? '#f59e0b' : '#adb5bd';
+    const lab = document.createElement('span'); lab.textContent = (it.type === 'costume' ? '🎭 ' : it.type === 'hat' ? '🎩 ' : it.type === 'pet' ? '🐾 ' : '🎨 ') + it.name; row.appendChild(lab);
+    const b = document.createElement('button'), locked = !st.has && it.lv && myLevel() < it.lv;
+    b.textContent = st.using ? 'Kasutusel ✓' : st.has ? 'Kasuta' : locked ? '🔒 Tase ' + it.lv : it.price + ' 🪙';
+    b.style.background = st.using ? '#1d1b3a' : st.has ? '#22c55e' : !locked && coins >= it.price ? '#f59e0b' : '#adb5bd';
     b.onclick = () => shopClick(it);
     row.appendChild(b); $('shopItems').appendChild(row);
   });
@@ -2597,6 +3030,7 @@ function readMenu() {
   audioInit();
 }
 $('solo').onclick = () => { readMenu(); startGame(false); };
+$('practiceBtn').onclick = () => startPractice();
 $('online').onclick = async () => {
   readMenu();
   roomCode = $('code').value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '') || randomCode();
@@ -2648,6 +3082,7 @@ for (let i = 0; i < 2; i++) {
   rays.push({ c, line, dot });
   c.addEventListener('selectstart', () => {
     if (vrMenu.open) return menuSelect(i);
+    if (spectating && show.stage === 'play') { spectatorDrop(i); return; }
     if (buildAimCache) { const src = renderer.xr.getSession() && renderer.xr.getSession().inputSources[i]; doBuild(!!(src && src.handedness === 'left')); }
   });
 }
@@ -2689,7 +3124,7 @@ function drawMenu() {
     row('Liikumine', 450);
     mBtn(230, 450, 250, 60, 'Kätega (ahv)', () => { loco = 'arms'; clearHands(); }, { on: loco === 'arms' });
     mBtn(495, 450, 250, 60, 'Pulgaga', () => { loco = 'stick'; clearHands(); }, { on: loco === 'stick' });
-    x.fillStyle = '#b8860b'; x.font = 'bold 30px system-ui'; x.textAlign = 'right'; x.fillText('🪙 ' + coins, 984, 60);
+    x.fillStyle = '#b8860b'; x.font = 'bold 30px system-ui'; x.textAlign = 'right'; x.fillText('⭐' + myLevel() + '  🪙 ' + coins, 984, 60);
     mBtn(40, 530, 300, 60, 'Lihtne režiim', () => { wantEasy = !wantEasy; }, { on: wantEasy });
     mBtn(355, 530, 300, 60, 'Muusika', () => setMusic(!musicOn), { on: musicOn });
     mBtn(670, 530, 314, 60, 'Graafika: ' + (gfx === 'ilus' ? 'Ilus' : 'Kiire'), () => setGfx(gfx === 'ilus' ? 'kiire' : 'ilus'));
@@ -2698,6 +3133,7 @@ function drawMenu() {
       mBtn(495, 610, 489, 62, 'Robotid ka (sõpradega)', () => { wantBots = !wantBots; }, { on: wantBots });
       mBtn(40, 695, 460, 86, 'Mängi robotitega', () => { syncHtml(); closeVrMenu(); startGame(false); }, { big: '#2f9bff' });
       mBtn(524, 695, 460, 86, 'Mängi sõpradega', () => vrOnline(), { big: '#ff3d8b' });
+      mBtn(355, 10, 300, 60, 'Harjuta 🎓', () => { syncHtml(); closeVrMenu(); startPractice(); }, { big: '#22c55e' });
     } else {
       x.fillStyle = '#556'; x.font = '28px system-ui'; x.textAlign = 'left'; x.fillText(net.on ? 'Ruum ' + roomCode + ' · ' + humanIds().length + ' inimest' : 'Üksi robotitega', 40, 640);
       mBtn(262, 695, 500, 86, 'Sulge menüü', () => closeVrMenu(), { big: '#22c55e' });
@@ -2843,13 +3279,15 @@ function onStageChange() {
       prog.rounds++;
       if (show.alive.includes(me)) { prog.qual++; sfx('cheer'); showMsg('Pääsesid edasi!', ['Edasi pääses ' + show.alive.length + '/' + show.part.length], 3); setTimeout(() => addCoins(5, 'edasipääsu eest'), 600); }
       else { sfx('out'); showMsg('Langesid välja', ['Järgmisi voore saad pealt vaadata'], 3); }
+      if (show.rt === 'boss' && show.boss && show.boss.won && show.alive.includes(me)) setTimeout(() => addCoins(10, 'bossi võitmise eest!'), 1400);
+      if (show.alive.includes(me)) { questTick('qual'); addXp(20); }
       saveProg();
     }
   }
   if (st === 'crown') {
     sfx('fanfare');
     const wp = posOf(show.winner); burst(wp || player.pos);
-    if (show.winner === net.id) { prog.crowns++; saveProg(); setTimeout(() => addCoins(50, 'KROONI eest!'), 900); }
+    if (show.winner === net.id) { prog.crowns++; saveProg(); setTimeout(() => addCoins(50, 'KROONI eest!'), 900); questTick('crown'); addXp(100); }
     fwT = 0;
   }
   if (st === 'play' && show.part.includes(net.id)) { sfx('go'); showMsg('MINE!', [], 1); }
@@ -2909,7 +3347,7 @@ renderer.setAnimationLoop(() => {
   handleInput(dt, canMove);
 
   if (net.isHost) {
-    for (const b of bots) if (b.visible) { grabEffect(b, dt); botAI(b, dt); }
+    for (const b of bots) if (b.visible) { grabEffect(b, dt); if (!b.carried) botAI(b, dt); }
     botGrabs(dt);
   }
   const off = vr ? armOffset() : 0;
@@ -2921,12 +3359,12 @@ renderer.setAnimationLoop(() => {
 
   // lükkamine
   const others = allOthers();
-  for (const o of others) pushApart(player, o.pos.x, o.pos.y, o.pos.z);
+  if (!player.carried) for (const o of others) { if (o.id === pcGrab || grabHold.includes(o.id)) continue; pushApart(player, o.pos.x, o.pos.y, o.pos.z); }
   if (net.isHost) {
     for (let i = 0; i < bots.length; i++) {
       if (!bots[i].visible) continue;
       for (let j = i + 1; j < bots.length; j++) { if (!bots[j].visible) continue; const m = pushApart(bots[i], bots[j].pos.x, bots[j].pos.y, bots[j].pos.z); if (m) { bots[j].pos.x += m[0]; bots[j].pos.z += m[1]; } }
-      pushApart(bots[i], player.pos.x, player.pos.y, player.pos.z);
+      if (!bots[i].carried) pushApart(bots[i], player.pos.x, player.pos.y, player.pos.z);
       for (const p of net.peers.values()) if (p.d) pushApart(bots[i], p.pos.x, p.pos.y, p.pos.z);
     }
   }
@@ -2938,7 +3376,7 @@ renderer.setAnimationLoop(() => {
     if (!player.finished && show.stage === 'play' && player.pos.z < TR.finishZ && player.pos.y > TR.cps[0].pos.y - 1 && show.part.includes(net.id)) {
       player.finished = true; myFinishTime = t - show.sa; burst(player.pos); sfx('cheer');
       if (!(prog.best[TR.name] < myFinishTime)) { prog.best[TR.name] = Math.round(myFinishTime * 10) / 10; showToast('Uus rekord: ' + myFinishTime.toFixed(1) + ' s!', 2); }
-      saveProg(); setTimeout(() => addCoins(3, 'finiš'), 300);
+      saveProg(); setTimeout(() => addCoins(3, 'finiš'), 300); questTick('fin'); addXp(10);
       if (net.isHost) recordFinish(net.id, myFinishTime); else net.fin.send({ t: myFinishTime, r: show.rid });
     }
   }
@@ -2963,10 +3401,18 @@ renderer.setAnimationLoop(() => {
   updatePeers(dt);
   if (show.stage === 'lobby') { drawBoard(); drawStatBoard(); rebuildBuilder(false); }
   // mündid
+  const tnow = now();
+  for (const bx of TR.boxes) {
+    const show1 = bx.back < tnow; bx.m.visible = show1; bx.m.rotation.y += dt * 1.5; bx.m.position.y = bx.y + Math.sin(tnow * 2 + bx.x) * 0.12;
+    if (show1 && !spectating && Math.hypot(player.pos.x - bx.x, player.pos.z - bx.z) < 1.0 && Math.abs(player.pos.y + 0.8 - bx.y) < 1.3) { bx.back = tnow + 5; puff(bx.m.position, 0xffd43b, 10, 2, 0.5, 1); givePower(player, true); }
+    if (net.isHost && bx.botBack < tnow) for (const b of bots) if (b.visible && Math.hypot(b.pos.x - bx.x, b.pos.z - bx.z) < 1.0 && Math.abs(b.pos.y + 0.8 - bx.y) < 1.3) { bx.botBack = tnow + 5; givePower(b, false); break; }
+  }
+  const magnet = player.pw === 'magnet' && player.pwT > tnow;
   if (TR.coins.length && !spectating) for (const c of TR.coins) {
     if (c.taken) continue;
+    if (magnet) { const mx = player.pos.x - c.m.position.x, my = player.pos.y + 0.8 - c.m.position.y, mz = player.pos.z - c.m.position.z, md = Math.hypot(mx, my, mz); if (md < 7 && md > 0.01) c.m.position.addScaledVector(tmpC.set(mx, my, mz).normalize(), Math.min(md, dt * 12)); }
     const dx = c.m.position.x - player.pos.x, dy = c.m.position.y - (player.pos.y + 0.8), dz = c.m.position.z - player.pos.z;
-    if (dx * dx + dy * dy + dz * dz < 0.8) { c.taken = true; c.m.visible = false; coins++; saveProg(); sfx('coin'); puff(c.m.position, 0xffd43b, 6, 1.2, 0.4, 0.8); }
+    if (dx * dx + dy * dy + dz * dz < 0.8) { c.taken = true; c.m.visible = false; coins++; saveProg(); sfx('coin'); questTick('coin'); addXp(1); if (show.stage === 'trenn') practiceDone('coin'); puff(c.m.position, 0xffd43b, 6, 1.2, 0.4, 0.8); }
   }
   // ilutulestik kroonimisel
   if (show.stage === 'crown') {
@@ -2978,6 +3424,15 @@ renderer.setAnimationLoop(() => {
     }
   }
   replayTick(dt, t, vr);
+  updateDrops(dt);
+  dropCd = Math.max(0, dropCd - dt);
+  if (player.pwT && player.pwT < tnow && player.pw) { player.pw = null; }
+  shieldBubble.visible = !vr && false;
+  updateRain(dt);
+  updatePets(dt);
+  if (show.rt === 'boss') bossVisual(dt, t);
+  if (TR.gates.length) gateVisual(dt, t);
+  if (show.stage === 'trenn') practiceTick();
 
   // värav
   if (show.rt === 'pall' && show.lastGoal) { const k = show.rid + show.lastGoal.join(); if (k !== lastGoalKey) { lastGoalKey = k; sfx('goal'); showToast('VÄRAV! ' + TEAM_NAMES[show.lastGoal[0]] + ' · ' + show.score[0] + ':' + show.score[1], 2); if (TR.ballMesh) puff(TR.ballMesh.position, TEAM_COLORS[show.lastGoal[0]], 14, 3, 0.9, 2); } }
@@ -3015,8 +3470,10 @@ renderer.setAnimationLoop(() => {
     if (show.stage === 'lobby') {
       if (buildAimCache) line = 'Rajaehitaja · ' + (renderer.xr.isPresenting ? 'parem päästik = ehita, vasak = kustuta, B = tüüp' : isTouch ? 'nupud all' : 'F = ehita, G = kustuta, T = tüüp') + ' (' + BUILD_TYPES[buildType] + ')';
       else line = 'Ootesaal · ' + (net.isHost ? (renderer.xr.isPresenting ? 'Astu rohelisele ringile, et alustada' : 'Vajuta ALUSTA, kui kõik on kohal') : 'Ootame, kuni ' + nameOf(net.hostId) + ' alustab');
+    } else if (show.stage === 'trenn') {
+      line = practiceLine();
     } else if (spectating) {
-      line = 'Vaatad pealt · ' + TR.name + (SURVIVAL[show.rt] ? ' · alles ' + show.inR.length : '');
+      line = 'Vaatad pealt · ' + (show.stage === 'play' ? (renderer.xr.isPresenting ? 'päästik' : isTouch ? 'nupp all' : 'F') + ' = viska pall rajale' + (dropCd > 0 ? ' (' + Math.ceil(dropCd) + ')' : '') + ' · ' : '') + TR.name + (SURVIVAL[show.rt] ? ' · alles ' + show.inR.length : '');
     } else if (show.rt === 'race') {
       const qi = show.q.indexOf(net.id);
       line = TR.name + ' · ' + clock + ' · ' + (qi >= 0 ? (qi + 1) + '. koht ✓' : 'edasi ' + show.q.length + '/' + show.quota);
@@ -3025,10 +3482,14 @@ renderer.setAnimationLoop(() => {
     } else if (TEAM[show.rt]) {
       const tm = show.teams ? show.teams[net.id] : undefined, sc = show.score || [0, 0];
       line = 'Sinine ' + sc[0] + ' : ' + sc[1] + ' Punane' + (tm !== undefined ? ' · sina: ' + TEAM_NAMES[tm].toUpperCase() : '') + ' · ' + Math.max(0, Math.ceil((show.rt === 'pall' ? 75 : 60) - tau)) + ' s';
+    } else if (show.rt === 'boss' && show.boss) {
+      line = 'Bossivoor · ' + (tau < 15 ? 'boss on kaitstud veel ' + Math.ceil(15 - tau) + ' s – hoia meteooridest eemale' : 'nupud ' + show.boss.pads.filter(x => x).length + '/4 (seisa 3 s)') + (show.boss.won ? ' · VÕIT! 🎉' : '') + ' · alles ' + show.inR.length + ' · ' + Math.max(0, Math.ceil(70 - tau)) + ' s';
     } else if (show.rt === 'magi') {
       const list = Object.entries(show.hill || {}).sort((a, b) => b[1] - a[1]);
       line = 'Mäe tipp · sinu punktid ' + Math.floor((show.hill || {})[net.id] || 0) + (list[0] ? ' · liider ' + nameOf(list[0][0]) + ' ' + Math.floor(list[0][1]) : '') + ' · ' + Math.max(0, Math.ceil(50 - tau)) + ' s';
     } else line = TR.name + ' · alles ' + show.inR.length + (show.final ? '' : ' · edasi ' + show.quota) + ' · ' + clock;
+    if (player.pw && player.pwT > now() && !spectating) { const pw = POWERS.find(p => p.id === player.pw); if (pw) line = pw.name + ' ' + Math.ceil(player.pwT - now()) + 's · ' + line; }
+    if (raining) line = '🌧️ ' + line;
     drawStats(line);
     if (show.stage === 'results') {
       showMsg(show.alive.includes(net.id) ? 'Pääsesid edasi!' : show.part.includes(net.id) ? 'Langesid välja' : 'Voor läbi!',
