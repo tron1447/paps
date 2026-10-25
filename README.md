@@ -1,4 +1,4 @@
-[index (51).html](https://github.com/user-attachments/files/33929944/index.51.html)
+[Uploading index (52).html…]()
 <!doctype html>
 <html lang="et">
 <head>
@@ -38,7 +38,15 @@ canvas{touch-action:none;display:block;position:fixed;left:0;top:0;width:100vw!i
 #tGrab{right:calc(136px + env(safe-area-inset-right));bottom:calc(30px + env(safe-area-inset-bottom));width:72px;height:72px;background:var(--blue)}
 #tEmote{right:calc(40px + env(safe-area-inset-right));bottom:calc(146px + env(safe-area-inset-bottom));width:60px;height:60px;background:#f59e0b;font-size:24px}
 #tDuck{right:calc(220px + env(safe-area-inset-right));bottom:calc(30px + env(safe-area-inset-bottom));width:72px;height:72px;background:#8b5cf6;font-size:13px;display:none}
+#padBtn{display:none;position:fixed;left:12px;top:110px;z-index:9;width:44px;height:44px;font-size:22px;border:0;border-radius:12px;background:rgba(29,27,58,.6);color:#fff}
 #fsBtn{display:none;position:fixed;right:12px;bottom:200px;z-index:8;width:48px;height:48px;font-size:24px;border:0;border-radius:12px;background:rgba(29,27,58,.6);color:#fff}
+#lvMenuBtn{display:none;position:fixed;right:12px;top:12px;z-index:8;font-size:15px;font-weight:800;padding:9px 14px;border:0;border-radius:14px;background:#8b5cf6;color:#fff}
+#levelSel,#lvDone{display:none;position:fixed;inset:0;z-index:31;align-items:center;justify-content:center;padding:12px;box-sizing:border-box;background:rgba(0,0,0,.3);overflow:auto}
+#levelSel.on,#lvDone.on{display:flex}#levelSel .card,#lvDone .card{background:#fff;border-radius:22px;padding:16px 18px;max-width:560px;width:100%;margin:auto}
+#lvGrid{display:grid;grid-template-columns:repeat(6,1fr);gap:7px}
+.lvb{border:0;border-radius:12px;padding:7px 2px;background:#eef0ff;font-size:12px;line-height:1.3;cursor:pointer;color:#1d1b3a}
+.lvb b{font-size:17px}.lvb.lock{background:#e9ecef;color:#999}
+#lvDone .big{min-width:120px;flex:0 1 auto}
 #shopBtn{display:none;position:fixed;right:12px;top:12px;z-index:8;font-size:16px;font-weight:800;padding:10px 16px;border:0;border-radius:14px;background:#f59e0b;color:#fff;cursor:pointer}
 #shop{display:none;position:fixed;inset:0;z-index:30;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;background:rgba(0,0,0,.25);overflow:auto}
 #shop.on{display:flex}#shop .card{background:var(--card);border-radius:22px;padding:18px 20px;max-width:460px;width:100%;margin:auto}
@@ -59,6 +67,7 @@ small{opacity:.8}
 #tDuck{width:58px;height:58px;right:calc(170px + env(safe-area-inset-right));bottom:calc(12px + env(safe-area-inset-bottom))}
 #tEmote{width:48px;height:48px;right:calc(28px + env(safe-area-inset-right));bottom:calc(102px + env(safe-area-inset-bottom))}
 #fsBtn{bottom:auto;top:56px;width:40px;height:40px;font-size:20px}
+#padBtn{top:40px;left:6px;width:38px;height:38px;font-size:19px}
 #shopBtn{font-size:13px;padding:7px 11px;top:6px}
 #startBtn{font-size:16px;padding:10px 18px;top:8px}#hud{font-size:12px;padding:5px 9px;top:6px;left:6px;max-width:45vw}
 #buildBar{bottom:8px}.tb2{padding:9px 10px;font-size:12px}
@@ -104,6 +113,7 @@ small{opacity:.8}
     <button class="big" id="solo">Mängi robotitega</button>
     <button class="big" id="online">Mängi sõpradega</button>
     <button class="big" id="practiceBtn" style="background:#22c55e">Harjuta 🎓</button>
+    <button class="big" id="levelsBtn" style="background:#8b5cf6">Tasemed ⭐ (30)</button>
   </div>
   <div id="status"></div>
   <p id="statLine" style="font-size:13px;margin:8px 0 0"></p>
@@ -120,7 +130,26 @@ small{opacity:.8}
 <div id="hud"></div>
 <div id="shieldGlow"></div>
 <button id="shopBtn">🛒 Pood</button>
+<button id="lvMenuBtn">☰ Tasemed</button>
+<div id="levelSel"><div class="card">
+  <h2 style="margin:0 0 4px;color:#8b5cf6">Tasemed</h2>
+  <p id="lvTotal" style="margin:0 0 8px;font-weight:700"></p>
+  <div id="lvGrid"></div>
+  <p style="font-size:13px;margin:8px 0 0">Iga tase avab järgmise. Kiire aeg = 3 tähte. Arvutis: R = uuesti, Enter = järgmine.</p>
+  <button class="big" id="lvBack" style="background:#495057;width:100%">Tagasi menüüsse</button>
+</div></div>
+<div id="lvDone"><div class="card" style="text-align:center">
+  <h2 id="lvTitle" style="margin:0;color:#8b5cf6"></h2>
+  <div id="lvStars" style="font-size:44px;margin:6px 0"></div>
+  <p id="lvInfo" style="margin:0 0 10px"></p>
+  <div class="row" style="justify-content:center">
+    <button class="big" id="lvNext" style="background:#22c55e">Järgmine ▶</button>
+    <button class="big" id="lvRetry" style="background:#f59e0b">Uuesti ↻</button>
+    <button class="big" id="lvList" style="background:#8b5cf6">Tasemed ☰</button>
+  </div>
+</div></div>
 <button id="fsBtn" title="Täisekraan">⛶</button>
+<button id="padBtn" title="Puutenupud sisse/välja">🎮</button>
 <div id="shop"><div class="card">
   <h2 style="margin:0 0 4px;color:var(--pink)">Pood</h2>
   <p id="coinsLbl" style="margin:0 0 10px;font-weight:700"></p>
@@ -796,7 +825,7 @@ TRACKS.push(
     box(0, 0, -26.5, 8, 1, 6, C.purple);
     const bl = [[-1.5, -33, 0], [1.5, -36.5, -0.8], [-1.5, -40, -1.6], [1.5, -43.5, -2.4], [0, -47, -3.2]].map(([x, z, ph], i) => box(x, 0, z, 3, 1, 3, [C.pink, C.yellow, C.green, C.orange, C.purple][i], { blink: { period: 3.2, phase: ph } }));
     box(0, 0, -58, 6, 1, 18, 0x9aa5b1);
-    [-52.5, -58, -63.5].forEach(z => box(0, 1.0, z, 6, 1.0, 1.0, C.orange, { conveyor: 3, flat: true, roller: true }));
+    [-52.5, -58, -63.5].forEach(z => box(0, 1.0, z, 6, 1.0, 1.0, C.orange, { conveyor: 2, flat: true, roller: true }));
     box(-3.4, 1.4, -55.2, 1.6, 1.2, 1.0, C.red, { move: { axis: 'x', amp: 1.8, speed: 2.2, phase: 0 }, pusher: true });
     box(3.4, 1.4, -60.8, 1.6, 1.2, 1.0, C.red, { move: { axis: 'x', amp: 1.8, speed: 2.2, phase: 1.5 }, pusher: true });
     box(0, 0, -69, 4, 0.5, 4, C.orange, { bounce: true });
@@ -911,6 +940,55 @@ function buildTrenn() {
   TR.spawn = (i, n, out) => out.set(0, 0.3, 2);
   TR.outY = -6;
 }
+function levelIndex(n) { return TRACKS.findIndex(t => t.gen && t.level === n); }
+prog.levels = prog.levels || {};
+function levelStars(n) { return prog.levels[n] ? prog.levels[n].s : 0; }
+function levelUnlocked(n) { return n === 1 || levelStars(n - 1) > 0; }
+function startLevel(n) {
+  if (n > LEVEL_COUNT) { openLevelSelect(); return; }
+  readMenu(); started = true; $('menu').style.display = 'none'; $('levelSel').classList.remove('on'); $('lvDone').classList.remove('on'); goFullscreen();
+  pitch = 0; camera.rotation.set(0, 0, 0);
+  net.on = false; net.isHost = true;
+  makeBots(3); bots.forEach(b => { b.speed *= 0.85; });
+  show.mode = 'levels'; show.level = n; show.weather = ''; show.gates = [0, 0]; show.boss = null; show.teams = {};
+  show.rt = 'race'; show.ti = levelIndex(n); show.stage = 'intro'; show.sa = T() + 4; show.ea = 0;
+  show.part = [net.id, ...bots.map(b => b.id)]; show.alive = show.part.slice(); show.inR = show.part.slice(); show.q = []; show.fo = []; show.quota = 99; show.final = false;
+  show.rid = newId(); closeVrMenu();
+  updateHud();
+}
+function levelComplete() {
+  if (show.stage !== 'play') return;
+  show.stage = 'lvdone'; show.ea = T();
+  const n = show.level, t = myFinishTime, par = TR.par || 40;
+  const st = t <= par ? 3 : t <= par * 1.5 ? 2 : 1;
+  const old = prog.levels[n] || { s: 0, t: 999 };
+  const firstTime = !old.s;
+  prog.levels[n] = { s: Math.max(old.s, st), t: Math.min(old.t, Math.round(t * 10) / 10) };
+  saveProg();
+  const reward = (firstTime ? 10 : 2) + (st > old.s ? (st - old.s) * 5 : 0);
+  setTimeout(() => addCoins(reward, 'tase ' + n), 700); addXp(firstTime ? 25 : 5);
+  sfx(st === 3 ? 'fanfare' : 'cheer'); burst(player.pos);
+  const stars = '⭐'.repeat(st) + '☆'.repeat(3 - st);
+  $('lvTitle').textContent = 'Tase ' + n + ' läbitud!'; $('lvStars').textContent = stars;
+  $('lvInfo').textContent = 'Aeg ' + t.toFixed(1) + ' s · 3 tähe jaoks ' + par + ' s · rekord ' + prog.levels[n].t + ' s';
+  $('lvNext').style.display = n < LEVEL_COUNT ? 'inline-block' : 'none';
+  if (renderer.xr.isPresenting) { vrMenu.open = true; vrMenu.inGame = true; vrMenu.screen = 'lvdone'; vrMenu.place = true; drawMenu(); }
+  else { $('lvDone').classList.add('on'); if (document.pointerLockElement) document.exitPointerLock(); }
+  showMsg(stars, ['Tase ' + n + ' läbitud!', 'Aeg ' + t.toFixed(1) + ' s'], 4);
+}
+function openLevelSelect() {
+  if (renderer.xr.isPresenting) { vrMenu.open = true; vrMenu.screen = 'levels'; vrMenu.place = true; drawMenu(); return; }
+  const g = $('lvGrid'); g.innerHTML = '';
+  let total = 0;
+  for (let n = 1; n <= LEVEL_COUNT; n++) {
+    const b = document.createElement('button'), st = levelStars(n), un = levelUnlocked(n); total += st;
+    b.className = 'lvb' + (un ? '' : ' lock'); b.innerHTML = '<b>' + n + '</b><br>' + (un ? '⭐'.repeat(st) + '☆'.repeat(3 - st) : '🔒');
+    b.onclick = () => { if (un) startLevel(n); else showToast('Läbi enne tase ' + (n - 1), 1.2); };
+    g.appendChild(b);
+  }
+  $('lvTotal').textContent = 'Tähti kokku: ' + total + ' / ' + LEVEL_COUNT * 3;
+  $('levelSel').classList.add('on');
+}
 function startPractice() {
   readMenu(); started = true; $('menu').style.display = 'none'; goFullscreen();
   pitch = 0; camera.rotation.set(0, 0, 0);
@@ -920,9 +998,60 @@ function startPractice() {
   updateHud();
   setTimeout(() => showMsg('Harjutusväljak', ['Tee harjutused läbi järjest', 'Ülal on alati järgmine ülesanne'], 4), 300);
 }
-function pendulum(z, speed, phase) {   // kiikuv kuul üle silla
-  const piv = new V3(0, 6, z), len = 5.2, R = 0.8;
-  const frame = new THREE.Group(); frame.position.set(0, 0, z);
+// =====================================================================
+// TASEMED: rajad genereeritakse juppidest (sama number = alati sama rada)
+// =====================================================================
+function rng(seed) { let a = seed >>> 0; return () => { a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+const GPAL = [C.pink, C.yellow, C.blue, C.green, C.purple, C.orange, 0x63e6be, 0xff8787];
+const SEG = {
+  stones(c) { const sd = c.R() < 0.5 ? 1 : -1; for (let i = 0; i < 4; i++) { const x = (i % 2 ? 1.5 : -1.5) * sd, zc = c.z - 2 - i * 3.5; box(x, c.y, zc, 3, 1, 3, c.col()); c.w({ x, z: zc }); } c.z = c.z - 2 - 3 * 3.5 - 1.5; },
+  tiles(c) { tileGrid(-2.85, c.z - 1.4, 4, 5, c.y); c.w({ x: 0, z: c.z - 1.4, wide: 1.5 }); c.w({ x: 0, z: c.z - 9, wide: 1.5 }); c.z -= 10; },
+  disc(c) { const zc = c.z - 5.5; cyl(0, c.y, zc, 5, 1, c.col()); cyl(0, c.y + 1.4, zc, 0.6, 1.4, C.red); sweeper(0, zc, c.y, 5, (c.R() < 0.5 ? 1 : -1) * (0.8 + c.R() * 0.5)); c.w({ x: 0, z: zc + 4.4, wide: 1 }); c.w({ side: 2.6, z: zc }); c.w({ x: 0, z: zc - 4.4, wide: 1 }); c.z = zc - 5; },
+  movers(c) { const ms = []; for (let i = 0; i < 3; i++) ms.push(box(0, c.y, c.z - 2 - i * 3.5, 3, 0.5, 3, c.col(), { move: { axis: 'x', amp: 3, speed: 1 + c.R() * 0.3, phase: i * 2.1 } })); c.w({ x: 0, z: c.z + 0.6, wide: 0.8 }); ms.forEach(m => c.w({ plat: m })); c.z = c.z - 2 - 2 * 3.5 - 1.5; },
+  pend(c) { box(0, c.y, c.z - 7.5, 3, 1, 15, c.col()); [-3, -7.5, -12].forEach((dz, i) => pendulum(c.z + dz, 1.5 + c.R() * 0.5, i * 2.1, c.y)); [-1, -5.2, -9.7, -14].forEach(dz => c.w({ x: 0, z: c.z + dz })); c.z -= 15; },
+  walls(c) { box(0, c.y, c.z - 9, 10, 1, 18, c.col()); const ws = [-5, -12].map((dz, k) => box(0, c.y + 2.2, c.z + dz, 7, 2.2, 0.8, c.col(), { move: { axis: 'x', amp: 3, speed: 0.7 + c.R() * 0.5, phase: k * 1.7 }, pusher: true })); ws.forEach(w => c.w({ gap: w, z: w.mesh.position.z })); c.w({ x: 0, z: c.z - 17, wide: 2 }); c.z -= 18; },
+  blink(c) { const per = 3.6 + c.R() * 0.6; [[-1.5, -2], [1.5, -5.5], [-1.5, -9], [1.5, -12.5]].forEach(([x, dz], i) => { const b = box(x, c.y, c.z + dz, 3, 1, 3, c.col(), { blink: { period: per, phase: -i * 0.7 } }); c.w({ blink: b, x, z: c.z + dz }); }); c.z -= 14; },
+  rollers(c) { box(0, c.y, c.z - 7, 6, 1, 14, 0x9aa5b1); [-3.5, -8.5].forEach(dz => box(0, c.y + 1, c.z + dz, 6, 1, 1, C.orange, { conveyor: 1.6, flat: true, roller: true })); box(-3.4, c.y + 1.4, c.z - 6, 1.6, 1.2, 1, C.red, { move: { axis: 'x', amp: 1.8, speed: 2, phase: c.R() * 3 }, pusher: true }); c.w({ x: 0, z: c.z - 1, wide: 1 }); c.w({ x: 0, z: c.z - 13, wide: 1 }); c.z -= 14; },
+  stairs(c) { for (let i = 0; i < 3; i++) { c.y += 0.6; const zc = c.z - 1.5 - i * 3.6; box(0, c.y, zc, 4, 1 + c.y, 3, c.col()); c.w({ x: 0, z: zc }); } c.z = c.z - 1.5 - 2 * 3.6 - 1.5; },
+  bounce(c) { box(0, c.y, c.z - 2, 4, 0.5, 4, C.orange, { bounce: true }); c.y += 3; box(0, c.y, c.z - 6.5, 6, 3.2, 5, c.col()); c.w({ x: 0, z: c.z - 1 }); c.w({ x: 0, z: c.z - 2 }); c.w({ x: 0, z: c.z - 6.5, wide: 1.5 }); c.z -= 9; },
+  conv(c) { box(0, c.y, c.z - 7, 6, 1, 14, 0x9aa5b1, { conveyor: 1.2 + c.R() * 0.6, flat: true }); box(0, c.y + 1.2, c.z - 5, 1.6, 1.2, 1.2, C.red, { move: { axis: 'x', amp: 2, speed: 1.5, phase: 0 }, pusher: true }); box(0, c.y + 1.2, c.z - 10, 1.6, 1.2, 1.2, C.red, { move: { axis: 'x', amp: 2, speed: 1.5, phase: 2 }, pusher: true }); c.w({ x: 0, z: c.z - 1, wide: 1.5 }); c.w({ x: 0, z: c.z - 13, wide: 1.5 }); c.z -= 14; },
+  spin(c) { const a = c.z - 4, b = c.z - 11.5, sg = c.R() < 0.5 ? 1 : -1; cyl(0, c.y, a, 3.5, 1, c.col(), { spin: sg * (0.7 + c.R() * 0.4) }); cyl(0, c.y, b, 3.5, 1, c.col(), { spin: -sg * (0.7 + c.R() * 0.4) }); c.w({ x: 0, z: a }); c.w({ x: 0, z: b }); c.z = b - 3.5; },
+  lift(c) { const l = box(0, c.y, c.z - 2.5, 3, 0.5, 3, c.col(), { move: { axis: 'y', amp: 1.2, speed: 0.9, phase: c.R() * 6 } }); c.w({ liftOn: l }); c.w({ liftOff: l, top: c.y + 1.2, x: 0, z: c.z - 7 }); c.y += 1.2; box(0, c.y, c.z - 7, 4, 1, 4, c.col()); c.z -= 9; },
+};
+const SEG_EASY = ['stones', 'tiles', 'movers', 'spin', 'stairs'];
+const SEG_MID = ['disc', 'conv', 'lift', 'bounce'];
+const SEG_HARD = ['walls', 'pend', 'blink', 'rollers'];
+const LV_ADJ = ['Rõõmus', 'Kiire', 'Vingerdav', 'Hüplev', 'Keerlev', 'Salapärane', 'Vahune', 'Hull', 'Libe', 'Tormine', 'Kuldne', 'Pilvine', 'Kõikuv', 'Suur', 'Viimane'];
+const LV_NOUN = ['sild', 'rada', 'mägi', 'labürint', 'saar', 'tee', 'torn', 'jõgi', 'park', 'linn'];
+function genTrack(seed, nSeg, pool) {
+  return function () {
+    const R = rng(seed);
+    const c = { z: -5, y: 0, R, w: wp => TR.wps.push(wp), col: () => GPAL[Math.floor(R() * GPAL.length)] };
+    box(0, 0, 0, 10, 1, 10, C.green); arch(4.5, 0, c.col()); cp(99, 0, 0, 1.5);
+    let last = '';
+    for (let i = 0; i < nSeg; i++) {
+      let name; do { name = pool[Math.floor(R() * pool.length)]; } while (name === last && pool.length > 1);
+      last = name; const z0 = c.z, y0 = c.y; SEG[name](c); (TR.segs = TR.segs || []).push([name, Math.round(z0), Math.round(c.z), y0, c.y]);
+      const zc = c.z - 2.5; box(0, c.y, zc, 8, 1, 5, c.col());
+      if (i % 2 === 0 && i < nSeg - 1) cp(c.z - 0.6, 0, c.y, zc);
+      c.w({ x: 0, z: zc, wide: 2 }); c.z -= 5;
+    }
+    box(0, c.y, c.z - 5, 10, 1, 10, C.yellow);
+    TR.finishZ = c.z - 2; finishDeco(c.z - 2, c.y); c.w({ x: 0, z: c.z - 6, wide: 3 });
+    TR.par = Math.round(Math.abs(TR.finishZ) / 3.4 + nSeg * 1.5);
+  };
+}
+const LEVEL_COUNT = 30;
+const LEVEL_BASE = TRACKS.length;   // tasemed tulevad TRACKS massiivi lõppu (pärast käsitsi tehtud radu)
+for (let n = 1; n <= LEVEL_COUNT; n++) {
+  const R = rng(4242 + n * 97);
+  const pool = n <= 5 ? SEG_EASY : n <= 12 ? [...SEG_EASY, ...SEG_MID] : n <= 20 ? [...SEG_EASY.slice(2), ...SEG_MID, ...SEG_HARD] : [...SEG_MID, ...SEG_HARD];
+  const nSeg = Math.min(9, 2 + Math.floor(n / 3));
+  TRACKS.push({ name: 'Tase ' + n + ': ' + LV_ADJ[Math.floor(R() * LV_ADJ.length)] + ' ' + LV_NOUN[Math.floor(R() * LV_NOUN.length)], gen: true, level: n, build: genTrack(9000 + n * 7919, nSeg, pool) });
+}
+function pendulum(z, speed, phase, by = 0) {   // kiikuv kuul üle silla
+  const piv = new V3(0, 6 + by, z), len = 5.2, R = 0.8;
+  const frame = new THREE.Group(); frame.position.set(0, by, z);
   [-4.6, 4.6].forEach(x => { const p = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.22, 6.2, 10), mat(0xffffff)); p.position.set(x, 3.0, 0); frame.add(p); });
   const top = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 9.4, 10), mat(0xffffff)); top.rotation.z = Math.PI / 2; top.position.y = 6.05; frame.add(top);
   shadowAll(frame, true, false); trackGroup.add(frame);
@@ -2059,7 +2188,8 @@ function raceAI(b, dt) {
       goTo(b, b.jit * 3, wp.z + 1.5, dt, b.speed * 0.6); return;
     }
   }
-  if (wp.blink && b.standingOn !== wp.blink && dist < 3.2 && (!wp.blink.active || wp.blink.blink.left < 0.7)) { steer(b, 0, 0, dt); return; }
+  if (b.onGround && b.standingOn && b.standingOn.roller) b.vel.y = JUMP;   // rullilt hüppa kohe edasi
+  if (wp.blink && b.standingOn !== wp.blink && !(b.standingOn && b.standingOn.blink) && dist < 3.2 && (!wp.blink.active || wp.blink.blink.left < 0.7)) { steer(b, 0, 0, dt); return; }
   for (const pd of TR.pendulums) {   // oota, kuni kiikuv kuul on eest läinud
     if (b.pos.z > pd.piv.z + 0.9 && b.pos.z - pd.piv.z < 2.6 && Math.abs(pd.pos.x - b.pos.x) < 2.6 && b.onGround) { steer(b, 0, 0, dt); return; }
   }
@@ -2319,8 +2449,10 @@ function nextRound() {
   const { rt, final } = pickRound();
   hostOnly.prevType = rt;
   const NT = TRACKS.filter(t => !t.custom && !t.coop).length, CI = TRACKS.findIndex(t => t.custom), COOP = TRACKS.findIndex(t => t.coop);
-  const REG = TRACKS.map((tr, i) => i).filter(i => !TRACKS[i].custom && !TRACKS[i].coop);
+  const REG = TRACKS.map((tr, i) => i).filter(i => !TRACKS[i].custom && !TRACKS[i].coop && !TRACKS[i].gen);
+  const GENS = TRACKS.map((tr, i) => i).filter(i => TRACKS[i].gen && TRACKS[i].level >= 4);
   show.rt = rt; show.final = final; show.ti = rt === 'race' ? REG[Math.floor(Math.random() * REG.length)] : 0;
+  if (rt === 'race' && Math.random() < 0.35 && GENS.length) show.ti = GENS[Math.floor(Math.random() * GENS.length)];
   if (rt === 'race' && (show.blocks || []).length >= 4 && show.rn <= 2 && Math.random() < 0.4) show.ti = CI;
   else if (rt === 'race' && COOP >= 0 && show.alive.length >= 2 && Math.random() < 0.2) show.ti = COOP;
   show.weather = rt === 'race' && TRACKS[show.ti] && TRACKS[show.ti].name !== 'Öörada' && Math.random() < 0.25 ? 'vihm' : '';
@@ -2394,6 +2526,7 @@ function crownStage(w) {
 function hostTick(dt) {
   const t = T();
   if (show.stage === 'trenn') return;
+  if (show.mode === 'levels') { if (show.stage === 'intro' && t > show.sa) show.stage = 'play'; return; }
   if (show.stage === 'lobby') {
     // alustada saab ainult juht (esimene mängija): nupp, Enter või ise ringile astumine
     const pad = TR.pad ? TR.pad.mesh.position : null;
@@ -2736,6 +2869,8 @@ addEventListener('keydown', e => {
   if (document.activeElement && document.activeElement.tagName === 'INPUT') return;
   keys[e.code] = true;
   if (!started) return;
+  if (e.code === 'KeyR' && show.mode === 'levels') { startLevel(show.level); return; }
+  if (e.code === 'Enter' && show.mode === 'levels' && show.stage === 'lvdone') { startLevel(show.level + 1); return; }
   if (e.code === 'KeyR' && net.isHost) { if (show.stage === 'trenn') { makeBots(0); } enterLobby(); }
   if (e.code === 'Enter' && show.stage === 'lobby' && net.isHost) startShow();
   if (e.code === 'KeyM') setMusic(!musicOn);
@@ -2750,7 +2885,16 @@ addEventListener('keyup', e => { keys[e.code] = false; });
 const isHeadset = HEADSET;
 // puuteekraaniga arvuti (hiir olemas) EI ole telefon
 const finePointer = !!(window.matchMedia && matchMedia('(any-pointer: fine)').matches);
-const isTouch = !isHeadset && !finePointer && (('ontouchstart' in window) || (window.matchMedia && matchMedia('(pointer: coarse)').matches));
+const hasTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints || 0) > 0;
+const coarse = !!(window.matchMedia && matchMedia('(pointer: coarse)').matches);
+const smallScreen = typeof screen !== 'undefined' && Math.min(screen.width || 9999, screen.height || 9999) < 820;
+// telefon = puuteekraan ja (jäme osuti või väike ekraan). Kindluse mõttes: iga puudutus lülitab nupud sisse.
+let isTouch = !isHeadset && hasTouch && (coarse || smallScreen || !finePointer);
+let touchManual = null;   // 🎮 nupuga: true/false
+try { const tm = localStorage.getItem('kp_touch'); if (tm !== null) touchManual = tm === '1'; } catch (e) {}
+if (touchManual !== null && !isHeadset) isTouch = touchManual;
+addEventListener('pointerdown', e => { if (e.pointerType === 'touch' && !isHeadset && touchManual !== false && !isTouch) { isTouch = true; updateHud(); } }, true);
+addEventListener('touchstart', () => { if (!isHeadset && touchManual !== false && !isTouch) { isTouch = true; updateHud(); } }, { capture: true, passive: true });
 renderer.domElement.addEventListener('click', () => { audioInit(); if (started && !renderer.xr.isPresenting && !isTouch) renderer.domElement.requestPointerLock(); });
 // ---------- telefoni juhtimine ----------
 const touchIn = { mx: 0, my: 0, jump: false, grab: false, duck: false };
@@ -2836,7 +2980,7 @@ function handleInput(dt, canMove) {
   // grip-ide järjekord: grips[0]/[1] vastavad inputSources järjekorrale; kasutame käelisust
   const gripByIndex = [false, false];
   if (session) { let i = 0; for (const src of session.inputSources) { if (i < 2 && src.gamepad) gripByIndex[i] = grip[src.handedness === 'left' ? 0 : 1]; i++; } }
-  if (bDown) { bHold += dt; if (bHold > 1.5 && net.isHost && show.stage !== 'lobby') { if (show.stage === 'trenn') makeBots(0); enterLobby(); bHold = -99; } } else bHold = 0;
+  if (bDown) { bHold += dt; if (bHold > 1.5 && show.mode === 'levels') { startLevel(show.level); bHold = -99; } else if (bHold > 1.5 && net.isHost && show.stage !== 'lobby') { if (show.stage === 'trenn') makeBots(0); enterLobby(); bHold = -99; } } else bHold = 0;
 
   if (keys.KeyW || keys.ArrowUp) my += 1; if (keys.KeyS || keys.ArrowDown) my -= 1;
   if (keys.KeyD) mx += 1; if (keys.KeyA) mx -= 1;
@@ -2968,7 +3112,9 @@ function updateHud() {
   $('tDuck').style.display = TR && TR.hasHigh ? 'block' : 'none';
   $('startBtn').style.display = !vrNow && net.isHost && show.stage === 'lobby' ? 'block' : 'none';
   $('shopBtn').style.display = !vrNow && show.stage === 'lobby' ? 'block' : 'none';
+  $('lvMenuBtn').style.display = !vrNow && show.mode === 'levels' ? 'block' : 'none';
   $('fsBtn').style.display = isTouch && !vrNow && !document.fullscreenElement ? 'block' : 'none';
+  $('padBtn').style.display = !vrNow && !isHeadset && (hasTouch || touchManual !== null) ? 'block' : 'none';
   $('buildBar').classList.toggle('on', isTouch && !vrNow && !!buildAimCache);
   $('dropBtn').style.display = isTouch && !vrNow && spectating && show.stage === 'play' ? 'block' : 'none';
   $('shieldGlow').style.display = !vrNow && player.shieldT > now() ? 'block' : 'none';
@@ -3015,6 +3161,7 @@ function renderShop() {
 }
 function openShop() { renderShop(); $('shop').classList.add('on'); if (document.pointerLockElement) document.exitPointerLock(); }
 $('shopClose').onclick = () => { $('shop').classList.remove('on'); renderPickers(); };
+$('padBtn').onclick = () => { isTouch = !isTouch; touchManual = isTouch; try { localStorage.setItem('kp_touch', isTouch ? '1' : '0'); } catch (e) {} updateHud(); };
 $('shopBtn').onclick = openShop; $('fsBtn').onclick = goFullscreen; $('menuShop').onclick = openShop;
 renderPickers();
 const params = new URLSearchParams(location.search);
@@ -3032,6 +3179,12 @@ function readMenu() {
 }
 $('solo').onclick = () => { readMenu(); startGame(false); };
 $('practiceBtn').onclick = () => startPractice();
+$('levelsBtn').onclick = () => { readMenu(); openLevelSelect(); };
+$('lvBack').onclick = () => { $('levelSel').classList.remove('on'); if (started) location.reload(); };
+$('lvNext').onclick = () => startLevel(show.level + 1);
+$('lvRetry').onclick = () => startLevel(show.level);
+$('lvList').onclick = () => { $('lvDone').classList.remove('on'); openLevelSelect(); };
+$('lvMenuBtn').onclick = () => openLevelSelect();
 $('online').onclick = async () => {
   readMenu();
   roomCode = $('code').value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '') || randomCode();
@@ -3135,11 +3288,28 @@ function drawMenu() {
       mBtn(40, 695, 460, 86, 'Mängi robotitega', () => { syncHtml(); closeVrMenu(); startGame(false); }, { big: '#2f9bff' });
       mBtn(524, 695, 460, 86, 'Mängi sõpradega', () => vrOnline(), { big: '#ff3d8b' });
       mBtn(355, 10, 300, 60, 'Harjuta 🎓', () => { syncHtml(); closeVrMenu(); startPractice(); }, { big: '#22c55e' });
+      mBtn(670, 85, 314, 60, 'Tasemed ⭐', () => { syncHtml(); M.screen = 'levels'; }, { big: '#8b5cf6' });
     } else {
       x.fillStyle = '#556'; x.font = '28px system-ui'; x.textAlign = 'left'; x.fillText(net.on ? 'Ruum ' + roomCode + ' · ' + humanIds().length + ' inimest' : 'Üksi robotitega', 40, 640);
       mBtn(262, 695, 500, 86, 'Sulge menüü', () => closeVrMenu(), { big: '#22c55e' });
+      if (show.mode === 'levels') { mBtn(40, 610, 460, 70, 'Tasemete valik', () => { M.screen = 'levels'; }, { big: '#8b5cf6' }); mBtn(524, 610, 460, 70, 'Alusta uuesti ↻', () => startLevel(show.level), { big: '#f59e0b' }); }
     }
     if (M.status) { x.fillStyle = '#d6336c'; x.font = 'bold 28px system-ui'; x.textAlign = 'center'; x.fillText(M.status, MW / 2, 800); }
+  } else if (M.screen === 'levels') {
+    x.fillStyle = '#8b5cf6'; x.font = 'bold 54px system-ui'; x.textAlign = 'left'; x.fillText('Tasemed', 40, 58);
+    for (let n = 1; n <= LEVEL_COUNT; n++) {
+      const i = n - 1, st = levelStars(n), un = levelUnlocked(n);
+      mBtn(40 + (i % 6) * 158, 100 + Math.floor(i / 6) * 112, 146, 100, n + (un ? ' ' + '★'.repeat(st) : ' 🔒'), () => { if (un) startLevel(n); }, { on: st === 3 });
+    }
+    mBtn(262, 668, 500, 80, 'Tagasi', () => { M.screen = 'main'; }, { big: '#495057' });
+  } else if (M.screen === 'lvdone') {
+    const n = show.level, L = prog.levels[n] || { s: 0, t: 0 };
+    x.fillStyle = '#8b5cf6'; x.font = 'bold 64px system-ui'; x.textAlign = 'center'; x.fillText('Tase ' + n + ' läbitud!', MW / 2, 110);
+    x.fillStyle = '#f59e0b'; x.font = 'bold 120px system-ui'; x.fillText('★'.repeat(L.s) + '☆'.repeat(3 - L.s), MW / 2, 260);
+    x.fillStyle = '#1d1b3a'; x.font = 'bold 38px system-ui'; x.fillText('Aeg ' + myFinishTime.toFixed(1) + ' s · rekord ' + L.t + ' s', MW / 2, 370);
+    if (n < LEVEL_COUNT) mBtn(40, 460, 300, 110, 'Järgmine ▶', () => startLevel(n + 1), { big: '#22c55e' });
+    mBtn(362, 460, 300, 110, 'Uuesti ↻', () => startLevel(n), { big: '#f59e0b' });
+    mBtn(684, 460, 300, 110, 'Tasemed ☰', () => { M.screen = 'levels'; }, { big: '#8b5cf6' });
   } else if (M.screen === 'shop') {
     x.fillStyle = '#ff3d8b'; x.font = 'bold 56px system-ui'; x.textAlign = 'left'; x.fillText('Pood', 40, 60);
     x.fillStyle = '#b8860b'; x.font = 'bold 36px system-ui'; x.textAlign = 'right'; x.fillText('🪙 ' + coins, 984, 60);
@@ -3326,9 +3496,9 @@ renderer.setAnimationLoop(() => {
     if (n !== lastCd) {
       lastCd = n;
       const nm = mapName(show.rt, show.ti);
-      const desc = show.rt === 'race' && TRACKS[show.ti] && TRACKS[show.ti].custom ? 'Teie enda ehitatud rada! Esimesed ' + show.quota + ' edasi' : show.rt === 'race' ? 'Esimesed ' + show.quota + ' pääsevad edasi' : show.final ? 'Viimane püstiseisja võidab krooni!' : ARENAS[show.rt].desc;
+      const desc = show.mode === 'levels' ? (levelStars(show.level) ? 'Rekord ' + prog.levels[show.level].t + ' s · 3 tähte alla ' + (TR.par || 40) + ' s' : '3 tähte, kui jõuad alla ' + (TR.par || 40) + ' s') : show.rt === 'race' && TRACKS[show.ti] && TRACKS[show.ti].custom ? 'Teie enda ehitatud rada! Esimesed ' + show.quota + ' edasi' : show.rt === 'race' ? 'Esimesed ' + show.quota + ' pääsevad edasi' : show.final ? 'Viimane püstiseisja võidab krooni!' : ARENAS[show.rt].desc;
       if (n <= 3 && n > 0) { showMsg(String(n), [], 1.1); sfx('beep'); }
-      else if (n > 3) showMsg(nm, [(show.final ? 'FINAAL · ' : 'Voor ' + show.rn + ' · ') + show.part.length + ' mängijat', desc, spectating ? 'Sina vaatad pealt' : ''], 1.2);
+      else if (n > 3) showMsg(nm, [show.mode === 'levels' ? 'Tasemete režiim' : (show.final ? 'FINAAL · ' : 'Voor ' + show.rn + ' · ') + show.part.length + ' mängijat', desc, spectating ? 'Sina vaatad pealt' : ''], 1.2);
     }
   }
 
@@ -3379,6 +3549,7 @@ renderer.setAnimationLoop(() => {
       if (!(prog.best[TR.name] < myFinishTime)) { prog.best[TR.name] = Math.round(myFinishTime * 10) / 10; showToast('Uus rekord: ' + myFinishTime.toFixed(1) + ' s!', 2); }
       saveProg(); setTimeout(() => addCoins(3, 'finiš'), 300); questTick('fin'); addXp(10);
       if (net.isHost) recordFinish(net.id, myFinishTime); else net.fin.send({ t: myFinishTime, r: show.rid });
+      if (show.mode === 'levels') levelComplete();
     }
   }
   if (net.isHost) {
@@ -3471,6 +3642,9 @@ renderer.setAnimationLoop(() => {
     if (show.stage === 'lobby') {
       if (buildAimCache) line = 'Rajaehitaja · ' + (renderer.xr.isPresenting ? 'parem päästik = ehita, vasak = kustuta, B = tüüp' : isTouch ? 'nupud all' : 'F = ehita, G = kustuta, T = tüüp') + ' (' + BUILD_TYPES[buildType] + ')';
       else line = 'Ootesaal · ' + (net.isHost ? (renderer.xr.isPresenting ? 'Astu rohelisele ringile, et alustada' : 'Vajuta ALUSTA, kui kõik on kohal') : 'Ootame, kuni ' + nameOf(net.hostId) + ' alustab');
+    } else if (show.mode === 'levels') {
+      const rec = prog.levels[show.level];
+      line = 'Tase ' + show.level + ' · ' + (show.stage === 'lvdone' ? myFinishTime.toFixed(1) : tau.toFixed(1)) + ' s' + (rec ? ' · rekord ' + rec.t + ' s' : '') + ' · 3⭐ alla ' + (TR.par || 40) + ' s';
     } else if (show.stage === 'trenn') {
       line = practiceLine();
     } else if (spectating) {
