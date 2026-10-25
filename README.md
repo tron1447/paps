@@ -1,4 +1,5 @@
-[Uploading index (53).html…]()<!doctype html>
+[Uploading index (54).html…]()
+<!doctype html>
 <html lang="et">
 <head>
 <meta charset="utf-8">
@@ -37,6 +38,11 @@ canvas{touch-action:none;display:block;position:fixed;left:0;top:0;width:100vw!i
 #tGrab{right:calc(136px + env(safe-area-inset-right));bottom:calc(30px + env(safe-area-inset-bottom));width:72px;height:72px;background:var(--blue)}
 #tEmote{right:calc(40px + env(safe-area-inset-right));bottom:calc(146px + env(safe-area-inset-bottom));width:60px;height:60px;background:#f59e0b;font-size:24px}
 #tDuck{right:calc(220px + env(safe-area-inset-right));bottom:calc(30px + env(safe-area-inset-bottom));width:72px;height:72px;background:#8b5cf6;font-size:13px;display:none}
+#exitBtn{display:none;position:fixed;left:12px;top:160px;z-index:9;font-size:15px;font-weight:800;padding:9px 13px;border:0;border-radius:12px;background:rgba(29,27,58,.7);color:#fff;cursor:pointer}
+#exitBtn.warn{background:#e03131}
+#feed{position:fixed;right:12px;top:62px;z-index:7;display:flex;flex-direction:column;align-items:flex-end;gap:4px;pointer-events:none;max-width:60vw}
+#feed div{background:rgba(29,27,58,.78);color:#fff;font:700 14px system-ui;padding:5px 10px;border-radius:10px;transition:opacity .5s}
+#coopStart{display:none;position:fixed;left:50%;top:76px;transform:translateX(-50%);z-index:8;font-size:16px;font-weight:800;padding:10px 20px;border:0;border-radius:14px;background:#0ea5e9;color:#fff;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.2)}
 #padBtn{display:none;position:fixed;left:12px;top:110px;z-index:9;width:44px;height:44px;font-size:22px;border:0;border-radius:12px;background:rgba(29,27,58,.6);color:#fff}
 #fsBtn{display:none;position:fixed;right:12px;bottom:200px;z-index:8;width:48px;height:48px;font-size:24px;border:0;border-radius:12px;background:rgba(29,27,58,.6);color:#fff}
 #lvMenuBtn{display:none;position:fixed;right:12px;top:12px;z-index:8;font-size:15px;font-weight:800;padding:9px 14px;border:0;border-radius:14px;background:#8b5cf6;color:#fff}
@@ -66,9 +72,9 @@ small{opacity:.8}
 #tDuck{width:58px;height:58px;right:calc(170px + env(safe-area-inset-right));bottom:calc(12px + env(safe-area-inset-bottom))}
 #tEmote{width:48px;height:48px;right:calc(28px + env(safe-area-inset-right));bottom:calc(102px + env(safe-area-inset-bottom))}
 #fsBtn{bottom:auto;top:56px;width:40px;height:40px;font-size:20px}
-#padBtn{top:40px;left:6px;width:38px;height:38px;font-size:19px}
+#padBtn{top:40px;left:6px;width:38px;height:38px;font-size:19px}#exitBtn{top:84px;left:6px;font-size:12px;padding:6px 9px}
 #shopBtn{font-size:13px;padding:7px 11px;top:6px}
-#startBtn{font-size:16px;padding:10px 18px;top:8px}#hud{font-size:12px;padding:5px 9px;top:6px;left:6px;max-width:45vw}
+#startBtn{font-size:16px;padding:10px 18px;top:8px}#coopStart{font-size:13px;padding:7px 14px;top:52px}#feed{top:46px}#feed div{font-size:11px;padding:3px 7px}#hud{font-size:12px;padding:5px 9px;top:6px;left:6px;max-width:45vw}
 #buildBar{bottom:8px}.tb2{padding:9px 10px;font-size:12px}
 }
 </style>
@@ -113,6 +119,8 @@ small{opacity:.8}
     <button class="big" id="online">Mängi sõpradega</button>
     <button class="big" id="practiceBtn" style="background:#22c55e">Harjuta 🎓</button>
     <button class="big" id="levelsBtn" style="background:#8b5cf6">Tasemed ⭐ (30)</button>
+    <button class="big" id="coopBtn" style="background:#0ea5e9">Koostöö 🤝</button>
+    <button class="big" id="dailyBtn" style="background:#e8590c">📅 Päeva väljakutse</button>
   </div>
   <div id="status"></div>
   <p id="statLine" style="font-size:13px;margin:8px 0 0"></p>
@@ -124,7 +132,8 @@ small{opacity:.8}
   <b>Pealtvaatajana:</b> F / nupp / päästik = viska pall rajale.<br>
   <b>VR pulgaga:</b> vasak pulk = liigu, A/X = hüppa, muu sama.</p></details>
   <p><small><b>Telefonis:</b> vasak ring = liigu, lohista ekraani = vaata ringi, nupud = hüppa / haara / emotikon.<br>
-  <b>Alustamine:</b> üksi mängides vajuta „Alusta” või astu rohelisele ringile. Sõpradega mängides alustab <b>esimene ruumi tulnud mängija</b>.</small></p>
+  <b>Alustamine:</b> üksi mängides vajuta „Alusta” või astu rohelisele ringile. Sõpradega mängides alustab <b>esimene ruumi tulnud mängija</b>. Ootesaalis saab juht valida ka <b>🤝 Koostöö</b> (K) – kõik peavad koos finišisse jõudma.<br>
+  <b>Liigad:</b> edasi pääsedes ja võites saad karikaid 🏆 – Pronksist Meistrini. Iga päev järjest mängides kasvab päevaboonus 🔥.</small></p>
 </div></div>
 <div id="hud"></div>
 <div id="shieldGlow"></div>
@@ -133,6 +142,7 @@ small{opacity:.8}
 <div id="levelSel"><div class="card">
   <h2 style="margin:0 0 4px;color:#8b5cf6">Tasemed</h2>
   <p id="lvTotal" style="margin:0 0 8px;font-weight:700"></p>
+  <button class="big" id="lvDaily" style="background:#e8590c;width:100%;margin:0 0 8px">📅 Päeva väljakutse – iga päev uus rada</button>
   <div id="lvGrid"></div>
   <p style="font-size:13px;margin:8px 0 0">Iga tase avab järgmise. Kiire aeg = 3 tähte. Arvutis: R = uuesti, Enter = järgmine.</p>
   <button class="big" id="lvBack" style="background:#495057;width:100%">Tagasi menüüsse</button>
@@ -148,6 +158,7 @@ small{opacity:.8}
   </div>
 </div></div>
 <button id="fsBtn" title="Täisekraan">⛶</button>
+<button id="exitBtn" title="Peamenüüsse (teise ruumi)">⏏ Menüü</button>
 <button id="padBtn" title="Puutenupud sisse/välja">🎮</button>
 <div id="shop"><div class="card">
   <h2 style="margin:0 0 4px;color:var(--pink)">Pood</h2>
@@ -159,6 +170,8 @@ small{opacity:.8}
 <button id="dropBtn">🎳 VISKA PALL RAJALE</button>
 <div id="buildBar"><button class="tb2" id="bBuild">EHITA</button><button class="tb2" id="bDel">KUSTUTA</button><button class="tb2" id="bType">TÜÜP: Kast</button></div>
 <button id="startBtn">▶ ALUSTA MÄNGU</button>
+<button id="coopStart">🤝 KOOSTÖÖ (kõik koos)</button>
+<div id="feed"></div>
 <div id="touch">
   <div id="stick"><div id="knob"></div></div>
   <button class="tb" id="tJump">HÜPPA</button>
@@ -351,7 +364,12 @@ const T = () => net.isHost ? now() : now() + net.offset;
 const show = { sid: '', stage: 'lobby', rn: 0, rt: 'lobby', ti: 0, rid: '', sa: 0, ea: 0, part: [], alive: [], inR: [], q: [], fo: [],
   tails: [], winner: '', easy: false, crowns: {}, final: false, lastOut: [], quota: 0, ready: 0 };
 const hostOnly = { padT: 0, falls: {}, immune: {}, prevType: '', tailTimer: 0, grabbedAt: {}, ballPos: new THREE.Vector3(), ballV: new THREE.Vector3(), goalT: 0, eggs: [], carry: {}, stealCd: {} };
-const S = () => show.easy ? 0.65 : 1;
+const S = () => show.easy ? 0.65 : (show.mode === 'levels' || show.mode === 'coop' || show.stage === 'trenn' || show.stage === 'lobby') ? 1 : (show.rt === 'race' ? 1.08 + Math.min(0.08, Math.max(0, (show.rn || 1) - 1) * 0.04) : 1.1 + Math.min(0.21, Math.max(0, (show.rn || 1) - 1) * 0.07)) * (show.tw === 'turbo' ? 1.25 : 1);
+// vooru keerdkäigud (kõigil sama, tuleb juhilt show.tw kaudu)
+const TWISTS = { kuu: '🌙 Kuugravitatsioon – hüppad kõrgele!', turbo: '⚡ Turbo – takistused on eriti kiired!', libe: '🧊 Libe põrand – kõik libiseb!', hiid: '🦍 Hiiglased – kõik on suured!', tuul: '🌪️ Tuuletorm – tuul lükkab külje pealt!', hupe: '🦘 Superhüpe – hüppa üle kõige!' };
+const twOn = k => show.tw === k && show.mode !== 'levels' && show.mode !== 'coop' && show.stage !== 'lobby' && show.stage !== 'trenn';
+const twG = () => twOn('kuu') ? 0.5 : 1, twJ = () => twOn('hupe') ? 1.4 : 1;
+function twistLine() { return show.tw && TWISTS[show.tw] ? 'Üllatus: ' + TWISTS[show.tw] : ''; }
 const SURVIVAL = { areen: 1, plaadid: 1, noor: 1, boss: 1 };
 const TEAM = { pall: 1, munad: 1 };
 const TEAM_COLORS = [0x2f9bff, 0xff3b3b], TEAM_NAMES = ['Sinine', 'Punane'];
@@ -392,18 +410,42 @@ function addXp(n) {
   const before = myLevel(); prog.xp += n; saveProg();
   if (myLevel() > before) { setTimeout(() => { sfx('fanfare'); showToast('TASE ' + myLevel() + '! 🎉 Uued asjad poes', 2.5); }, 400); }
 }
+const LEAGUES = [['Pronks', '🥉', 0], ['Hõbe', '🥈', 60], ['Kuld', '🥇', 150], ['Plaatina', '💠', 300], ['Teemant', '💎', 500], ['Meister', '👑', 800]];
+function leagueOf(tr) { let k = 0; LEAGUES.forEach((L, i) => { if (tr >= L[2]) k = i; }); return k; }
+function myLeague() { return leagueOf(prog.tr || 0); }
+function leagueText() { const k = myLeague(), L = LEAGUES[k], nx = LEAGUES[k + 1]; return L[1] + ' ' + L[0] + ' liiga · 🏆 ' + (prog.tr || 0) + (nx ? ' (' + nx[0] + ' ' + nx[2] + ')' : ''); }
+function addTrophies(n) {
+  const before = myLeague(), floor = LEAGUES[before][2];
+  prog.tr = Math.max(floor, (prog.tr || 0) + n); saveProg();   // liigast alla ei kuku
+  if (n > 0) setTimeout(() => showToast('+' + n + ' 🏆 karikat', 1.4), 1600);
+  const after = myLeague();
+  if (after > before) setTimeout(() => { sfx('fanfare'); burst(player.pos); showMsg(LEAGUES[after][1] + ' ' + LEAGUES[after][0] + ' liiga!', ['Tõusid uude liigasse!', '+' + after * 50 + ' 🪙 boonust'], 4); addCoins(after * 50, 'uus liiga!'); }, 2500);
+}
+const dayKey = () => new Date().toDateString();
+let dailyMsg = '';
+function dailyLogin() {   // iga päev järjest mängides kasvab boonus
+  const today = dayKey(); if (prog.lastDay === today) return;
+  const y = new Date(Date.now() - 864e5).toDateString();
+  prog.streak = prog.lastDay === y ? (prog.streak || 0) + 1 : 1; prog.lastDay = today;
+  const bonus = prog.streak % 7 === 0 ? 120 : 10 + Math.min(prog.streak, 6) * 10;
+  coins += bonus; saveProg();
+  dailyMsg = '🔥 ' + prog.streak + '. päev järjest! +' + bonus + ' 🪙' + (prog.streak % 7 === 0 ? ' (nädala SUURBOONUS!)' : ' · homme rohkem');
+}
+function showDailyMsg() { if (!dailyMsg) return; const m = dailyMsg; dailyMsg = ''; setTimeout(() => { sfx('fanfare'); showToast(m, 3.5); }, 1200); }
+function dailyDesc() { const d = prog.daily && prog.daily.day === dayKey() ? prog.daily : null; return d ? 'Tänane rekord ' + d.t + ' s – löö see üle!' : 'Iga päev uus rada · esimene läbimine +40 🪙'; }
 const QUEST_POOL = [
   { id: 'coin', text: 'Korja 20 münti', goal: 20 }, { id: 'qual', text: 'Pääse 3 korda edasi', goal: 3 }, { id: 'fin', text: 'Jõua 2 korda finišisse', goal: 2 },
-  { id: 'throw', text: 'Viska kedagi 3 korda', goal: 3 }, { id: 'box', text: 'Ava 4 boonuskasti', goal: 4 }, { id: 'crown', text: 'Võida kroon', goal: 1 },
+  { id: 'throw', text: 'Viska kedagi 3 korda', goal: 3 }, { id: 'crown', text: 'Võida kroon', goal: 1 },
   { id: 'carry', text: 'Tassi kedagi 2 korda', goal: 2 }, { id: 'pad', text: 'Vajuta 2 nuppu (boss/värav)', goal: 2 },
 ];
 function ensureQuests() {
   const today = new Date().toDateString();
-  if (prog.day === today && Array.isArray(prog.quests) && prog.quests.length) return;
+  if (prog.day === today && Array.isArray(prog.quests) && prog.quests.length && prog.quests.every(q => QUEST_POOL.some(x => x.id === q.id))) return;
   const pool = QUEST_POOL.slice().sort(() => Math.random() - 0.5).slice(0, 3);
   prog.day = today; prog.quests = pool.map(q => ({ id: q.id, n: 0, done: false })); saveProg();
 }
 ensureQuests();
+try { dailyLogin(); } catch (e) {}
 function questText(q) { const d = QUEST_POOL.find(x => x.id === q.id); return d ? (q.done ? '✓ ' : '') + d.text + ' (' + Math.min(q.n, d.goal) + '/' + d.goal + ')' : ''; }
 function questTick(id, n = 1) {
   ensureQuests();
@@ -860,7 +902,7 @@ TRACKS.push(
     ];
   } },
 );
-TRACKS.push({ name: 'Koostöörada', coop: true, build() {
+TRACKS.push({ name: 'Koostöö 1: Kaks väravat', coop: true, build() {
   box(0, 0, 0, 10, 1, 10, C.green); arch(4.5, 0, 0x22c55e);
   box(0, 0, -14, 10, 1, 18, C.blue);
   gate(0, -20, [[-3.5, -12], [3.5, -12]]);
@@ -873,10 +915,58 @@ TRACKS.push({ name: 'Koostöörada', coop: true, build() {
   TR.wps = [{ x: 0, z: -6, wide: 2 }, { gate: 0, x: 0, z: -18 }, { x: 0, z: -24, wide: 3 }, { gate: 1, x: 0, z: -38 }, { x: 0, z: -44, wide: 3 }, { x: 0, z: -49, wide: 3 }];
   const sg = textSprite('Seiske KAHEKESI nuppudel!', 3.4, '#fff', 'rgba(255,92,92,.95)'); sg.position.set(0, 4.2, -19.6); trackGroup.add(sg);
 } });
-function gate(k, z, plates) {
+TRACKS.push({ name: 'Koostöö 2: Kolm nuppu', coop: true, build() {
+  box(0, 0, 0, 10, 1, 10, C.green); arch(4.5, 0, 0x0ea5e9);
+  box(0, 0, -16, 10, 1, 22, C.blue);
+  sweeper(0, -11, 0, 4.6, 1.1, 1);
+  gate(0, -24, [[-3.5, -17.5], [0, -20], [3.5, -17.5]]);
+  box(0, 0, -34, 10, 1, 18, C.purple);
+  pendulum(-30, 1.6, 0); pendulum(-36, 1.6, 2.2);
+  gate(1, -41.5, [[-3.8, -38.5], [3.8, -38.5]]);
+  box(0, 0, -50, 10, 1, 16, C.yellow);
+  TR.finishZ = -50; finishDeco(-50, 0);
+  cp(99, 0, 0, 1.5); cp(-25, 0, 0, -27); cp(-42.5, 0, 0, -45);
+  TR.wps = [{ x: 0, z: -6, wide: 2 }, { x: 0, z: -11, wide: 2 }, { x: 0, z: -16, wide: 2 }, { gate: 0, x: 0, z: -22 }, { x: 0, z: -27, wide: 2 }, { x: 0, z: -30.8 }, { x: 0, z: -35 }, { gate: 1, x: 0, z: -40 }, { x: 0, z: -46, wide: 2 }, { x: 0, z: -52, wide: 2 }];
+  const sg = textSprite('KOLM nuppu korraga!', 3.2, '#fff', 'rgba(14,165,233,.95)'); sg.position.set(0, 4.2, -23.6); trackGroup.add(sg);
+} });
+TRACKS.push({ name: 'Koostöö 3: Hüppesild', coop: true, build() {
+  box(0, 0, 0, 10, 1, 10, C.green); arch(4.5, 0, 0xff922b);
+  box(0, 0, -10, 10, 1, 10, C.blue);
+  gate(0, -14, [[-3.5, -8], [3.5, -8]]);
+  const b1 = box(-1.5, 0, -16.5, 3, 1, 3, C.pink, { blink: { period: 3.8, phase: 0 } });
+  const b2 = box(1.5, 0, -20, 3, 1, 3, C.yellow, { blink: { period: 3.8, phase: -0.8 } });
+  const b3 = box(-1.5, 0, -23.5, 3, 1, 3, C.green, { blink: { period: 3.8, phase: -1.6 } });
+  box(0, 0, -32, 10, 1, 12, C.purple);
+  gate(1, -38, [[-3.8, -30], [-1.3, -32], [1.3, -32], [3.8, -30]]);
+  box(0, 0, -40.5, 4, 0.5, 4, C.orange, { bounce: true });
+  box(0, 3, -47, 8, 3.5, 8, C.blue);
+  box(0, 3, -56, 10, 1, 10, C.yellow);
+  TR.finishZ = -54; finishDeco(-54, 3);
+  cp(99, 0, 0, 1.5); cp(-27, 0, 0, -29); cp(-45, 0, 3, -47);
+  TR.wps = [{ x: 0, z: -6, wide: 2 }, { gate: 0, x: 0, z: -12 }, { x: -1.5, z: -14 }, { blink: b1, x: -1.5, z: -16.5 }, { blink: b2, x: 1.5, z: -20 }, { blink: b3, x: -1.5, z: -23.5 }, { x: 0, z: -28.5, wide: 2 }, { gate: 1, x: 0, z: -36 }, { x: 0, z: -39.5 }, { x: 0, z: -40.5 }, { x: 0, z: -47, wide: 2 }, { x: 0, z: -58, wide: 2 }];
+  const sg = textSprite('NELI nuppu – kõik appi!', 3.4, '#fff', 'rgba(255,146,43,.95)'); sg.position.set(0, 4.2, -37.6); trackGroup.add(sg);
+} });
+TRACKS.push({ name: 'Koostöö 4: Suur väljakutse', coop: true, build() {
+  box(0, 0, 0, 10, 1, 10, C.green); arch(4.5, 0, 0x8b5cf6);
+  box(0, 0, -12, 10, 1, 14, C.blue);
+  box(0, 1.2, -10, 1.6, 1.2, 1.2, C.red, { move: { axis: 'x', amp: 3.5, speed: 1.5, phase: 0 }, pusher: true });
+  gate(0, -18.5, [[-3.8, -14], [3.8, -14]]);
+  box(0, 0, -27, 10, 1, 16, C.pink, { conveyor: 1.3, flat: true });
+  sweeper(0, -27, 0, 4.6, -1.0, 2);
+  gate(1, -34, [[-3.8, -21.5], [0, -20.5], [3.8, -21.5]], 15);
+  box(0, 0, -41, 10, 1, 12, C.purple);
+  pendulum(-40, 1.7, 1);
+  gate(2, -46.5, [[-3.8, -43], [-1.3, -44.5], [1.3, -44.5], [3.8, -43]]);
+  box(0, 0, -55, 10, 1, 16, C.yellow);
+  TR.finishZ = -54; finishDeco(-54, 0);
+  cp(99, 0, 0, 1.5); cp(-19.5, 0, 0, -21); cp(-35, 0, 0, -37); cp(-47.5, 0, 0, -50);
+  TR.wps = [{ x: 0, z: -6, wide: 2 }, { x: 0, z: -12, wide: 2 }, { gate: 0, x: 0, z: -16.5 }, { x: 0, z: -21, wide: 2 }, { gate: 1, x: 0, z: -32 }, { x: 0, z: -37, wide: 2 }, { x: 0, z: -39 }, { gate: 2, x: 0, z: -45.5 }, { x: 0, z: -50, wide: 2 }, { x: 0, z: -57, wide: 2 }];
+  const sg = textSprite('Nupud on TAGA – jookske kiiresti!', 3.6, '#fff', 'rgba(139,92,246,.95)'); sg.position.set(0, 4.2, -33.6); trackGroup.add(sg);
+} });
+function gate(k, z, plates, hold = 6) {
   const w = box(0, 3, z, 10, 3, 0.6, C.red); w.gateBase = w.mesh.position.y;
   const pl = plates.map(([x, pz]) => ({ x, z: pz, s: cyl(x, 0.1, pz, 1.0, 0.2, C.yellow) }));
-  TR.gates.push({ k, wall: w, plates: pl, z });
+  TR.gates.push({ k, wall: w, plates: pl, z, hold });
 }
 function gateOpen(k) { return T() < ((show.gates || [])[k] || 0); }
 function gateVisual(dt, t) {
@@ -894,9 +984,34 @@ function gateVisual(dt, t) {
 function gateHostTick(t) {
   if (!TR.gates.length || show.stage !== 'play') return;
   for (const gt of TR.gates) {
-    const occ = gt.plates.every(pl => show.part.some(id => { const p = posOf(id); return p && Math.hypot(p.x - pl.x, p.z - pl.z) < 1.05 && p.y < 1; }));
-    if (occ || show.part.length < 2) show.gates[gt.k] = Math.round((t + 6) * 10) / 10;
+    const n = gt.plates.filter(pl => show.part.some(id => { const p = posOf(id); return p && Math.hypot(p.x - pl.x, p.z - pl.z) < 1.05 && p.y < 1; })).length;
+    const need = Math.min(gt.plates.length, show.part.length);   // vähem mängijaid kui nuppe → piisab kõigist
+    if (n >= need || show.part.length < 2) show.gates[gt.k] = Math.round((t + gt.hold) * 10) / 10;
   }
+}
+function startCoop(cl) {   // koostöörežiim: kõik koos läbi mitme koostöörajaa
+  if (!net.isHost) return;
+  if (cl === 1) { show.ct = 0; if (net.on) pushFeed('🤝 Koostöö algab! Kõik peavad finišisse jõudma'); }
+  show.mode = 'coop'; show.cl = cl; show.tw = ''; show.weather = ''; show.rt = 'race'; show.ti = COOPS[cl - 1]; show.rn = cl; show.final = false;
+  show.boss = null; show.teams = {}; show.gates = [0, 0, 0, 0]; show.ok = 0; show.lt = 0;
+  const hs = humanIds(), helpers = bots.slice(0, Math.max(0, 4 - hs.length));
+  show.part = [...hs, ...helpers.map(b => b.id)]; show.alive = show.part.slice(); show.inR = show.part.slice(); show.q = []; show.fo = []; show.quota = 99; show.lastOut = [];
+  show.rid = newId(); show.stage = 'intro'; show.sa = T() + 5; show.ea = 0; hostOnly.claims = {};
+}
+function coopTick(t) {
+  if (show.stage === 'intro' && t > show.sa) show.stage = 'play';
+  if (show.stage === 'play') {
+    gateHostTick(t);
+    const tau = t - show.sa, hs = show.part.filter(isHuman).filter(id => id === net.id || net.peers.has(id));
+    const done = hs.length > 0 && hs.every(id => show.q.includes(id));
+    if (done || tau > 240) {
+      show.ok = done ? 1 : 0; show.lt = Math.round(tau * 10) / 10; if (done) show.ct = Math.round(((show.ct || 0) + tau) * 10) / 10;
+      if (done && net.on) pushFeed('✅ Tiim läbis raja ' + show.cl + ' ajaga ' + show.lt + ' s');
+      show.stage = 'cdone'; show.ea = t;
+    }
+  }
+  if (show.stage === 'cdone' && t > show.ea + 6) { if (!show.ok) startCoop(show.cl); else if (show.cl < COOPS.length) startCoop(show.cl + 1); else { show.stage = 'cwin'; show.ea = t; } }
+  if (show.stage === 'cwin' && t > show.ea + 9) enterLobby();
 }
 const PRACTICE = [
   { id: 'move', text: '1. Liigu edasi (WASD / joystick / VR-is lükka kätega maad)' },
@@ -906,7 +1021,6 @@ const PRACTICE = [
   { id: 'throw', text: '5. Viska robot: hoia kinni ja lase hooga lahti' },
   { id: 'bounce', text: '6. Hüppa batuudil' },
   { id: 'coin', text: '7. Korja münt' },
-  { id: 'box', text: '8. Ava ? boonuskast' },
 ];
 let practice = {};
 function practiceDone(id) {
@@ -934,7 +1048,6 @@ function buildTrenn() {
   TR.dummyPos = new V3(0, 0.3, -20); sign('4.–5. Haara ja viska robotit', -18, 'rgba(139,92,246,.95)');
   box(0, 0.25, -27, 3, 0.5, 3, C.orange, { bounce: true }); sign('6. Batuut', -25.5, 'rgba(255,61,139,.95)');
   addCoin(0, 1.2, -32); addCoin(-1.5, 1.2, -32.5); addCoin(1.5, 1.2, -32.5); sign('7. Mündid', -30.5, 'rgba(34,197,94,.95)');
-  addBox(0, 1.1, -37); sign('8. Boonuskast', -35.5, 'rgba(240,140,0,.95)');
   sign('Valmis? Vajuta R', -42, 'rgba(29,27,58,.9)');
   TR.spawn = (i, n, out) => out.set(0, 0.3, 2);
   TR.outY = -6;
@@ -952,13 +1065,26 @@ function startLevel(n) {
   show.mode = 'levels'; show.level = n; show.weather = ''; show.gates = [0, 0]; show.boss = null; show.teams = {};
   show.rt = 'race'; show.ti = levelIndex(n); show.stage = 'intro'; show.sa = T() + 4; show.ea = 0;
   show.part = [net.id, ...bots.map(b => b.id)]; show.alive = show.part.slice(); show.inR = show.part.slice(); show.q = []; show.fo = []; show.quota = 99; show.final = false;
-  show.rid = newId(); closeVrMenu();
-  updateHud();
+  show.rid = newId(); closeVrMenu(); show.tw = '';
+  updateHud(); showDailyMsg();
 }
 function levelComplete() {
   if (show.stage !== 'play') return;
   show.stage = 'lvdone'; show.ea = T();
   const n = show.level, t = myFinishTime, par = TR.par || 40;
+  if (n === 0) {   // päeva väljakutse
+    const today = dayKey(), d = prog.daily && prog.daily.day === today ? prog.daily : null, first = !d, rec = !d || t < d.t;
+    prog.daily = { day: today, t: d ? Math.min(d.t, Math.round(t * 10) / 10) : Math.round(t * 10) / 10 }; prog.dailyN = (prog.dailyN || 0) + (first ? 1 : 0); saveProg();
+    setTimeout(() => addCoins(first ? 40 : rec ? 10 : 2, 'päeva väljakutse'), 700); addXp(first ? 40 : 5); if (first) addTrophies(5);
+    sfx('fanfare'); burst(player.pos);
+    $('lvTitle').textContent = 'Päeva väljakutse läbitud!'; $('lvStars').textContent = rec ? '🏆 REKORD' : '✅';
+    $('lvInfo').textContent = 'Aeg ' + t.toFixed(1) + ' s · tänane rekord ' + prog.daily.t + ' s · homme tuleb uus rada!';
+    $('lvNext').style.display = 'none';
+    if (renderer.xr.isPresenting) { vrMenu.open = true; vrMenu.inGame = true; vrMenu.screen = 'lvdone'; vrMenu.place = true; drawMenu(); }
+    else { $('lvDone').classList.add('on'); if (document.pointerLockElement) document.exitPointerLock(); }
+    showMsg(rec ? '🏆 Uus rekord!' : '✅ Läbitud!', ['Päeva väljakutse', 'Aeg ' + t.toFixed(1) + ' s'], 4);
+    return;
+  }
   const st = t <= par ? 3 : t <= par * 1.5 ? 2 : 1;
   const old = prog.levels[n] || { s: 0, t: 999 };
   const firstTime = !old.s;
@@ -1268,6 +1394,12 @@ function buildCustom() {
   TR.wps = [{ x: 0, z: -4, wide: 3 }, { x: 0, z: -12, wide: 4 }, { x: 0, z: -19.5, wide: 3 }, { x: 0, z: -25, wide: 3 }];
 }
 TRACKS.push({ name: 'Teie rada', custom: true, build: buildCustom });
+{ // päeva väljakutse: iga päev uus juhuslik (kuid kõigil sama) rada
+  let h = 7; for (const ch of new Date().toDateString()) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+  const R = rng(h);
+  TRACKS.push({ name: 'Päeva väljakutse: ' + LV_ADJ[Math.floor(R() * LV_ADJ.length)] + ' ' + LV_NOUN[Math.floor(R() * LV_NOUN.length)], gen: true, level: 0, daily: true, build: genTrack(h % 1000000 + 77, 6 + Math.floor(R() * 3), [...SEG_EASY.slice(2), ...SEG_MID, ...SEG_HARD]) });
+}
+const COOPS = TRACKS.map((t, i) => i).filter(i => TRACKS[i].coop);
 function drawStatBoard() {
   const B = TR && TR.board2; if (!B) return;
   const key = coins + JSON.stringify(prog) + myName + myPet;
@@ -1277,7 +1409,7 @@ function drawStatBoard() {
   x.fillStyle = '#2f9bff'; x.font = 'bold 50px system-ui'; x.textAlign = 'center'; x.fillText('Sinu statistika', 320, 62);
   x.fillStyle = '#1d1b3a'; x.font = 'bold 32px system-ui'; x.textAlign = 'left';
   const lv = myLevel(), x0 = 40 * (lv - 1) * (lv - 1), x1 = 40 * lv * lv;
-  const rows = ['⭐ Tase ' + lv + '   🪙 ' + coins + '   👑 ' + prog.crowns, '🎮 Mänge ' + prog.shows + '   ✅ Edasi ' + prog.qual + '/' + prog.rounds];
+  const rows = ['⭐ Tase ' + lv + '   🪙 ' + coins + '   👑 ' + prog.crowns + '   🔥 ' + (prog.streak || 1), leagueText()];
   rows.forEach((r, i) => x.fillText(r, 40, 118 + i * 44));
   x.fillStyle = '#e9ecef'; x.fillRect(40, 196, 560, 18); x.fillStyle = '#22c55e'; x.fillRect(40, 196, 560 * Math.min(1, (prog.xp - x0) / Math.max(1, x1 - x0)), 18);
   ensureQuests();
@@ -1291,15 +1423,16 @@ function drawStatBoard() {
 }
 function drawBoard() {
   const B = TR && TR.board; if (!B) return;
-  const list = Object.entries(show.crowns).sort((a, b) => b[1] - a[1]).slice(0, 6);
+  const names = new Set([...Object.keys(show.crowns || {}), ...Object.keys(show.pts || {})]);
+  const list = [...names].map(n => [n, (show.crowns || {})[n] || 0, (show.pts || {})[n] || 0]).sort((a, b) => b[1] - a[1] || b[2] - a[2]).slice(0, 6);
   const key = JSON.stringify(list) + net.hostId + net.peers.size;
   if (key === B.key) return; B.key = key;
   const ctx = B.cv.getContext('2d');
   ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, 768, 420);
-  ctx.fillStyle = '#ff3d8b'; ctx.font = 'bold 64px system-ui'; ctx.textAlign = 'center'; ctx.fillText('Kroonid', 384, 75);
-  ctx.font = 'bold 40px system-ui'; ctx.fillStyle = '#1d1b3a';
+  ctx.fillStyle = '#ff3d8b'; ctx.font = 'bold 58px system-ui'; ctx.textAlign = 'center'; ctx.fillText(net.on ? 'Ruumi edetabel' : 'Kroonid', 384, 70);
+  ctx.font = 'bold 38px system-ui'; ctx.fillStyle = '#1d1b3a';
   if (!list.length) ctx.fillText('Keegi pole veel võitnud', 384, 180);
-  list.forEach(([n, c], i) => { ctx.textAlign = 'left'; ctx.fillText((i + 1) + '. ' + n, 110, 140 + i * 44); ctx.textAlign = 'right'; ctx.fillText(c + ' kroon' + (c > 1 ? 'i' : ''), 660, 140 + i * 44); });
+  list.forEach(([n, c, pt], i) => { ctx.fillStyle = i === 0 ? '#e8590c' : '#1d1b3a'; ctx.textAlign = 'left'; ctx.fillText((i + 1) + '. ' + n, 80, 136 + i * 43); ctx.textAlign = 'right'; ctx.fillText('👑' + c + '   ⭐' + pt, 690, 136 + i * 43); });
   ctx.textAlign = 'center'; ctx.fillStyle = '#22a35a'; ctx.font = 'bold 34px system-ui';
   ctx.fillText(net.on && net.peers.size ? 'Mängijaid ' + humanIds().length + '/' + MAX_HUMANS + ' · alustab: ' + nameOf(net.hostId) : 'Vajuta ALUSTA või astu ringile', 384, 400);
   B.tex.needsUpdate = true;
@@ -1463,7 +1596,7 @@ function buildMap(rt, ti) {
   if (rt !== 'lobby' && rt !== 'trenn') specPlatform();
   decorate(rt);
   applyEnv(!!TR.night);
-  if (rt !== 'lobby' && rt !== 'trenn') { placeCoins(rt); placeBoxes(rt); }
+  if (rt !== 'lobby' && rt !== 'trenn') { placeCoins(rt); }
   drops.length = 0; bananas.length = 0;
   setRain(show.weather === 'vihm' && rt === 'race' && !TR.night);
   if (rt === 'lobby') rebuildBuilder(true);
@@ -1751,7 +1884,8 @@ function stepEntity(e, dt) {
     if (so0.conveyor) e.pos.z += so0.conveyor * S() * dt;
   }
   for (const w of TR.winds) if (Math.abs(e.pos.x - w.x) < w.hw + 1 && e.pos.z < w.z0 && e.pos.z > w.z1 && e.pos.y > -1) e.pos.x += w.amp * S() * Math.sin(T() * w.speed) * dt;
-  if (!e.holding && !e.carried) e.vel.y -= G * dt;
+  if (!e.holding && !e.carried) e.vel.y -= G * twG() * dt;
+  if (twOn('tuul') && show.stage === 'play' && e.pos.y > -1) e.pos.x += Math.sin(T() * 0.55) * 1.7 * dt;
   const prevY = e.pos.y;
   e.pos.addScaledVector(e.vel, dt);
   const wasGround = e.onGround;
@@ -1847,7 +1981,7 @@ function hitBall(e, b) {
 }
 function steer(e, tx, tz, dt) {
   const ice = e.standingOn && e.standingOn.ice;
-  const k = e.knock > 0 ? 1 : (e.onGround ? (ice ? 1.3 : raining ? 3.5 : 10) : 2.5);
+  const k = e.knock > 0 ? 1 : (e.onGround ? (ice ? 1.3 : twOn('libe') ? 2.2 : raining ? 3.5 : 10) : 2.5);
   const f = Math.min(1, k * dt), m = (e.speedMul || 1) * (e.pw === 'kiirus' && e.pwT > now() ? 1.6 : 1);
   e.vel.x += (tx * m - e.vel.x) * f; e.vel.z += (tz * m - e.vel.z) * f;
 }
@@ -1948,7 +2082,7 @@ function armLocomotion(dt) {
   } else if (wasHolding) {
     tv.set(0, 0, 0); flingBuf.forEach(f => tv.add(f.v));
     if (flingBuf.length) tv.divideScalar(flingBuf.length);
-    if (tv.length() > 0.5) { const boost = player.pw === 'hupe' && player.pwT > now() ? 1.5 : player.pw === 'kiirus' && player.pwT > now() ? 1.3 : 1; tv.multiplyScalar(1.3 * boost); if (tv.length() > 10 * boost) tv.setLength(10 * boost); player.vel.copy(tv); }
+    if (tv.length() > 0.5) { const boost = player.pw === 'hupe' && player.pwT > now() ? 1.5 : player.pw === 'kiirus' && player.pwT > now() ? 1.3 : 1; tv.multiplyScalar(1.3 * boost * (twOn('hupe') ? 1.25 : 1)); if (tv.length() > 10 * boost) tv.setLength(10 * boost); player.vel.copy(tv); }
     flingBuf.length = 0;
   } else if (player.onGround) {
     const ice = player.standingOn && player.standingOn.ice;
@@ -1970,6 +2104,15 @@ function doEmote(i) {
   if (net.on && net.peers.size) net.emote.send({ e: i });
 }
 function bodyCenter(pos, out) { return out.set(pos.x, pos.y + 0.8, pos.z); }
+function bodyDist(pos, hand) {   // käe kaugus tegelase kehast (püstine lõik jalgadest peani)
+  const y = Math.max(pos.y + 0.2, Math.min(pos.y + 1.1, hand.y));
+  return Math.hypot(hand.x - pos.x, hand.y - y, hand.z - pos.z);
+}
+let grabMark = null;
+function showGrabMark(p) {   // ✋ märk selle kohal, keda saab haarata
+  if (!grabMark) { grabMark = new THREE.Mesh(new THREE.RingGeometry(0.16, 0.24, 20), new THREE.MeshBasicMaterial({ color: 0xffe14d, side: THREE.DoubleSide, transparent: true, opacity: 0.9, depthTest: false })); grabMark.renderOrder = 10; grabMark.rotation.x = -Math.PI / 2; scene.add(grabMark); }
+  grabMark.visible = !!p; if (p) grabMark.position.set(p.x, p.y + 1.45 + Math.sin(now() * 6) * 0.05, p.z);
+}
 function allOthers() {
   const list = [];
   if (net.isHost) bots.forEach(b => { if (b.visible) list.push({ id: b.id, pos: b.pos }); });
@@ -1991,6 +2134,7 @@ function nameOf(id) {
   const p = net.peers.get(id); return p ? p.name : '?';
 }
 function applyGrab(targetId, byId, on, th, hp) {
+  if (net.isHost && !on && th && th.length === 3 && isHuman(byId)) { hostOnly.thr = hostOnly.thr || {}; hostOnly.thr[byId] = (hostOnly.thr[byId] || 0) + 1; pushFeed('🚀 ' + nameOf(byId) + ' viskas: ' + nameOf(targetId)); }
   const until = on ? now() + 0.6 : 0;
   if (on) markGrab(targetId);
   const tgt = targetId === net.id ? player : (net.isHost ? bots.find(b => b.id === targetId) : null);
@@ -2023,7 +2167,7 @@ function holdPoint(i) {   // kuhu tassitav sõber tõstetakse
   return [r2(player.pos.x + fw.x * 0.75), r2(player.pos.y + 1.45), r2(player.pos.z + fw.z * 0.75)];
 }
 const handVel = [new V3(), new V3()], handPrev = [new V3(), new V3()];
-let pcGrabT = 0;
+let pcGrabT = 0, grabMissT = 0;
 function grabEffect(e, dt) {
   e.speedMul = 1;
   e.carried = false;
@@ -2051,12 +2195,12 @@ function updateGrabs(dt, buttons) {
       grips[i].getWorldPosition(tmpA);
       handVel[i].lerp(tmpC.copy(tmpA).sub(handPrev[i]).divideScalar(Math.max(dt, 1e-3)), 0.5); handPrev[i].copy(tmpA);
       if (pressed && !grabHold[i]) {
-        let best = null, bd = 0.55;
-        for (const o of others) { const d = bodyCenter(o.pos, tmpB).distanceTo(tmpA); if (d < bd) { bd = d; best = o; } }
+        let best = null, bd = 0.85;
+        for (const o of others) { const d = bodyDist(o.pos, tmpA); if (d < bd) { bd = d; best = o; } }
         if (best) { grabHold[i] = best.id; sfx('grab'); buzz(i, 0.6, 40); sendGrab(best.id, true); }
       } else if (grabHold[i]) {
         const tp = posOf(grabHold[i]);
-        if (!pressed || !tp || bodyCenter(tp, tmpB).distanceTo(tmpA) > 1.8) {
+        if (!pressed || !tp || bodyDist(tp, tmpA) > 2.4) {
           // vehkimisega lahti lastes viskad sõbra käe liikumise suunas
           const v = handVel[i], th = !pressed && v.length() > 1.3 ? [r2(v.x * 2.2), r2(Math.max(3, v.y * 2.2 + 3)), r2(v.z * 2.2)] : null;
           sendGrab(grabHold[i], false, th); grabHold[i] = null;
@@ -2064,20 +2208,30 @@ function updateGrabs(dt, buttons) {
         else if (resend) { sendGrab(grabHold[i], true, null, holdPoint(i)); if (!carryCounted[grabHold[i] + show.rid]) { carryCounted[grabHold[i] + show.rid] = 1; questTick('carry'); } }
       }
     }
+    let mk = null, md = 1.0;   // näita ✋ märki, kui käsi on kellelegi piisavalt lähedal
+    if (!grabHold[0] && !grabHold[1]) for (let i = 0; i < 2; i++) { grips[i].getWorldPosition(tmpA); for (const o of others) { const d = bodyDist(o.pos, tmpA); if (d < md) { md = d; mk = o; } } }
+    showGrabMark(mk ? mk.pos : null);
   } else {
     const pressed = !!keys.KeyE || touchIn.grab;
-    if (pressed && !pcGrab) {
+    if (!pressed) grabMissT = 0;
+    let cand = null;
+    if (!pcGrab) {
       camera.getWorldDirection(fw); fw.y = 0; fw.normalize();
-      let best = null, bd = 1.6;
+      let bs = 1e9;
       for (const o of others) {
         const dx = o.pos.x - player.pos.x, dz = o.pos.z - player.pos.z, d = Math.hypot(dx, dz);
-        if (d < bd && Math.abs(o.pos.y - player.pos.y) < 1.2 && (dx * fw.x + dz * fw.z) / (d || 1) > 0.2) { bd = d; best = o; }
+        const face = (dx * fw.x + dz * fw.z) / (d || 1);
+        if (d < 2.4 && Math.abs(o.pos.y - player.pos.y) < 1.6 && (face > -0.3 || d < 1.1)) { const sc = d - face * 0.6; if (sc < bs) { bs = sc; cand = o; } }
       }
-      if (best) { pcGrab = best.id; pcGrabT = 0; sfx('grab'); sendGrab(best.id, true); }
+    }
+    showGrabMark(!pcGrab && cand ? cand.pos : null);
+    if (pressed && !pcGrab) {
+      if (cand) { pcGrab = cand.id; pcGrabT = 0; sfx('grab'); sendGrab(cand.id, true); }
+      else if (!grabMissT) { showToast('Kedagi pole lähedal – mine robotile ligi', 1); grabMissT = 1; }
     } else if (pcGrab) {
       const tp = posOf(pcGrab);
       pcGrabT += dt;
-      if (!pressed || !tp || tp.distanceTo(player.pos) > 3.2) {
+      if (!pressed || !tp || tp.distanceTo(player.pos) > 3.6) {
         // lahti lastes viskad sõbra ette ja üles (kui hoidsid vähemalt pool sekundit)
         camera.getWorldDirection(fw); fw.y = 0; fw.normalize();
         const th = !pressed && pcGrabT > 0.5 ? [r2(fw.x * 6.5), 6, r2(fw.z * 6.5)] : null;
@@ -2153,6 +2307,11 @@ function raceAI(b, dt) {
   b.stuckT = (b.stuckT || 0) + dt;
   if (b.stuckT > 2.5) { if (!TR.balls.length && b.pos.z > (b.lastZ ?? 99) - 0.6) { b.jit = rnd(-1, 1); b.side *= -1; } b.lastZ = b.pos.z; b.stuckT = 0; }
   if (b.finished) { steer(b, 0, 0, dt); if (b.onGround && Math.random() < dt * 0.8) b.vel.y = JUMP * 0.8; return; }
+  if (TR.gates.length) for (let i = 0; i < b.wi && i < TR.wps.length; i++) {
+    const w = TR.wps[i]; if (w.gate === undefined) continue;
+    const gt = TR.gates.find(g => g.k === w.gate);
+    if (gt && b.pos.z > gt.z && !gateOpen(w.gate)) { b.wi = i; b.claim = null; break; }
+  }
   const wp = TR.wps[Math.min(b.wi, TR.wps.length - 1)], p = wpTarget(b, wp);
   let dx = p.x - b.pos.x, dz = p.z - b.pos.z; const dist = Math.hypot(dx, dz);
   let waiting = false;
@@ -2364,7 +2523,7 @@ async function startOnline(code) {
   });
   onRoom(room, 'onPeerJoin', id => { ensurePeer(id); updateHud(); });
   onRoom(room, 'onPeerLeave', id => onPeerGone(id));
-  net.pose.on((d, id) => { const p = ensurePeer(id); if (p.name !== d.n || p.color !== d.c || p.hat !== d.h || p.costume !== (d.u || 0) || p.lv !== (d.lv || 1)) rebuildPeerAvatar(p, d); p.d = d; p.last = now(); });
+  net.pose.on((d, id) => { const p = ensurePeer(id); if (p.name !== d.n || p.color !== d.c || p.hat !== d.h || p.costume !== (d.u || 0) || p.lv !== (d.lv || 1) || (p.lg || 0) !== (d.lg || 0)) rebuildPeerAvatar(p, d); p.d = d; p.last = now(); });
   net.host.on((d, id) => {
     const hs = d.hs || Infinity;
     if (net.isHost) {
@@ -2403,8 +2562,9 @@ function ensurePeer(id) {
   return p;
 }
 function rebuildPeerAvatar(p, d) {
+  if (p.name === '…' && net.isHost) pushFeed('👋 ' + d.n + ' tuli ruumi');
   scene.remove(p.avatar); p.name = d.n; p.color = d.c; p.hat = d.h; p.costume = d.u || 0; p.lv = d.lv || 1;
-  p.avatar = makeHuman(d.c, d.n + ' ⭐' + p.lv, d.h, d.u || 0); p.avatar.visible = false;
+  p.lg = d.lg || 0; p.avatar = makeHuman(d.c, (LEAGUES[p.lg] ? LEAGUES[p.lg][1] + ' ' : '') + d.n + ' ⭐' + p.lv, d.h, d.u || 0); p.avatar.visible = false;
   const sb = shieldBubble.clone(); sb.position.y = 0.8; sb.visible = false; p.avatar.add(sb); p.avatar.userData.shield = sb;
 }
 function removePeer(id) {
@@ -2422,6 +2582,7 @@ function humanIds() {
   return m.slice().sort();
 }
 function onPeerGone(id) {
+  { const pp = net.peers.get(id); if (pp && pp.name && pp.name !== '…' && (net.isHost || id === net.hostId)) { const nm = pp.name; setTimeout(() => pushFeed('🚪 ' + nm + ' lahkus'), 50); } }
   removePeer(id);
   if (net.on && id === net.hostId && !net.isHost) {
     // juht lahkus: uueks juhiks saab järgmine liitunu (kõigil sama nimekiri)
@@ -2448,11 +2609,12 @@ function makeBots(n) {
   for (let i = 0; i < n; i++) {
     const b = makeEnt(false); b.mesh = makeBot(BOT_COLORS[i % BOT_COLORS.length], botHat(i)); b.id = '#b' + i;
     b.side = Math.random() < 0.5 ? -1 : 1; b.jit = Math.random() * 2 - 1;
-    b.speed = (3.3 + Math.random() * 0.9) * (show.easy ? 0.8 : 1); b.skill = 0.6 + Math.random() * 0.6;
+    b.speed = show.easy ? (3.3 + Math.random() * 0.9) * 0.8 : 3.65 + Math.random() * 0.85; b.skill = show.easy ? 0.6 + Math.random() * 0.6 : 0.8 + Math.random() * 0.55;
     bots.push(b);
   }
 }
 function enterLobby() {
+  show.mode = ''; show.tw = '';
   show.stage = 'lobby'; show.rt = 'lobby'; show.ti = 0; show.rid = newId(); show.part = []; show.alive = []; show.inR = []; show.q = []; show.fo = []; show.tails = []; show.lastOut = [];
   show.easy = wantEasy;
   show.bots = !net.on || wantBots;     // üksi mängides on robotid alati
@@ -2462,7 +2624,8 @@ function enterLobby() {
   hostOnly.padT = 0;
 }
 function startShow() {
-  show.sid = newId(); show.rn = 0; show.winner = ''; hostOnly.falls = {}; hostOnly.prevType = '';
+  show.sid = newId(); show.rn = 0; show.winner = ''; hostOnly.falls = {}; hostOnly.prevType = ''; hostOnly.thr = {}; hostOnly.fast = null; show.aw = []; show.mode = '';
+  if (net.on) pushFeed('🎬 Show algab! ' + humanIds().length + ' inimest' + (bots.length ? ' + ' + bots.length + ' robotit' : ''));
   show.alive = [...humanIds(), ...bots.map(b => b.id)];
   nextRound();
 }
@@ -2487,14 +2650,16 @@ function nextRound() {
   show.rt = rt; show.final = final; show.ti = rt === 'race' ? REG[Math.floor(Math.random() * REG.length)] : 0;
   if (rt === 'race' && Math.random() < 0.35 && GENS.length) show.ti = GENS[Math.floor(Math.random() * GENS.length)];
   if (rt === 'race' && (show.blocks || []).length >= 4 && show.rn <= 2 && Math.random() < 0.4) show.ti = CI;
-  else if (rt === 'race' && COOP >= 0 && show.alive.length >= 2 && Math.random() < 0.2) show.ti = COOP;
   show.weather = rt === 'race' && TRACKS[show.ti] && TRACKS[show.ti].name !== 'Öörada' && Math.random() < 0.25 ? 'vihm' : '';
-  show.gates = [0, 0]; show.boss = null;
+  show.gates = [0, 0, 0, 0]; show.boss = null;
+  // üllatus-keerdkäik: alates 2. voorust umbes pooltel kordadel
+  show.tw = '';
+  if (show.rn >= 2 && Math.random() < (final ? 0.4 : 0.5)) { const pool = Object.keys(TWISTS).filter(k => !(show.easy && k === 'turbo') && !(TEAM[rt] && k === 'tuul')); show.tw = pool[Math.floor(Math.random() * pool.length)]; }
   if (rt === 'boss') { show.boss = { pads: [0, 0, 0, 0], m: [], won: 0 }; hostOnly.padHold = [0, 0, 0, 0]; hostOnly.metT = 0; hostOnly.metId = 0; }
   show.rid = newId(); show.stage = 'intro'; show.sa = T() + 6; show.ea = 0;
   show.part = show.alive.slice(); show.inR = show.alive.slice(); show.q = []; show.fo = []; show.lastOut = [];
   const n = show.part.length;
-  show.quota = final ? 1 : rt === 'race' ? Math.max(1, Math.ceil(n * 0.65)) : rt === 'saba' ? Math.max(1, Math.ceil(n * 0.5)) : Math.max(1, Math.ceil(n * 0.6));
+  show.quota = final ? 1 : rt === 'race' ? Math.max(1, Math.ceil(n * (show.easy ? 0.65 : 0.55))) : rt === 'saba' ? Math.max(1, Math.ceil(n * 0.5)) : Math.max(1, Math.ceil(n * 0.6));
   if (!show.bots && !final) show.quota = rt === 'race' ? n : rt === 'saba' ? Math.max(1, Math.ceil(n * 0.5)) : 1;
   show.tails = []; show.teams = {}; show.score = [0, 0]; show.winTeam = -1; show.hill = {}; show.ball = null; show.eggs = null;
   if (TEAM[rt]) {
@@ -2512,15 +2677,35 @@ function nextRound() {
   }
   hostOnly.immune = {};
 }
+function pushFeed(text) {   // sündmuste teade kõigile (juht saadab show kaudu)
+  if (!net.isHost) return;
+  show.fid = (show.fid || 0) + 1; show.feed = [...(show.feed || []).slice(-4), [show.fid, text]];
+}
+let feedSeen = -1;
+function feedTick() {
+  const f = show.feed || []; const maxId = f.length ? f[f.length - 1][0] : 0;
+  if (feedSeen < 0) { feedSeen = net.isHost ? 0 : maxId; }
+  for (const [id, tx] of f) if (id > feedSeen) { feedSeen = id; addFeedLine(tx); }
+  if (maxId < feedSeen) feedSeen = maxId;
+}
+function addFeedLine(tx) {
+  if (renderer.xr.isPresenting) { showToast(tx, 2.2); return; }
+  const box = $('feed'); const d = document.createElement('div'); d.textContent = tx; box.appendChild(d);
+  while (box.children.length > 4) box.removeChild(box.firstChild);
+  setTimeout(() => { d.style.opacity = '0'; setTimeout(() => d.remove(), 600); }, 4500);
+}
 function recordFinish(id, t) {
   if (show.stage !== 'play' || show.rt !== 'race') return;
   if (show.q.includes(id)) return;
   show.q.push(id); show.fo.push([id, Math.round(t * 10) / 10]);
+  if (show.q.length === 1 && show.mode !== 'coop') pushFeed('🏁 ' + nameOf(id) + ' jõudis esimesena finišisse!');
+  if (isHuman(id) && (!hostOnly.fast || t < hostOnly.fast[1])) hostOnly.fast = [id, Math.round(t * 10) / 10];
 }
 function hostOut(id) {
   if (show.stage !== 'play' || !SURVIVAL[show.rt]) return;
   const i = show.inR.indexOf(id); if (i < 0) return;
   show.inR.splice(i, 1);
+  if (isHuman(id)) pushFeed('💥 ' + nameOf(id) + ' kukkus välja!');
 }
 const isHuman = id => !id.startsWith('#');
 function endRound() {
@@ -2536,7 +2721,15 @@ function endRound() {
     if (a === b) next = P.slice();
     else { const w = a > b ? 0 : 1; show.winTeam = w; next = P.filter(id => show.teams[id] === w || (show.easy && isHuman(id))); }
   }
-  else if (show.rt === 'race') next = P.filter(id => show.q.includes(id) || (show.easy && isHuman(id)));
+  else if (show.rt === 'race') {
+    next = P.filter(id => show.q.includes(id) || (show.easy && isHuman(id)));
+    const fin = P.filter(id => show.q.includes(id)).length;
+    if (fin < show.quota && show.bots) {   // aeg sai otsa: edasi pääsevad ka kõige kaugemale jõudnud
+      const rest = P.filter(id => !next.includes(id)).map(id => [id, posOf(id)]).filter(([, p]) => p && p.y > -20).sort((a, b) => a[1].z - b[1].z);
+      rest.slice(0, show.quota - fin).forEach(([id]) => next.push(id));
+      if (rest.length) pushFeed('⏱️ Aeg läbi! Edasi pääsesid ka kõige kaugemale jõudnud');
+    }
+  }
   else if (show.rt === 'saba' && show.bots) next = P.filter(id => show.tails.includes(id) || (show.easy && isHuman(id)));
   else next = show.inR.slice();
   if (!next.length && show.rt === 'boss') next = P.slice();   // kõik kukkusid: boss võitis, kõik jätkavad
@@ -2550,16 +2743,29 @@ function endRound() {
     crownStage(w); return;
   }
   show.lastOut = P.filter(id => !next.includes(id));
+  show.pts = show.pts || {};
+  next.filter(isHuman).forEach(id => { const nm = nameOf(id); show.pts[nm] = (show.pts[nm] || 0) + 1; });
+  const outH = show.lastOut.filter(isHuman).map(nameOf);
+  if (outH.length) pushFeed('❌ Välja langes: ' + outH.join(', '));
   show.alive = next; show.stage = 'results'; show.ea = T();
 }
 function crownStage(w) {
   show.winner = w; show.stage = 'crown'; show.ea = T();
   const nm = nameOf(w); show.crowns[nm] = (show.crowns[nm] || 0) + 1;
+  show.pts = show.pts || {}; show.pts[nm] = (show.pts[nm] || 0) + 5;
+  pushFeed('👑 ' + nm + ' võitis krooni!');
+  show.aw = [];   // show auhinnad
+  const thr = Object.entries(hostOnly.thr || {}).sort((a, b) => b[1] - a[1])[0];
+  if (thr && thr[1] >= 2) show.aw.push(['🚀 Suurim viskaja', nameOf(thr[0]) + ' (' + thr[1] + ' viset)']);
+  if (hostOnly.fast) show.aw.push(['⚡ Kiireim jooksja', nameOf(hostOnly.fast[0]) + ' (' + hostOnly.fast[1] + ' s)']);
+  const fl = Object.entries(hostOnly.falls || {}).filter(([id]) => isHuman(id)).sort((a, b) => b[1] - a[1])[0];
+  if (fl && fl[1] >= 3) show.aw.push(['🤸 Kõige rohkem kukkumisi', nameOf(fl[0]) + ' (' + fl[1] + ')']);
 }
 function hostTick(dt) {
   const t = T();
   if (show.stage === 'trenn') return;
   if (show.mode === 'levels') { if (show.stage === 'intro' && t > show.sa) show.stage = 'play'; return; }
+  if (show.mode === 'coop' && show.stage !== 'lobby') { coopTick(t); return; }
   if (show.stage === 'lobby') {
     // alustada saab ainult juht (esimene mängija): nupp, Enter või ise ringile astumine
     const pad = TR.pad ? TR.pad.mesh.position : null;
@@ -2860,7 +3066,7 @@ function sendPose(dt) {
   poseT -= dt; if (poseT > 0) return; poseT = 1 / 20;
   camera.getWorldPosition(headW); camera.getWorldDirection(fw);
   const d = { n: myName, c: myColor, h: myHat, p: [r2(player.pos.x), r2(player.pos.y), r2(player.pos.z)], y: r2(Math.atan2(fw.x, fw.z)),
-    hd: [r2(headW.x), r2(headW.y), r2(headW.z)], v: renderer.xr.isPresenting ? 1 : 0, s: spectating ? 1 : 0, k: player.ducking ? 1 : 0, u: myCostume, pt: myPet, sh: player.shieldT > now() ? 1 : 0, lv: myLevel() };
+    hd: [r2(headW.x), r2(headW.y), r2(headW.z)], v: renderer.xr.isPresenting ? 1 : 0, s: spectating ? 1 : 0, k: player.ducking ? 1 : 0, u: myCostume, pt: myPet, sh: player.shieldT > now() ? 1 : 0, lv: myLevel(), lg: myLeague() };
   if (renderer.xr.isPresenting) {
     grips[0].getWorldPosition(lW); grips[1].getWorldPosition(rW);
     d.l = [r2(lW.x), r2(lW.y), r2(lW.z)]; d.rr = [r2(rW.x), r2(rW.y), r2(rW.z)];
@@ -2908,6 +3114,7 @@ addEventListener('keydown', e => {
   if (e.code === 'Enter' && show.stage === 'lobby' && net.isHost) startShow();
   if (e.code === 'KeyM') setMusic(!musicOn);
   if (e.code === 'KeyP' && show.stage === 'lobby') openShop();
+  if (e.code === 'KeyK' && started && net.isHost && show.stage === 'lobby') startCoop(1);
   if (e.code === 'KeyF') { if (spectating) spectatorDrop(); else doBuild(false); }
   if (e.code === 'KeyG') doBuild(true);
   if (e.code === 'KeyT' && buildAimCache) cycleBuildType();
@@ -3046,7 +3253,7 @@ function handleInput(dt, canMove) {
   } else {
     player.holding = false;
     steer(player, canMove ? mvIn.x * player.speed : 0, canMove ? mvIn.z * player.speed : 0, dt);
-    if (jump && !jumpWas && player.onGround && canMove) { player.vel.y = JUMP * (player.pw === 'hupe' && player.pwT > now() ? 1.45 : 1); sfx('jump'); puff(player.pos, 0xffffff, 4, 0.8, 0.4, 0.3); }
+    if (jump && !jumpWas && player.onGround && canMove) { player.vel.y = JUMP * twJ() * (player.pw === 'hupe' && player.pwT > now() ? 1.45 : 1); sfx('jump'); puff(player.pos, 0xffffff, 4, 0.8, 0.4, 0.3); }
   }
   jumpWas = jump;
 }
@@ -3117,7 +3324,7 @@ function updateWorld(dt, force) {
   for (const so of TR.tiles) {
     if (so.state === 'shake') {
       so.t += dt; so.mesh.position.x = so.home.x + Math.sin(so.t * 60) * 0.04;
-      if (so.t > (show.easy ? 1.2 : 0.8) + (TR.slowTiles ? 0.4 : 0)) { so.state = 'fall'; so.active = false; so.t = 0; so.mesh.position.x = so.home.x; }
+      if (so.t > (show.easy ? 1.2 : 0.65) + (TR.slowTiles ? 0.4 : 0)) { so.state = 'fall'; so.active = false; so.t = 0; so.mesh.position.x = so.home.x; }
     } else if (so.state === 'fall') {
       so.t += dt; so.mesh.position.y = so.home.y - so.t * so.t * 6;
       if (so.t > 3.5) { if (so.noReturn) { so.state = 'gone'; so.mesh.visible = false; } else { so.state = 'idle'; so.active = true; so.mesh.position.copy(so.home); } }
@@ -3144,9 +3351,11 @@ function updateHud() {
   $('touch').classList.toggle('on', isTouch && !vrNow);
   $('tDuck').style.display = TR && TR.hasHigh ? 'block' : 'none';
   $('startBtn').style.display = !vrNow && net.isHost && show.stage === 'lobby' ? 'block' : 'none';
+  $('coopStart').style.display = !vrNow && net.isHost && show.stage === 'lobby' ? 'block' : 'none';
   $('shopBtn').style.display = !vrNow && show.stage === 'lobby' ? 'block' : 'none';
   $('lvMenuBtn').style.display = !vrNow && show.mode === 'levels' ? 'block' : 'none';
   $('fsBtn').style.display = isTouch && !vrNow && !document.fullscreenElement ? 'block' : 'none';
+  $('exitBtn').style.display = !vrNow ? 'block' : 'none';
   $('padBtn').style.display = !vrNow && !isHeadset && (hasTouch || touchManual !== null) ? 'block' : 'none';
   $('buildBar').classList.toggle('on', isTouch && !vrNow && !!buildAimCache);
   $('dropBtn').style.display = isTouch && !vrNow && spectating && show.stage === 'play' ? 'block' : 'none';
@@ -3177,7 +3386,7 @@ function renderPickers() {
   if (myCostume) { const b = document.createElement('button'); b.className = 'hat on'; b.textContent = '🎭 ' + COSTUMES[myCostume]; b.onclick = () => { myCostume = 0; saveProg(); renderPickers(); }; $('hats').appendChild(b); }
   const best = Object.entries(prog.best || {}).sort((a, b) => a[1] - b[1]).slice(0, 3).map(([k, v]) => k + ' ' + v.toFixed(1) + ' s').join(', ');
   ensureQuests();
-  $('statLine').innerHTML = '⭐ Tase <b>' + myLevel() + '</b> · 🪙 <b>' + coins + '</b> münti · 👑 ' + prog.crowns + ' krooni · mänge ' + prog.shows + ' · edasipääse ' + prog.qual + '/' + prog.rounds + (best ? '<br>Parimad ajad: ' + best : '') + '<br><b>Tänased ülesanded:</b> ' + prog.quests.map(questText).join(' · ');
+  $('statLine').innerHTML = '<b>' + leagueText() + '</b> · 🔥 ' + (prog.streak || 1) + ' päeva järjest<br>⭐ Tase <b>' + myLevel() + '</b> · 🪙 <b>' + coins + '</b> münti · 👑 ' + prog.crowns + ' krooni · mänge ' + prog.shows + ' · edasipääse ' + prog.qual + '/' + prog.rounds + (best ? '<br>Parimad ajad: ' + best : '') + '<br><b>Tänased ülesanded:</b> ' + prog.quests.map(questText).join(' · ');
 }
 function renderShop() {
   $('coinsLbl').textContent = 'Sul on ' + coins + ' 🪙 · tase ' + myLevel();
@@ -3212,6 +3421,10 @@ function readMenu() {
 }
 $('solo').onclick = () => { readMenu(); startGame(false); };
 $('practiceBtn').onclick = () => startPractice();
+$('coopBtn').onclick = () => { readMenu(); startGame(false); startCoop(1); };
+$('dailyBtn').onclick = () => { readMenu(); startLevel(0); };
+$('lvDaily').onclick = () => startLevel(0);
+$('coopStart').onclick = () => { audioInit(); if (started && net.isHost && show.stage === 'lobby') startCoop(1); };
 $('levelsBtn').onclick = () => { readMenu(); openLevelSelect(); };
 $('lvBack').onclick = () => { $('levelSel').classList.remove('on'); if (started) location.reload(); };
 $('lvNext').onclick = () => startLevel(show.level + 1);
@@ -3235,13 +3448,25 @@ function goFullscreen() {   // telefonis: täisekraan + horisontaalne, et brause
   setTimeout(fitScreen, 300); setTimeout(fitScreen, 900);
 }
 document.addEventListener('fullscreenchange', () => { fitW = 0; setTimeout(fitScreen, 100); setTimeout(fitScreen, 500); });
+let exitArm = 0;
+function exitToMenu() {   // lahku ruumist ja mine peamenüüsse (saab valida uue ruumi koodi)
+  try { net.room && net.room.leave && net.room.leave(); } catch (e) {}
+  try { saveProg(); } catch (e) {}
+  setTimeout(() => location.reload(), 150);
+}
+$('exitBtn').onclick = () => {
+  audioInit();
+  if (now() < exitArm) { exitToMenu(); return; }
+  exitArm = now() + 3; $('exitBtn').classList.add('warn'); $('exitBtn').textContent = 'Kindel? Vajuta uuesti';
+  setTimeout(() => { $('exitBtn').classList.remove('warn'); $('exitBtn').textContent = '⏏ Menüü'; }, 3000);
+};
 function startGame(online) {
   goFullscreen();
   started = true; $('menu').style.display = 'none';
   pitch = 0; camera.rotation.set(0, 0, 0);
   if (!online) { net.on = false; net.isHost = true; }
   if (net.isHost) { show.easy = wantEasy; enterLobby(); loadForShow(); }
-  updateHud();
+  updateHud(); showDailyMsg();
 }
 renderer.xr.addEventListener('sessionstart', () => {
   audioInit(); clearHands(); headStand = 1.5;
@@ -3298,7 +3523,7 @@ function drawMenu() {
   x.fillStyle = 'rgba(255,255,255,0.96)'; x.beginPath(); x.roundRect(0, 0, MW, MH, 50); x.fill();
   x.textBaseline = 'middle';
   if (M.screen === 'main') {
-    x.fillStyle = '#ff3d8b'; x.font = 'bold 64px system-ui'; x.textAlign = 'left'; x.fillText('Kukerpall VR', 40, 60);
+    if (M.inGame) { x.fillStyle = '#ff3d8b'; x.font = 'bold 64px system-ui'; x.textAlign = 'left'; x.fillText('Kukerpall VR', 40, 60); }
     x.fillStyle = '#1d1b3a'; x.font = 'bold 34px system-ui';
     const row = (t, y) => { x.fillStyle = '#1d1b3a'; x.textAlign = 'left'; x.font = 'bold 34px system-ui'; x.fillText(t, 40, y + 30); };
     row('Nimi', 120); mBtn(230, 120, 420, 62, myName + '  ✎', () => openKeyboard('name'));
@@ -3311,7 +3536,7 @@ function drawMenu() {
     row('Liikumine', 450);
     mBtn(230, 450, 250, 60, 'Kätega (ahv)', () => { loco = 'arms'; clearHands(); }, { on: loco === 'arms' });
     mBtn(495, 450, 250, 60, 'Pulgaga', () => { loco = 'stick'; clearHands(); }, { on: loco === 'stick' });
-    x.fillStyle = '#b8860b'; x.font = 'bold 30px system-ui'; x.textAlign = 'right'; x.fillText('⭐' + myLevel() + '  🪙 ' + coins, 984, 60);
+    x.fillStyle = '#b8860b'; x.font = 'bold 30px system-ui'; x.textAlign = 'right'; x.fillText(LEAGUES[myLeague()][1] + ' ⭐' + myLevel() + '  🪙 ' + coins, 984, 60);
     mBtn(40, 530, 300, 60, 'Lihtne režiim', () => { wantEasy = !wantEasy; }, { on: wantEasy });
     mBtn(355, 530, 300, 60, 'Muusika', () => setMusic(!musicOn), { on: musicOn });
     mBtn(670, 530, 314, 60, 'Graafika: ' + (gfx === 'ilus' ? 'Ilus' : 'Kiire'), () => setGfx(gfx === 'ilus' ? 'kiire' : 'ilus'));
@@ -3320,11 +3545,15 @@ function drawMenu() {
       mBtn(495, 610, 489, 62, 'Robotid ka (sõpradega)', () => { wantBots = !wantBots; }, { on: wantBots });
       mBtn(40, 695, 460, 86, 'Mängi robotitega', () => { syncHtml(); closeVrMenu(); startGame(false); }, { big: '#2f9bff' });
       mBtn(524, 695, 460, 86, 'Mängi sõpradega', () => vrOnline(), { big: '#ff3d8b' });
-      mBtn(355, 10, 300, 60, 'Harjuta 🎓', () => { syncHtml(); closeVrMenu(); startPractice(); }, { big: '#22c55e' });
-      mBtn(670, 85, 314, 60, 'Tasemed ⭐', () => { syncHtml(); M.screen = 'levels'; }, { big: '#8b5cf6' });
+      mBtn(40, 20, 230, 64, 'Harjuta 🎓', () => { syncHtml(); closeVrMenu(); startPractice(); }, { big: '#22c55e' });
+      mBtn(282, 20, 230, 64, 'Koostöö 🤝', () => { syncHtml(); closeVrMenu(); startGame(false); startCoop(1); }, { big: '#0ea5e9' });
+      mBtn(524, 20, 230, 64, 'Tasemed ⭐', () => { syncHtml(); M.screen = 'levels'; }, { big: '#8b5cf6' });
+      mBtn(670, 120, 314, 62, '📅 Päeva rada', () => { syncHtml(); closeVrMenu(); startLevel(0); }, { big: '#e8590c' });
     } else {
       x.fillStyle = '#556'; x.font = '28px system-ui'; x.textAlign = 'left'; x.fillText(net.on ? 'Ruum ' + roomCode + ' · ' + humanIds().length + ' inimest' : 'Üksi robotitega', 40, 640);
-      mBtn(262, 695, 500, 86, 'Sulge menüü', () => closeVrMenu(), { big: '#22c55e' });
+      mBtn(40, 695, 460, 86, 'Sulge menüü', () => closeVrMenu(), { big: '#22c55e' });
+      mBtn(524, 695, 460, 86, '⏏ Peamenüüsse', () => { if (now() < exitArm) exitToMenu(); else { exitArm = now() + 3; M.status = 'Vajuta uuesti, et lahkuda ruumist'; } }, { big: '#e03131' });
+      if (net.isHost && show.stage === 'lobby') mBtn(524, 610, 460, 70, '🤝 Alusta koostööd', () => { closeVrMenu(); startCoop(1); }, { big: '#0ea5e9' });
       if (show.mode === 'levels') { mBtn(40, 610, 460, 70, 'Tasemete valik', () => { M.screen = 'levels'; }, { big: '#8b5cf6' }); mBtn(524, 610, 460, 70, 'Alusta uuesti ↻', () => startLevel(show.level), { big: '#f59e0b' }); }
     }
     if (M.status) { x.fillStyle = '#d6336c'; x.font = 'bold 28px system-ui'; x.textAlign = 'center'; x.fillText(M.status, MW / 2, 800); }
@@ -3334,13 +3563,14 @@ function drawMenu() {
       const i = n - 1, st = levelStars(n), un = levelUnlocked(n);
       mBtn(40 + (i % 6) * 158, 100 + Math.floor(i / 6) * 112, 146, 100, n + (un ? ' ' + '★'.repeat(st) : ' 🔒'), () => { if (un) startLevel(n); }, { on: st === 3 });
     }
-    mBtn(262, 668, 500, 80, 'Tagasi', () => { M.screen = 'main'; }, { big: '#495057' });
+    mBtn(40, 668, 460, 80, '📅 Päeva väljakutse', () => startLevel(0), { big: '#e8590c' });
+    mBtn(524, 668, 460, 80, 'Tagasi', () => { M.screen = 'main'; }, { big: '#495057' });
   } else if (M.screen === 'lvdone') {
-    const n = show.level, L = prog.levels[n] || { s: 0, t: 0 };
-    x.fillStyle = '#8b5cf6'; x.font = 'bold 64px system-ui'; x.textAlign = 'center'; x.fillText('Tase ' + n + ' läbitud!', MW / 2, 110);
+    const n = show.level, L = n ? (prog.levels[n] || { s: 0, t: 0 }) : { s: 3, t: prog.daily ? prog.daily.t : 0 };
+    x.fillStyle = '#8b5cf6'; x.font = 'bold 64px system-ui'; x.textAlign = 'center'; x.fillText(n ? 'Tase ' + n + ' läbitud!' : 'Päeva väljakutse läbitud!', MW / 2, 110);
     x.fillStyle = '#f59e0b'; x.font = 'bold 120px system-ui'; x.fillText('★'.repeat(L.s) + '☆'.repeat(3 - L.s), MW / 2, 260);
     x.fillStyle = '#1d1b3a'; x.font = 'bold 38px system-ui'; x.fillText('Aeg ' + myFinishTime.toFixed(1) + ' s · rekord ' + L.t + ' s', MW / 2, 370);
-    if (n < LEVEL_COUNT) mBtn(40, 460, 300, 110, 'Järgmine ▶', () => startLevel(n + 1), { big: '#22c55e' });
+    if (n && n < LEVEL_COUNT) mBtn(40, 460, 300, 110, 'Järgmine ▶', () => startLevel(n + 1), { big: '#22c55e' });
     mBtn(362, 460, 300, 110, 'Uuesti ↻', () => startLevel(n), { big: '#f59e0b' });
     mBtn(684, 460, 300, 110, 'Tasemed ☰', () => { M.screen = 'levels'; }, { big: '#8b5cf6' });
   } else if (M.screen === 'shop') {
@@ -3433,6 +3663,7 @@ renderer.xr.addEventListener('sessionend', updateHud);
 // MÄNGU TSÜKKEL
 // =====================================================================
 const clock = new THREE.Clock();
+let lastTwScale = 1;
 let hudT = 0, lastCd = -1, menuSpin = 0, lastStageKey = '', hadTail = false, camY = 1.6, lastGoalKey = '', fwT = 0;
 buildMap('race', 0);
 player.pos.set(0, 0.2, 1.5);
@@ -3484,17 +3715,23 @@ function onStageChange() {
       if (show.alive.includes(me)) { prog.qual++; sfx('cheer'); showMsg('Pääsesid edasi!', ['Edasi pääses ' + show.alive.length + '/' + show.part.length], 3); setTimeout(() => addCoins(5, 'edasipääsu eest'), 600); }
       else { sfx('out'); showMsg('Langesid välja', ['Järgmisi voore saad pealt vaadata'], 3); }
       if (show.rt === 'boss' && show.boss && show.boss.won && show.alive.includes(me)) setTimeout(() => addCoins(10, 'bossi võitmise eest!'), 1400);
-      if (show.alive.includes(me)) { questTick('qual'); addXp(20); }
+      if (show.alive.includes(me)) { questTick('qual'); addXp(20); addTrophies(show.easy ? 2 : 3 + Math.min(3, show.rn)); }
+      else if (!show.easy) addTrophies(-2);
       saveProg();
     }
   }
   if (st === 'crown') {
     sfx('fanfare');
     const wp = posOf(show.winner); burst(wp || player.pos);
-    if (show.winner === net.id) { prog.crowns++; saveProg(); setTimeout(() => addCoins(50, 'KROONI eest!'), 900); questTick('crown'); addXp(100); }
+    if (show.winner === net.id) { prog.crowns++; saveProg(); setTimeout(() => addCoins(50, 'KROONI eest!'), 900); questTick('crown'); addXp(100); addTrophies(show.easy ? 10 : 25); }
     fwT = 0;
   }
-  if (st === 'play' && show.part.includes(net.id)) { sfx('go'); showMsg('MINE!', [], 1); }
+  if (st === 'play' && show.part.includes(net.id)) { sfx('go'); showMsg('MINE!', [twistLine()].filter(Boolean), 1.2); }
+  if (st === 'cdone' && show.part.includes(net.id) && show.ok) { sfx('cheer'); burst(player.pos); setTimeout(() => addCoins(8, 'koostöö!'), 600); addXp(15); addTrophies(2); }
+  if (st === 'cwin') {
+    sfx('fanfare'); burst(player.pos); fwT = 0;
+    if (show.part.includes(net.id)) { const old = prog.coopBest || 0; if (!old || show.ct < old) prog.coopBest = show.ct; saveProg(); setTimeout(() => addCoins(30, 'kõik koostöörajad!'), 900); addXp(60); addTrophies(6); }
+  }
 }
 
 renderer.setAnimationLoop(() => {
@@ -3529,9 +3766,9 @@ renderer.setAnimationLoop(() => {
     if (n !== lastCd) {
       lastCd = n;
       const nm = mapName(show.rt, show.ti);
-      const desc = show.mode === 'levels' ? (levelStars(show.level) ? 'Rekord ' + prog.levels[show.level].t + ' s · 3 tähte alla ' + (TR.par || 40) + ' s' : '3 tähte, kui jõuad alla ' + (TR.par || 40) + ' s') : show.rt === 'race' && TRACKS[show.ti] && TRACKS[show.ti].custom ? 'Teie enda ehitatud rada! Esimesed ' + show.quota + ' edasi' : show.rt === 'race' ? 'Esimesed ' + show.quota + ' pääsevad edasi' : show.final ? 'Viimane püstiseisja võidab krooni!' : ARENAS[show.rt].desc;
+      const desc = show.mode === 'coop' ? 'Kõik peavad finišisse jõudma · seiske koos kollastel nuppudel!' : show.mode === 'levels' && show.level === 0 ? dailyDesc() : show.mode === 'levels' ? (levelStars(show.level) ? 'Rekord ' + prog.levels[show.level].t + ' s · 3 tähte alla ' + (TR.par || 40) + ' s' : '3 tähte, kui jõuad alla ' + (TR.par || 40) + ' s') : show.rt === 'race' && TRACKS[show.ti] && TRACKS[show.ti].custom ? 'Teie enda ehitatud rada! Esimesed ' + show.quota + ' edasi' : show.rt === 'race' ? 'Esimesed ' + show.quota + ' pääsevad edasi' : show.final ? 'Viimane püstiseisja võidab krooni!' : ARENAS[show.rt].desc;
       if (n <= 3 && n > 0) { showMsg(String(n), [], 1.1); sfx('beep'); }
-      else if (n > 3) showMsg(nm, [show.mode === 'levels' ? 'Tasemete režiim' : (show.final ? 'FINAAL · ' : 'Voor ' + show.rn + ' · ') + show.part.length + ' mängijat', desc, spectating ? 'Sina vaatad pealt' : ''], 1.2);
+      else if (n > 3) showMsg(nm, [show.mode === 'coop' ? '🤝 Koostöö · rada ' + show.cl + '/' + COOPS.length : show.mode === 'levels' ? (show.level ? 'Tasemete režiim' : '📅 Päeva väljakutse') : (show.final ? 'FINAAL · ' : 'Voor ' + show.rn + ' · ') + show.part.length + ' mängijat', desc, twistLine(), spectating ? 'Sina vaatad pealt' : ''].filter(Boolean), 1.2);
     }
   }
 
@@ -3620,7 +3857,7 @@ renderer.setAnimationLoop(() => {
     if (dx * dx + dy * dy + dz * dz < 0.8) { c.taken = true; c.m.visible = false; coins++; saveProg(); sfx('coin'); questTick('coin'); addXp(1); if (show.stage === 'trenn') practiceDone('coin'); puff(c.m.position, 0xffd43b, 6, 1.2, 0.4, 0.8); }
   }
   // ilutulestik kroonimisel
-  if (show.stage === 'crown') {
+  if (show.stage === 'crown' || show.stage === 'cwin') {
     fwT -= dt;
     if (fwT <= 0) {
       fwT = 0.4; const c = posOf(show.winner) || player.pos;
@@ -3628,6 +3865,9 @@ renderer.setAnimationLoop(() => {
       puff(pt, [0xff3d8b, 0xffd43b, 0x2f9bff, 0x22c55e, 0xb388ff][Math.floor(Math.random() * 5)], 14, 4.5, 0.9, 1.2); sfx('pop');
     }
   }
+  { const sc = twOn('hiid') ? 1.45 : 1;
+    if (sc !== lastTwScale || (sc !== 1 && Math.random() < 0.05)) { lastTwScale = sc; bots.forEach(b => b.mesh && b.mesh.scale.setScalar(sc)); remoteBots.forEach(rb => rb.mesh.scale.setScalar(sc)); for (const pp of net.peers.values()) if (pp.avatar) pp.avatar.scale.setScalar(sc); } }
+  feedTick();
   replayTick(dt, t, vr);
   updateDrops(dt);
   dropCd = Math.max(0, dropCd - dt);
@@ -3676,8 +3916,11 @@ renderer.setAnimationLoop(() => {
       if (buildAimCache) line = 'Rajaehitaja · ' + (renderer.xr.isPresenting ? 'parem päästik = ehita, vasak = kustuta, B = tüüp' : isTouch ? 'nupud all' : 'F = ehita, G = kustuta, T = tüüp') + ' (' + BUILD_TYPES[buildType] + ')';
       else line = 'Ootesaal · ' + (net.isHost ? (renderer.xr.isPresenting ? 'Astu rohelisele ringile, et alustada' : 'Vajuta ALUSTA, kui kõik on kohal') : 'Ootame, kuni ' + nameOf(net.hostId) + ' alustab');
     } else if (show.mode === 'levels') {
-      const rec = prog.levels[show.level];
-      line = 'Tase ' + show.level + ' · ' + (show.stage === 'lvdone' ? myFinishTime.toFixed(1) : tau.toFixed(1)) + ' s' + (rec ? ' · rekord ' + rec.t + ' s' : '') + ' · 3⭐ alla ' + (TR.par || 40) + ' s';
+      const rec = show.level ? prog.levels[show.level] : (prog.daily && prog.daily.day === dayKey() ? prog.daily : null);
+      line = (show.level ? 'Tase ' + show.level : '📅 Päeva väljakutse') + ' · ' + (show.stage === 'lvdone' ? myFinishTime.toFixed(1) : tau.toFixed(1)) + ' s' + (rec ? ' · rekord ' + rec.t + ' s' : '') + ' · 3⭐ alla ' + (TR.par || 40) + ' s';
+    } else if (show.mode === 'coop') {
+      const hs = show.part.filter(isHuman);
+      line = '🤝 Koostöö ' + show.cl + '/' + COOPS.length + ' · ' + clock + ' · finišis ' + hs.filter(id => show.q.includes(id)).length + '/' + hs.length + (show.ct ? ' · kokku ' + Math.round(show.ct) + ' s' : '');
     } else if (show.stage === 'trenn') {
       line = practiceLine();
     } else if (spectating) {
@@ -3698,17 +3941,22 @@ renderer.setAnimationLoop(() => {
     } else line = TR.name + ' · alles ' + show.inR.length + (show.final ? '' : ' · edasi ' + show.quota) + ' · ' + clock;
     if (player.pw && player.pwT > now() && !spectating) { const pw = POWERS.find(p => p.id === player.pw); if (pw) line = pw.name + ' ' + Math.ceil(player.pwT - now()) + 's · ' + line; }
     if (raining) line = '🌧️ ' + line;
+    if (show.tw && twOn(show.tw)) line = TWISTS[show.tw].split(' ')[0] + ' ' + line;
     drawStats(line);
-    if (show.stage === 'results') {
+    if (show.stage === 'cdone') {
+      showMsg(show.ok ? 'Rada läbitud! 🤝' : 'Aeg sai otsa…', [show.ok ? 'Tiimi aeg ' + show.lt + ' s' : 'Proovime sama rada uuesti', show.ok && show.cl < COOPS.length ? 'Järgmine rada ' + Math.max(0, Math.ceil(show.ea + 6 - t)) + ' s pärast' : show.ok ? 'See oli viimane rada!' : 'Uus katse ' + Math.max(0, Math.ceil(show.ea + 6 - t)) + ' s pärast'], 1, true);
+    } else if (show.stage === 'cwin') {
+      showMsg('KOOSTÖÖ VÕIDETUD! 🏆', ['Kõik ' + COOPS.length + ' rada läbitud', 'Kogu aeg ' + Math.round(show.ct) + ' s' + (prog.coopBest ? ' · rekord ' + Math.round(prog.coopBest) + ' s' : ''), 'Tagasi ootesaali ' + Math.max(0, Math.ceil(show.ea + 9 - t)) + ' s'], 1, true);
+    } else if (show.stage === 'results') {
       showMsg(show.alive.includes(net.id) ? 'Pääsesid edasi!' : show.part.includes(net.id) ? 'Langesid välja' : 'Voor läbi!',
         [...(TEAM[show.rt] ? [show.winTeam >= 0 ? 'Võitis ' + TEAM_NAMES[show.winTeam] + ' (' + show.score[0] + ':' + show.score[1] + ')' : 'Viik ' + show.score[0] + ':' + show.score[1]] : []),
          'Edasi pääses ' + show.alive.length + '/' + show.part.length, 'Järgmine voor ' + Math.max(0, Math.ceil(show.ea + 6.5 - t)) + ' s pärast'], 1, true);
     } else if (show.stage === 'crown') {
       const nm = nameOf(show.winner);
-      showMsg(show.winner === net.id ? 'SINA VÕITSID!' : 'Võitja: ' + nm, ['👑 ' + nm + ' – kroone kokku ' + (show.crowns[nm] || 1), 'Tagasi ootesaali ' + Math.max(0, Math.ceil(show.ea + 9 - t)) + ' s'], 1, true);
+      showMsg(show.winner === net.id ? 'SINA VÕITSID!' : 'Võitja: ' + nm, ['👑 ' + nm + ' – kroone kokku ' + (show.crowns[nm] || 1), ...(show.aw || []).slice(0, 2).map(a => a[0] + ': ' + a[1]), 'Tagasi ootesaali ' + Math.max(0, Math.ceil(show.ea + 9 - t)) + ' s'], 1, true);
     } else if (show.rt === 'race' && player.finished && show.stage === 'play') {
       const qi = show.q.indexOf(net.id);
-      showMsg('Finiš!', [(qi >= 0 ? (qi + 1) + '. koht · ' : '') + myFinishTime.toFixed(1) + ' s', 'Pääsesid edasi – ootame teisi…'], 1, true);
+      showMsg('Finiš!', [(qi >= 0 ? (qi + 1) + '. koht · ' : '') + myFinishTime.toFixed(1) + ' s', show.mode === 'coop' ? 'Ootame tiimikaaslasi – mine aita neid nuppudel!' : 'Pääsesid edasi – ootame teisi…'], 1, true);
     } else if (msgSticky) hideMsg();
     updateHud();
   }
