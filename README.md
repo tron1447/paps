@@ -1,4 +1,4 @@
-[index (43).html](https://github.com/user-attachments/files/33925996/index.43.html)
+[index (44).html](https://github.com/user-attachments/files/33926867/index.44.html)
 <!doctype html>
 <html lang="et">
 <head>
@@ -26,7 +26,8 @@ button.big{flex:1;min-width:150px;font-size:17px;font-weight:700;padding:13px;bo
 #status{margin-top:10px;font-size:14px;min-height:18px}
 #hud{position:fixed;left:12px;top:12px;background:var(--card);padding:8px 12px;border-radius:12px;font-size:13px;line-height:1.45;max-width:360px;display:none;z-index:5}
 details{font-size:13px;margin-top:10px}
-canvas{touch-action:none}
+canvas{touch-action:none;display:block}
+@media (max-height:480px){#stick{width:110px;height:110px;left:16px;bottom:16px}#knob{left:32px;top:32px;width:46px;height:46px}#tJump{width:80px;height:80px;right:18px;bottom:18px}#tGrab{width:60px;height:60px;right:110px;bottom:14px}#tEmote{width:50px;height:50px;right:30px;bottom:110px}#startBtn{font-size:16px;padding:10px 18px;top:8px}#hud{font-size:12px;padding:5px 9px;top:6px;left:6px}}
 #touch{display:none;position:fixed;inset:0;pointer-events:none;z-index:6;user-select:none;-webkit-user-select:none}
 #touch.on{display:block}
 #stick{position:absolute;left:24px;bottom:28px;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,.28);border:3px solid rgba(255,255,255,.7);pointer-events:auto;touch-action:none}
@@ -58,6 +59,7 @@ small{opacity:.8}
   <div class="row" style="margin-top:6px">
     <label><input type="checkbox" id="easy"> Lihtne režiim (noorematele)</label>
     <label><input type="checkbox" id="music" checked> Muusika</label>
+    <label><input type="checkbox" id="bots" checked> Robotid ka (sõpradega)</label>
   </div>
   <label class="t">Graafika</label>
   <div class="row">
@@ -71,7 +73,7 @@ small{opacity:.8}
   <div id="status"></div>
   <details><summary><b>Juhtimine</b></summary>
   <p><b>Arvutis:</b> klõpsa ekraanil, WASD + hiir, tühik = hüppa, E (hoia) = haara, 1–4 = emotikonid, Enter = alusta, R = tagasi ootesaali (ainult juht).<br>
-  <b>VR kätega:</b> lükka kätega vastu maad ja seinu, vehi hooga, et hüpata. Parem pulk vasak/parem = pööra, <b>üles/alla = maapinna kõrgus</b>. Grip = haara. Käsi üle pea ja lehvita = „Tere!”. Pulgavajutus = emotikon, Y = „GG”. B (hoia) = tagasi ootesaali.<br>
+  <b>VR kätega:</b> lükka kätega vastu maad ja seinu, vehi hooga, et hüpata. Parem pulk vasak/parem = pööra, <b>üles/alla = maapinna kõrgus</b>. Grip = haara. Käsi üle pea ja lehvita = „Tere!”. Pulgavajutus = emotikon. <b>Y = VR-menüü</b> (nimi, värv, müts, seaded). B (hoia) = tagasi ootesaali.<br>
   <b>VR pulgaga:</b> vasak pulk = liigu, A/X = hüppa, muu sama.</p></details>
   <p><small><b>Telefonis:</b> vasak ring = liigu, lohista ekraani = vaata ringi, nupud = hüppa / haara / emotikon.<br>
   <b>Alustamine:</b> üksi mängides vajuta „Alusta” või astu rohelisele ringile. Sõpradega mängides alustab <b>esimene ruumi tulnud mängija</b>.</small></p>
@@ -106,6 +108,7 @@ renderer.xr.setReferenceSpaceType('local-floor');
 document.body.appendChild(renderer.domElement);
 const vrBtn = VRButton.createButton(renderer);
 vrBtn.style.zIndex = 20;
+if (!HEADSET && (('ontouchstart' in window) || (window.matchMedia && matchMedia('(pointer: coarse)').matches))) vrBtn.style.display = 'none';
 document.body.appendChild(vrBtn);
 
 const scene = new THREE.Scene();
@@ -116,7 +119,16 @@ const camera = new THREE.PerspectiveCamera(70, innerWidth / innerHeight, 0.05, 3
 const rig = new THREE.Group();
 scene.add(rig); rig.add(camera);
 camera.position.set(0, 1.6, 0);
-addEventListener('resize', () => { camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); });
+let fitW = 0, fitH = 0;
+function fitScreen() {   // telefoni pööramisel kohanda pilt kogu ekraanile
+  if (renderer.xr.isPresenting) return;
+  const w = (window.visualViewport && visualViewport.width) || innerWidth, h = (window.visualViewport && visualViewport.height) || innerHeight;
+  if (Math.abs(w - fitW) < 1 && Math.abs(h - fitH) < 1) return;
+  fitW = w; fitH = h;
+  camera.aspect = w / h; camera.updateProjectionMatrix(); renderer.setSize(w, h);
+}
+addEventListener('resize', fitScreen);
+addEventListener('orientationchange', () => { setTimeout(fitScreen, 150); setTimeout(fitScreen, 600); });
 
 scene.add(new THREE.HemisphereLight(0xeaf6ff, 0xb48ad6, 1.0));
 const sun = new THREE.DirectionalLight(0xfff4e0, 1.7); sun.position.set(14, 32, 10); scene.add(sun); scene.add(sun.target);
@@ -136,6 +148,13 @@ const mat = c => mats[c] || (mats[c] = new THREE.MeshToonMaterial({ color: c, gr
 // ruuduline muster suurtele põrandatele
 const checkerImg = (() => { const cv = document.createElement('canvas'); cv.width = cv.height = 64; const x = cv.getContext('2d'); x.fillStyle = '#ffffff'; x.fillRect(0, 0, 64, 64); x.fillStyle = '#e4e4ee'; x.fillRect(0, 0, 32, 32); x.fillRect(32, 32, 32, 32); return cv; })();
 const checkMats = {};
+function conveyorMat(w, d) {   // liikuva lindi nooled
+  const cv = document.createElement('canvas'); cv.width = 64; cv.height = 64; const x = cv.getContext('2d');
+  x.fillStyle = '#7d8794'; x.fillRect(0, 0, 64, 64); x.fillStyle = '#ffd43b';
+  x.beginPath(); x.moveTo(32, 50); x.lineTo(10, 28); x.lineTo(22, 28); x.lineTo(22, 10); x.lineTo(42, 10); x.lineTo(42, 28); x.lineTo(54, 28); x.closePath(); x.fill();
+  const tex = new THREE.CanvasTexture(cv); tex.wrapS = tex.wrapT = THREE.RepeatWrapping; tex.repeat.set(Math.round(w / 2), Math.round(d / 2)); tex.colorSpace = THREE.SRGBColorSpace;
+  return new THREE.MeshToonMaterial({ map: tex, gradientMap: gradTex });
+}
 const discMats = {};
 function checkerDiscMat(color) {   // ketastele kiirjas muster
   if (discMats[color]) return discMats[color];
@@ -249,7 +268,7 @@ const show = { sid: '', stage: 'lobby', rn: 0, rt: 'lobby', ti: 0, rid: '', sa: 
 const hostOnly = { padT: 0, falls: {}, immune: {}, prevType: '', tailTimer: 0 };
 const S = () => show.easy ? 0.65 : 1;
 const SURVIVAL = { areen: 1, plaadid: 1 };
-let myName = 'Mängija', loco = 'arms', roomCode = '', musicOn = true, wantEasy = false;
+let myName = 'Mängija', loco = 'arms', roomCode = '', musicOn = true, wantEasy = false, wantBots = true;
 const HUMAN_COLORS = [0xff3d8b, 0x2f9bff, 0x22c55e, 0xf59e0b, 0x8b5cf6, 0x06b6d4, 0xef4444, 0xfacc15];
 const HATS = ['Puudub', 'Müts', 'Kõrvad', 'Sarv', 'Lill', 'Propeller'];
 let myColor = HUMAN_COLORS[Math.floor(Math.random() * HUMAN_COLORS.length)], myHat = 1;
@@ -330,7 +349,7 @@ function setMusic(on) { musicOn = on; if (musicGain) musicGain.gain.value = on ?
 const trackGroup = new THREE.Group(); scene.add(trackGroup);
 let TR = null;
 function newTR(kind, name) {
-  return { kind, name, solids: [], movers: [], sweepers: [], tiles: [], balls: [], cps: [], wps: [], finishZ: -90,
+  return { kind, name, solids: [], movers: [], sweepers: [], tiles: [], balls: [], pendulums: [], spinners: [], convs: [], cps: [], wps: [], finishZ: -90,
     outY: -6, gooY: -6, spawn: raceSpawn, center: new V3(0, 0, -12) };
 }
 function raceSpawn(i, n, out) { out.set(-4 + (i % 5) * 2, 0.3, 1.0 + Math.floor(i / 5) * 1.3); }
@@ -341,12 +360,14 @@ function rbox(w, h, d) {   // ümarate servadega kast (jagatud geomeetria)
   return g;
 }
 function box(x, top, z, w, h, d, color, opts = {}) {
-  const material = opts.bounce ? bounceMat : opts.ice ? iceMat : (w >= 5.5 && d >= 5.5 ? checkerMat(color, w, d) : mat(color));
-  const m = new THREE.Mesh(rbox(w, h, d), material);
+  let material = opts.bounce ? bounceMat : opts.ice ? iceMat : (w >= 5.5 && d >= 5.5 ? checkerMat(color, w, d) : mat(color));
+  if (opts.conveyor) material = conveyorMat(w, d);
+  const m = new THREE.Mesh(opts.flat ? new THREE.BoxGeometry(w, h, d) : rbox(w, h, d), material);
   m.position.set(x, top - h / 2, z); trackGroup.add(m);
   m.castShadow = true; m.receiveShadow = true;
   const s = Object.assign({ type: 'box', mesh: m, hw: w / 2, hh: h / 2, hd: d / 2, vel: new V3(), delta: new V3(), active: true }, opts);
   if (s.move) { s.move.base = m.position[s.move.axis]; s.move.init = false; TR.movers.push(s); }
+  if (s.conveyor) { TR.convs.push({ s, tex: material.map, len: d }); }
   if (s.bounce) {
     const ring = new THREE.Mesh(new THREE.TorusGeometry(Math.min(w, d) * 0.36, 0.09, 8, 28), mat(0xffffff)); ring.rotation.x = Math.PI / 2; ring.position.y = h / 2 + 0.03; m.add(ring);
     const dot = new THREE.Mesh(new THREE.CylinderGeometry(Math.min(w, d) * 0.16, Math.min(w, d) * 0.16, 0.04, 20), mat(0xffffff)); dot.position.y = h / 2 + 0.02; m.add(dot);
@@ -361,7 +382,8 @@ function cyl(x, top, z, r, h, color, opts = {}) {
   m.position.set(x, top - h / 2, z); trackGroup.add(m);
   m.castShadow = true; m.receiveShadow = true;
   if (r > 2) { const rim = new THREE.Mesh(new THREE.TorusGeometry(r - 0.05, 0.13, 8, 64), mat(0xffffff)); rim.rotation.x = Math.PI / 2; rim.position.y = h / 2; m.add(rim); }
-  const s = Object.assign({ type: 'cyl', mesh: m, r, hh: h / 2, vel: new V3(), delta: new V3(), active: true }, opts);
+  const s = Object.assign({ type: 'cyl', mesh: m, r, hh: h / 2, vel: new V3(), delta: new V3(), active: true, ang: 0, spinD: 0 }, opts);
+  if (s.spin) { TR.spinners.push(s); for (let i = 0; i < 4; i++) { const a = i / 4 * Math.PI * 2; const ar = new THREE.Mesh(new THREE.ConeGeometry(0.3, 0.6, 3), mat(0xffffff)); ar.rotation.set(-Math.PI / 2, 0, (s.spin > 0 ? 1 : -1) * Math.PI / 2 - a); ar.position.set(Math.cos(a) * r * 0.62, h / 2 + 0.03, -Math.sin(a) * r * 0.62); ar.scale.set(1, 1, 0.15); m.add(ar); } }
   TR.solids.push(s); return s;
 }
 function sweeper(x, z, baseTop, L, omega, bars = 1, phase = 0) {
@@ -555,7 +577,57 @@ const TRACKS = [
       { x: 0, z: -44, wide: 1.5 }, { x: 0, z: -50, wide: 1 }, { x: 0, z: -64, wide: 1.5 }, { x: 0, z: -71, wide: 3 },
     ];
   } },
+  { name: 'Pendlirada', build() {
+    box(0, 0, 0, 10, 1, 10, C.green); arch(4.5, 0, C.red);
+    box(0, 0, -14, 3, 1, 18, C.blue);
+    pendulum(-9, 1.6, 0); pendulum(-14, 1.9, 2.1); pendulum(-19, 1.7, 4.0);
+    box(0, 0, -27, 8, 1, 6, C.purple);
+    cyl(0, 0, -35, 3.5, 1, C.yellow, { spin: 0.8 }); cyl(0, 0, -42.5, 3.5, 1, C.pink, { spin: -0.9 }); cyl(0, 0, -50, 3.5, 1, C.green, { spin: 1.0 });
+    box(0, 0, -57, 8, 1, 4, C.purple);
+    box(0, 0, -68, 6, 1, 18, 0x9aa5b1, { conveyor: 2.0, flat: true });
+    box(0, 1.2, -64, 1.6, 1.2, 1.2, C.red, { move: { axis: 'x', amp: 2, speed: 1.5, phase: 0 }, pusher: true });
+    box(0, 1.2, -71, 1.6, 1.2, 1.2, C.red, { move: { axis: 'x', amp: 2, speed: 1.5, phase: 2 }, pusher: true });
+    box(0, 0, -82, 10, 1, 8, C.yellow);
+    TR.finishZ = -79; finishDeco(-79, 0);
+    cp(99, 0, 0, 1.5); cp(-24.5, 0, 0, -27); cp(-55.5, 0, 0, -57);
+    TR.wps = [
+      { x: 0, z: -6 }, { x: 0, z: -11.5 }, { x: 0, z: -16.5 }, { x: 0, z: -22 }, { x: 0, z: -27, wide: 2 },
+      { x: 0, z: -33 }, { x: 0, z: -40 }, { x: 0, z: -48 }, { x: 0, z: -55.5, wide: 2 },
+      { x: 0, z: -62, wide: 1.5 }, { x: 0, z: -75, wide: 1.5 }, { x: 0, z: -83, wide: 3 },
+    ];
+  } },
+  { name: 'Taevatrepp', build() {
+    box(0, 0, 0, 10, 1, 10, C.green); arch(4.5, 0, C.yellow);
+    box(0, 0, -7, 4, 0.5, 4, C.orange, { bounce: true });
+    box(0, 3, -12, 6, 3.2, 5, C.purple);
+    cyl(0, 3, -18.5, 3.5, 1, C.yellow, { spin: 0.9 });
+    box(0, 3, -27, 1.6, 1, 8, C.blue);
+    sweeper(0, -27, 3, 3, 1.2, 1);
+    tileGrid(-0.95, -33.5, 2, 3, 3.6); tileGrid(-0.95, -39.2, 2, 3, 4.2);
+    box(0, 4.8, -47, 6, 1, 6, C.purple);
+    box(0, 4.8, -52, 3, 0.5, 3, C.orange, { bounce: true });
+    box(0, 7.5, -59, 10, 3, 10, C.yellow);
+    TR.finishZ = -56.5; finishDeco(-56.5, 7.5);
+    cp(99, 0, 0, 1.5); cp(-10, 0, 3, -12.5); cp(-23.5, 0, 3, -24); cp(-44.5, 0, 4.8, -47);
+    TR.wps = [
+      { x: 0, z: -6 }, { x: 0, z: -7.5 }, { x: 0, z: -12, wide: 1.5 }, { x: 0, z: -18.5 }, { x: 0, z: -23.5 }, { x: 0, z: -31 },
+      { x: 0, z: -34 }, { x: 0, z: -42 }, { x: 0, z: -47, wide: 1.5 }, { x: 0, z: -52 }, { x: 0, z: -60, wide: 3 },
+    ];
+  } },
 ];
+function pendulum(z, speed, phase) {   // kiikuv kuul üle silla
+  const piv = new V3(0, 6, z), len = 5.2, R = 0.8;
+  const frame = new THREE.Group(); frame.position.set(0, 0, z);
+  [-4.6, 4.6].forEach(x => { const p = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.22, 6.2, 10), mat(0xffffff)); p.position.set(x, 3.0, 0); frame.add(p); });
+  const top = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 9.4, 10), mat(0xffffff)); top.rotation.z = Math.PI / 2; top.position.y = 6.05; frame.add(top);
+  shadowAll(frame, true, false); trackGroup.add(frame);
+  const g = new THREE.Group(); g.position.copy(piv);
+  const rope = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, len, 6), mat(0x8b5a3c)); rope.position.y = -len / 2; g.add(rope);
+  const b = new THREE.Mesh(new THREE.SphereGeometry(R, 20, 14), mat(0xff3b3b)); b.position.y = -len; g.add(b);
+  const st = new THREE.Mesh(new THREE.TorusGeometry(R * 1.0, R * 0.12, 8, 24), mat(0xffffff)); st.position.y = -len; g.add(st);
+  shadowAll(g, true, false); trackGroup.add(g);
+  TR.pendulums.push({ g, piv, len, r: R, speed, phase, amp: 1.0, pos: new V3(), vx: 0 });
+}
 
 // ---------- areenid ----------
 function accelAngle(t, w0, acc, wmax) {
@@ -837,7 +909,15 @@ function shakeTile(i, broadcast) {
 }
 function hurt(e) { if (e.isPlayer) { clearHands(); buzz(0, 0.8, 80); buzz(1, 0.8, 80); sfx('hit'); } }
 function stepEntity(e, dt) {
-  if (e.standingOn && e.standingOn.active && !e.holding) e.pos.add(e.standingOn.delta);
+  if (e.standingOn && e.standingOn.active && !e.holding) {
+    const so0 = e.standingOn;
+    e.pos.add(so0.delta);
+    if (so0.spin && so0.spinD) {   // pöörlev ketas kannab kaasa
+      const c = so0.mesh.position, dx = e.pos.x - c.x, dz = e.pos.z - c.z, ca = Math.cos(so0.spinD), sa = Math.sin(so0.spinD);
+      e.pos.x = c.x + dx * ca + dz * sa; e.pos.z = c.z - dx * sa + dz * ca;
+    }
+    if (so0.conveyor) e.pos.z += so0.conveyor * S() * dt;
+  }
   if (!e.holding) e.vel.y -= G * dt;
   const prevY = e.pos.y;
   e.pos.addScaledVector(e.vel, dt);
@@ -877,6 +957,15 @@ function stepEntity(e, dt) {
   if (so && e.onGround && !so.move && !so.tile && !so.bounce && !so.spec) e.lastSafe.copy(e.pos);
   for (const sw of TR.sweepers) hitSweeper(e, sw);
   for (const b of TR.balls) hitBall(e, b);
+  for (const p of TR.pendulums) {
+    const dx = e.pos.x - p.pos.x, dz = e.pos.z - p.pos.z, d = Math.hypot(dx, dz);
+    if (d < p.r + e.r && e.pos.y < p.pos.y + p.r && e.pos.y + e.h > p.pos.y - p.r) {
+      const nx = d > 1e-4 ? dx / d : Math.sign(p.vx) || 1, nz = d > 1e-4 ? dz / d : 0;
+      e.pos.x = p.pos.x + nx * (p.r + e.r); e.pos.z = p.pos.z + nz * (p.r + e.r);
+      e.vel.set(nx * 3 + Math.sign(p.vx) * Math.min(8, Math.abs(p.vx) * 1.3 + 2), 5, nz * 3); e.knock = 0.6; e.onGround = false; e.standingOn = null;
+      hurt(e);
+    }
+  }
   e.knock = Math.max(0, e.knock - dt);
 }
 function nearPlayer(e) { return e.isPlayer || (Math.abs(e.pos.x - player.pos.x) < 30 && Math.abs(e.pos.z - player.pos.z) < 30); }
@@ -1188,6 +1277,9 @@ function raceAI(b, dt) {
     if (b.standingOn !== wp.liftOff && b.onGround && b.pos.y > wp.top - 0.3 && (dist < 1.2 || b.pos.z < p.z)) b.wi++;
   } else if (dist < 1.2 || b.pos.z < p.z + (wp.wide ? 0.6 : -0.3)) b.wi = Math.min(b.wi + 1, TR.wps.length - 1);
   if (waiting) { steer(b, 0, 0, dt); return; }
+  for (const pd of TR.pendulums) {   // oota, kuni kiikuv kuul on eest läinud
+    if (b.pos.z > pd.piv.z + 0.9 && b.pos.z - pd.piv.z < 2.6 && Math.abs(pd.pos.x - b.pos.x) < 2.6 && b.onGround) { steer(b, 0, 0, dt); return; }
+  }
   if (TR.balls.length) {           // põikle veerevatest pallidest kõrvale
     const danger = x => { let m = 99; for (const bl of TR.balls) { if (bl.r < 0.3 || bl.pos.z > b.pos.z + 0.5 || b.pos.z - bl.pos.z > 8) continue; if (Math.abs(bl.pos.x - x) < bl.r + 0.6) m = Math.min(m, b.pos.z - bl.pos.z); } return m; };
     if (danger(p.x) < 8) {
@@ -1353,7 +1445,8 @@ function makeBots(n) {
 function enterLobby() {
   show.stage = 'lobby'; show.rt = 'lobby'; show.ti = 0; show.rid = newId(); show.part = []; show.alive = []; show.inR = []; show.q = []; show.fo = []; show.tails = []; show.lastOut = [];
   show.easy = wantEasy;
-  const n = Math.max(3, 10 - humanIds().length);
+  show.bots = !net.on || wantBots;     // üksi mängides on robotid alati
+  const n = show.bots ? Math.max(3, 10 - humanIds().length) : 0;
   if (bots.length !== n) makeBots(n);
   bots.forEach((b, i) => { b.visible = true; b.mesh.visible = true; b.pos.set(rnd(-6, 6), 0.3, rnd(-6, 6)); b.vel.set(0, 0, 0); b.finished = false; b.grabbing = null; b.grabbedBy = null; });
   hostOnly.padT = 0;
@@ -1365,7 +1458,8 @@ function startShow() {
 }
 function pickRound() {
   const n = show.alive.length, rn = show.rn;
-  if (n <= 3 || rn >= 4) return { rt: Math.random() < 0.5 ? 'plaadid' : 'areen', final: true };
+  // ainult sõpradega: keegi ei lange välja, 3 vooru + finaal
+  if ((show.bots && n <= 3) || rn >= 4 || n <= 1 && show.bots) return { rt: Math.random() < 0.5 ? 'plaadid' : 'areen', final: true };
   let options;
   if (rn === 1) options = ['race'];
   else if (rn === 2) options = ['race', 'race', 'saba'];
@@ -1382,6 +1476,7 @@ function nextRound() {
   show.part = show.alive.slice(); show.inR = show.alive.slice(); show.q = []; show.fo = []; show.lastOut = [];
   const n = show.part.length;
   show.quota = final ? 1 : rt === 'race' ? Math.max(1, Math.ceil(n * 0.65)) : rt === 'saba' ? Math.max(1, Math.ceil(n * 0.5)) : Math.max(1, Math.ceil(n * 0.6));
+  if (!show.bots && !final) show.quota = rt === 'race' ? n : rt === 'saba' ? Math.max(1, Math.ceil(n * 0.5)) : 1;
   show.tails = [];
   if (rt === 'saba') {
     const sh = show.part.slice().sort(() => Math.random() - 0.5);
@@ -1403,8 +1498,9 @@ const isHuman = id => !id.startsWith('#');
 function endRound() {
   let next;
   const P = show.part;
-  if (show.rt === 'race') next = P.filter(id => show.q.includes(id) || (show.easy && isHuman(id)));
-  else if (show.rt === 'saba') next = P.filter(id => show.tails.includes(id) || (show.easy && isHuman(id)));
+  if (!show.bots && !show.final) next = P.slice();       // ainult sõbrad: kõik jätkavad finaalini
+  else if (show.rt === 'race') next = P.filter(id => show.q.includes(id) || (show.easy && isHuman(id)));
+  else if (show.rt === 'saba' && show.bots) next = P.filter(id => show.tails.includes(id) || (show.easy && isHuman(id)));
   else next = show.inR.slice();
   if (!next.length) next = P.slice(0, 1);
   if (show.final) {
@@ -1448,8 +1544,8 @@ function hostTick(dt) {
       else tailSteals(dt);
     } else {
       const bleft = show.inR.filter(id => !isHuman(id)).length;
-      const onlyHumansEasy = show.easy && bleft === 0;
-      if (show.final) { if (show.inR.length <= 1 || onlyHumansEasy || tau > 150) endRound(); }
+      const onlyHumansEasy = show.easy && show.bots && bleft === 0;
+      if (show.final) { if (show.inR.length <= 1 || onlyHumansEasy || tau > (show.easy && !show.bots ? 60 : 150)) endRound(); }
       else if (show.inR.length <= show.quota || onlyHumansEasy || tau > 70) endRound();
     }
   }
@@ -1687,7 +1783,7 @@ function handleInput(dt, canMove) {
       const hi = left ? 0 : 1;
       if (b[1] && b[1].pressed) grip[hi] = true;
       if (edge((left ? 'L' : 'R') + '3', !!(b[3] && b[3].pressed))) doEmote(left ? 1 : 2);
-      if (left && edge('Y', !!(b[5] && b[5].pressed))) doEmote(3);
+      if (left && edge('Y', !!(b[5] && b[5].pressed))) { if (vrMenu.open) closeVrMenu(); else if (started) openVrMenu(true); }
       if (!left && b[5] && b[5].pressed) bDown = true;
       idx++;
     }
@@ -1749,6 +1845,18 @@ function updateWorld(dt, force) {
     sw.group.visible = sw.activeFn ? sw.active : true;
     sw.group.rotation.y = sw.a;
   }
+  for (const p of TR.pendulums) {
+    const a = p.amp * Math.sin(t * p.speed * s + p.phase);
+    p.vx = p.len * Math.cos(a) * p.amp * p.speed * s * Math.cos(t * p.speed * s + p.phase);
+    p.g.rotation.z = a;
+    p.pos.set(p.piv.x + p.len * Math.sin(a), p.piv.y - p.len * Math.cos(a), p.piv.z);
+  }
+  for (const sp of TR.spinners) {
+    const na = sp.spin * s * t;
+    sp.spinD = force ? 0 : na - sp.ang; if (Math.abs(sp.spinD) > 0.5) sp.spinD = 0;
+    sp.ang = na; sp.mesh.rotation.y = na;
+  }
+  for (const c of TR.convs) if (c.tex) c.tex.offset.y += (c.s.conveyor * s * dt) / 2;
   for (const b of TR.balls) {
     const len = b.zNear - b.zFar;
     const u = (((t * b.speed * s + b.offset) % len) + len) % len;
@@ -1813,7 +1921,7 @@ function readMenu() {
   myName = ($('name').value.trim() || 'Mängija').slice(0, 12);
   try { localStorage.setItem('kp_name', myName); } catch (e) {}
   loco = document.querySelector('input[name=loco]:checked').value;
-  wantEasy = $('easy').checked; setMusic($('music').checked);
+  wantEasy = $('easy').checked; wantBots = $('bots').checked; setMusic($('music').checked);
   const gsel = document.querySelector('input[name=gfx]:checked'); if (gsel && gsel.value !== gfx) setGfx(gsel.value);
   audioInit();
 }
@@ -1832,7 +1940,157 @@ function startGame(online) {
   if (net.isHost) { show.easy = wantEasy; enterLobby(); loadForShow(); }
   updateHud();
 }
-renderer.xr.addEventListener('sessionstart', () => { if (!started) { readMenu(); startGame(false); } audioInit(); clearHands(); headStand = 1.5; updateHud(); });
+renderer.xr.addEventListener('sessionstart', () => {
+  audioInit(); clearHands(); headStand = 1.5;
+  if (!started) { readMenu(); openVrMenu(false); }
+  updateHud();
+});
+
+// =====================================================================
+// VR MENÜÜ (laserkiirega, kontrolleri päästik = vali)
+// =====================================================================
+const vrMenu = { open: false, screen: 'main', edit: '', text: '', hover: null, items: [], status: '', inGame: false, place: true };
+const MW = 1024, MH = 820;
+const menuCv = document.createElement('canvas'); menuCv.width = MW; menuCv.height = MH;
+const menuCtx = menuCv.getContext('2d');
+const menuTex = new THREE.CanvasTexture(menuCv); menuTex.colorSpace = THREE.SRGBColorSpace;
+const menuMesh = new THREE.Mesh(new THREE.PlaneGeometry(1.25, 1.0), new THREE.MeshBasicMaterial({ map: menuTex, transparent: true, depthTest: false, fog: false }));
+menuMesh.renderOrder = 1000; menuMesh.visible = false; scene.add(menuMesh);
+const raycaster = new THREE.Raycaster();
+const rays = [];
+for (let i = 0; i < 2; i++) {
+  const c = renderer.xr.getController(i); rig.add(c);
+  const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints([new V3(0, 0, 0), new V3(0, 0, -1)]), new THREE.LineBasicMaterial({ color: 0xff3d8b }));
+  line.scale.z = 3; line.visible = false; c.add(line);
+  const dot = new THREE.Mesh(new THREE.SphereGeometry(0.012, 8, 6), new THREE.MeshBasicMaterial({ color: 0xff3d8b, depthTest: false })); dot.renderOrder = 1001; dot.visible = false; scene.add(dot);
+  rays.push({ c, line, dot });
+  c.addEventListener('selectstart', () => menuSelect(i));
+}
+function openVrMenu(inGame) {
+  vrMenu.open = true; vrMenu.inGame = inGame; vrMenu.screen = 'main'; vrMenu.status = ''; vrMenu.place = true;
+  if (!roomCode) roomCode = ($('code').value || randomCode()).toUpperCase();
+  drawMenu();
+}
+function closeVrMenu() { vrMenu.open = false; menuMesh.visible = false; rays.forEach(r => { r.line.visible = false; r.dot.visible = false; }); clearHands(); }
+function placeMenu() {
+  camera.getWorldPosition(tmpA); camera.getWorldDirection(fw); fw.y = 0; if (fw.length() < 0.01) fw.set(0, 0, -1); fw.normalize();
+  menuMesh.position.copy(tmpA).addScaledVector(fw, 1.3); menuMesh.position.y = tmpA.y - 0.1;
+  menuMesh.lookAt(tmpA.x, menuMesh.position.y, tmpA.z);
+  menuMesh.visible = true; menuMesh.updateMatrixWorld(true);
+}
+function mBtn(x, y, w, h, label, action, opts = {}) { vrMenu.items.push({ x, y, w, h, label, action, ...opts }); }
+function syncHtml() {
+  $('name').value = myName; $('code').value = roomCode; $('easy').checked = wantEasy; $('bots').checked = wantBots; $('music').checked = musicOn;
+  const lr = document.querySelector('input[name=loco][value=' + loco + ']'); if (lr) lr.checked = true;
+  const gr = document.querySelector('input[name=gfx][value=' + gfx + ']'); if (gr) gr.checked = true;
+  try { localStorage.setItem('kp_name', myName); } catch (e) {}
+}
+function drawMenu() {
+  const x = menuCtx, M = vrMenu; M.items = [];
+  x.clearRect(0, 0, MW, MH);
+  x.fillStyle = 'rgba(255,255,255,0.96)'; x.beginPath(); x.roundRect(0, 0, MW, MH, 50); x.fill();
+  x.textBaseline = 'middle';
+  if (M.screen === 'main') {
+    x.fillStyle = '#ff3d8b'; x.font = 'bold 64px system-ui'; x.textAlign = 'left'; x.fillText('Kukerpall VR', 40, 60);
+    x.fillStyle = '#1d1b3a'; x.font = 'bold 34px system-ui';
+    const row = (t, y) => { x.fillStyle = '#1d1b3a'; x.textAlign = 'left'; x.font = 'bold 34px system-ui'; x.fillText(t, 40, y + 30); };
+    row('Nimi', 120); mBtn(230, 120, 420, 62, myName + '  ✎', () => openKeyboard('name'));
+    row('Värv', 205);
+    HUMAN_COLORS.forEach((c, i) => mBtn(230 + i * 88, 205, 70, 62, '', () => { myColor = c; }, { color: c, on: c === myColor }));
+    row('Müts', 290);
+    HATS.forEach((h, i) => mBtn(230 + (i % 3) * 255, 290 + Math.floor(i / 3) * 70, 240, 60, h, () => { myHat = i; }, { on: i === myHat }));
+    row('Liikumine', 450);
+    mBtn(230, 450, 250, 60, 'Kätega (ahv)', () => { loco = 'arms'; clearHands(); }, { on: loco === 'arms' });
+    mBtn(495, 450, 250, 60, 'Pulgaga', () => { loco = 'stick'; clearHands(); }, { on: loco === 'stick' });
+    mBtn(40, 530, 300, 60, 'Lihtne režiim', () => { wantEasy = !wantEasy; }, { on: wantEasy });
+    mBtn(355, 530, 300, 60, 'Muusika', () => setMusic(!musicOn), { on: musicOn });
+    mBtn(670, 530, 314, 60, 'Graafika: ' + (gfx === 'ilus' ? 'Ilus' : 'Kiire'), () => setGfx(gfx === 'ilus' ? 'kiire' : 'ilus'));
+    if (!M.inGame) {
+      row('Kood', 610); mBtn(230, 610, 250, 62, roomCode + '  ✎', () => openKeyboard('code'));
+      mBtn(495, 610, 489, 62, 'Robotid ka (sõpradega)', () => { wantBots = !wantBots; }, { on: wantBots });
+      mBtn(40, 695, 460, 86, 'Mängi robotitega', () => { syncHtml(); closeVrMenu(); startGame(false); }, { big: '#2f9bff' });
+      mBtn(524, 695, 460, 86, 'Mängi sõpradega', () => vrOnline(), { big: '#ff3d8b' });
+    } else {
+      x.fillStyle = '#556'; x.font = '28px system-ui'; x.textAlign = 'left'; x.fillText(net.on ? 'Ruum ' + roomCode + ' · ' + humanIds().length + ' inimest' : 'Üksi robotitega', 40, 640);
+      mBtn(262, 695, 500, 86, 'Sulge menüü', () => closeVrMenu(), { big: '#22c55e' });
+    }
+    if (M.status) { x.fillStyle = '#d6336c'; x.font = 'bold 28px system-ui'; x.textAlign = 'center'; x.fillText(M.status, MW / 2, 800); }
+  } else {
+    const isCode = M.edit === 'code';
+    x.fillStyle = '#ff3d8b'; x.font = 'bold 54px system-ui'; x.textAlign = 'left'; x.fillText(isCode ? 'Ruumi kood' : 'Sinu nimi', 40, 60);
+    x.fillStyle = '#eef'; x.beginPath(); x.roundRect(40, 105, 944, 80, 20); x.fill();
+    x.fillStyle = '#1d1b3a'; x.font = 'bold 50px system-ui'; x.fillText((M.text || '') + '|', 64, 147);
+    const keys = isCode ? 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789' : 'ABCDEFGHIJKLMNOPQRSTUVWXYZÕÄÖÜ-';
+    const max = isCode ? 6 : 12;
+    [...keys].forEach((k, i) => mBtn(40 + (i % 10) * 95, 210 + Math.floor(i / 10) * 92, 85, 80, k, () => {
+      if (M.text.length >= max) return;
+      M.text += isCode ? k : (M.text.length === 0 || M.text.endsWith(' ') ? k : k.toLowerCase());
+    }));
+    const by = 210 + Math.ceil(keys.length / 10) * 92 + 20;
+    if (!isCode) mBtn(40, by, 300, 80, 'Tühik', () => { if (M.text.length < max && M.text && !M.text.endsWith(' ')) M.text += ' '; });
+    mBtn(360, by, 200, 80, '⌫', () => { M.text = M.text.slice(0, -1); });
+    mBtn(580, by, 404, 80, 'Valmis', () => {
+      const v = M.text.trim();
+      if (isCode) roomCode = v.replace(/[^A-Z0-9]/g, '') || roomCode; else myName = v || myName;
+      syncHtml(); M.screen = 'main';
+    }, { big: '#22c55e' });
+  }
+  for (const it of M.items) {
+    const hov = M.hover && M.hover.x === it.x && M.hover.y === it.y;
+    if (it.color !== undefined) {
+      x.fillStyle = '#' + new THREE.Color(it.color).getHexString(); x.beginPath(); x.arc(it.x + it.w / 2, it.y + it.h / 2, 28, 0, 6.283); x.fill();
+      if (it.on || hov) { x.strokeStyle = it.on ? '#1d1b3a' : '#999'; x.lineWidth = 6; x.beginPath(); x.arc(it.x + it.w / 2, it.y + it.h / 2, 34, 0, 6.283); x.stroke(); }
+      continue;
+    }
+    x.fillStyle = it.big ? it.big : it.on ? '#1d1b3a' : hov ? '#dde3ff' : '#eef0f6';
+    if (hov && it.big) x.globalAlpha = 0.8;
+    x.beginPath(); x.roundRect(it.x, it.y, it.w, it.h, 18); x.fill(); x.globalAlpha = 1;
+    x.fillStyle = it.big || it.on ? '#fff' : '#1d1b3a'; x.font = 'bold ' + (it.big ? 38 : 30) + 'px system-ui'; x.textAlign = 'center';
+    x.fillText((it.on && !it.big && it.color === undefined && it.label ? '✓ ' : '') + it.label, it.x + it.w / 2, it.y + it.h / 2 + 2);
+  }
+  menuTex.needsUpdate = true;
+}
+function openKeyboard(which) { vrMenu.screen = 'keys'; vrMenu.edit = which; vrMenu.text = which === 'code' ? '' : ''; }
+async function vrOnline() {
+  syncHtml(); vrMenu.status = 'Ühendan ruumiga ' + roomCode + ' …'; drawMenu();
+  const ok = await startOnline(roomCode);
+  if (ok) { closeVrMenu(); startGame(true); }
+  else { vrMenu.status = 'Ei saanud ühendust – ava mäng GitHubi lingilt'; drawMenu(); }
+}
+function menuHit(i) {
+  const r = rays[i]; r.c.updateMatrixWorld(true);
+  tmpA.setFromMatrixPosition(r.c.matrixWorld);
+  tmpB.set(0, 0, -1).transformDirection(r.c.matrixWorld);
+  raycaster.set(tmpA, tmpB);
+  const hit = raycaster.intersectObject(menuMesh, false)[0];
+  if (!hit || !hit.uv) return null;
+  const px = hit.uv.x * MW, py = (1 - hit.uv.y) * MH;
+  const item = vrMenu.items.find(it => px >= it.x && px <= it.x + it.w && py >= it.y && py <= it.y + it.h) || null;
+  return { hit, item };
+}
+let lastRay = 1;
+function menuSelect(i) {
+  if (!vrMenu.open) return;
+  lastRay = i;
+  const h = menuHit(i); if (!h || !h.item) return;
+  sfx('tap'); buzz(i, 0.4, 20);
+  h.item.action(); drawMenu();
+}
+function updateVrMenu() {
+  if (!vrMenu.open || !renderer.xr.isPresenting) { if (menuMesh.visible && !renderer.xr.isPresenting) menuMesh.visible = false; return; }
+  if (vrMenu.place && camera.position.y > 0.3) { placeMenu(); vrMenu.place = false; }
+  if (vrMenu.place) return;
+  let hov = null;
+  for (let i = 0; i < 2; i++) {
+    const r = rays[i], h = menuHit(i);
+    r.line.visible = true;
+    if (h) { r.dot.visible = true; r.dot.position.copy(h.hit.point); r.line.scale.z = h.hit.distance; if (h.item && (i === lastRay || !hov)) hov = h.item; }
+    else { r.dot.visible = false; r.line.scale.z = 3; }
+  }
+  const key = hov ? hov.x + ',' + hov.y : '';
+  const old = vrMenu.hover ? vrMenu.hover.x + ',' + vrMenu.hover.y : '';
+  if (key !== old) { vrMenu.hover = hov; drawMenu(); }
+}
 renderer.xr.addEventListener('sessionend', updateHud);
 
 // =====================================================================
@@ -1864,11 +2122,15 @@ renderer.setAnimationLoop(() => {
   const dt = Math.min(clock.getDelta(), 0.05);
   const vr = renderer.xr.isPresenting;
 
+  fitScreen();
   if (!started) {
     updateWorld(dt, false);
-    menuSpin += dt * 0.1;
-    rig.position.set(Math.sin(menuSpin) * 14, 6, 6 + Math.cos(menuSpin) * 4); rig.rotation.y = Math.sin(menuSpin) * 0.3;
-    camera.rotation.x = -0.35;
+    if (vr) { rig.position.set(0, 0, 9); rig.rotation.y = 0; updateVrMenu(); }
+    else {
+      menuSpin += dt * 0.1;
+      rig.position.set(Math.sin(menuSpin) * 14, 6, 6 + Math.cos(menuSpin) * 4); rig.rotation.y = Math.sin(menuSpin) * 0.3;
+      camera.rotation.x = -0.35;
+    }
     updateScenery(dt, now()); sky.position.copy(rig.position); gooMat.uniforms.camPos.value.copy(rig.position);
     renderer.render(scene, camera); return;
   }
@@ -1900,7 +2162,8 @@ renderer.setAnimationLoop(() => {
     if (Math.hypot(hx - player.pos.x, hz - player.pos.z) < 0.5) { player.pos.x = hx; player.pos.z = hz; }
   }
 
-  const canMove = show.stage !== 'intro' || spectating;
+  updateVrMenu();
+  const canMove = (show.stage !== 'intro' || spectating) && !vrMenu.open;
   grabEffect(player, dt);
   handleInput(dt, canMove);
 
