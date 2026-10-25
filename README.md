@@ -1,4 +1,4 @@
-[index (56).html](https://github.com/user-attachments/files/33931867/index.56.html)<!doctype html>
+[Uploading index (57).html…](<!doctype html>
 <html lang="et">
 <head>
 <meta charset="utf-8">
@@ -35,6 +35,7 @@ canvas{touch-action:none;display:block;position:fixed;left:0;top:0;width:100vw!i
 .tb{position:absolute;pointer-events:auto;touch-action:none;border:0;border-radius:50%;font-weight:800;color:#fff;font-size:16px;box-shadow:0 4px 12px rgba(0,0,0,.2)}
 #tJump{right:calc(28px + env(safe-area-inset-right));bottom:calc(36px + env(safe-area-inset-bottom));width:96px;height:96px;background:var(--pink)}
 #tGrab{right:calc(136px + env(safe-area-inset-right));bottom:calc(30px + env(safe-area-inset-bottom));width:72px;height:72px;background:var(--blue)}
+#tPet{display:none;right:calc(144px + env(safe-area-inset-right));bottom:calc(114px + env(safe-area-inset-bottom));width:56px;height:56px;background:#ff3d8b;font-size:24px}
 #tEmote{right:calc(40px + env(safe-area-inset-right));bottom:calc(146px + env(safe-area-inset-bottom));width:60px;height:60px;background:#f59e0b;font-size:24px}
 #tDuck{right:calc(220px + env(safe-area-inset-right));bottom:calc(30px + env(safe-area-inset-bottom));width:72px;height:72px;background:#8b5cf6;font-size:13px;display:none}
 #exitBtn{display:none;position:fixed;left:12px;top:160px;z-index:9;font-size:15px;font-weight:800;padding:9px 13px;border:0;border-radius:12px;background:rgba(29,27,58,.7);color:#fff;cursor:pointer}
@@ -69,7 +70,7 @@ small{opacity:.8}
 #tJump{width:76px;height:76px;right:calc(16px + env(safe-area-inset-right));bottom:calc(16px + env(safe-area-inset-bottom))}
 #tGrab{width:58px;height:58px;right:calc(102px + env(safe-area-inset-right));bottom:calc(12px + env(safe-area-inset-bottom))}
 #tDuck{width:58px;height:58px;right:calc(170px + env(safe-area-inset-right));bottom:calc(12px + env(safe-area-inset-bottom))}
-#tEmote{width:48px;height:48px;right:calc(28px + env(safe-area-inset-right));bottom:calc(102px + env(safe-area-inset-bottom))}
+#tPet{width:46px;height:46px;right:calc(108px + env(safe-area-inset-right));bottom:calc(78px + env(safe-area-inset-bottom));font-size:20px}#tEmote{width:48px;height:48px;right:calc(28px + env(safe-area-inset-right));bottom:calc(102px + env(safe-area-inset-bottom))}
 #fsBtn{bottom:auto;top:56px;width:40px;height:40px;font-size:20px}
 #padBtn{top:40px;left:6px;width:38px;height:38px;font-size:19px}#exitBtn{top:84px;left:6px;font-size:12px;padding:6px 9px}
 #shopBtn{font-size:13px;padding:7px 11px;top:6px}
@@ -127,7 +128,7 @@ small{opacity:.8}
   <details><summary><b>Juhtimine</b></summary>
   <p><b>Arvutis:</b> klõpsa ekraanil või lohista hiirega, WASD liigu, nooled pööra, tühik = hüppa, C = kükita, E (hoia) = haara, lase lahti = viska sõber ette, 1–4 = emotikonid, P = pood, Enter = alusta, R = tagasi ootesaali (ainult juht). Rajaehitajas: F ehita, G kustuta, T tüüp.<br>
   <b>VR kätega:</b> lükka kätega vastu maad ja seinu, vehi hooga, et hüpata. Parem pulk vasak/parem = pööra, <b>üles/alla = maapinna kõrgus</b>. Grip = haara, <b>vehi ja lase lahti = viska sõber</b> (aitab üle aukude). Batuudil saab liikuda ka pulgaga. Käsi üle pea ja lehvita = „Tere!”. Pulgavajutus = emotikon. <b>Y = VR-menüü</b> (nimi, värv, müts, seaded). B (hoia) = tagasi ootesaali.<br>
-  <b>Lemmik:</b> jookseb su kõrval; mine lähedale ja hoia E / PAI ❤️ (VR-is silita käega) – lemmik rõõmustab.<br>
+  <b>Lemmik:</b> jookseb su kõrval; seisa tema ees ja hoia E / telefonis ❤️ nupp (VR-is silita käega) – lemmik rõõmustab.<br>
   <b>Tassimine:</b> hoia haaramist kauem – sõber tõstetakse üles (VR-is järgib ta su kätt). Lase hooga lahti = viska.<br>
   <b>Pealtvaatajana:</b> F / nupp / päästik = viska pall rajale.<br>
   <b>VR pulgaga:</b> vasak pulk = liigu, A/X = hüppa, muu sama.</p></details>
@@ -177,6 +178,7 @@ small{opacity:.8}
   <button class="tb" id="tJump">HÜPPA</button>
   <button class="tb" id="tGrab">HAARA</button>
   <button class="tb" id="tEmote">😊</button>
+  <button class="tb" id="tPet">❤️</button>
   <button class="tb" id="tDuck">KÜKITA</button>
 </div>
 <script type="module">
@@ -405,7 +407,7 @@ SHOP.push(
 SHOP.forEach(it => { if (it.type === 'costume') it.lv = it.lv || 3; if (it.id === 'h8') it.lv = 4; });
 if (myPet && !owned.includes('p' + myPet)) myPet = 0;
 let freePetMsg = '';
-try { if (localStorage.getItem('kp_freepet') === null) { localStorage.setItem('kp_freepet', '1'); if (!owned.some(o => o[0] === 'p')) { owned.push('p1'); if (!myPet) myPet = 1; freePetMsg = '🐶 Said tasuta lemmiku: Kutsikas! Mine talle lähedale ja vajuta E / HAARA / VR-is silita – tee pai!'; } } } catch (e) {}
+try { if (localStorage.getItem('kp_freepet') === null) { localStorage.setItem('kp_freepet', '1'); if (!owned.some(o => o[0] === 'p')) { owned.push('p1'); if (!myPet) myPet = 1; freePetMsg = '🐶 Said tasuta lemmiku: Kutsikas! Seisa tema ees ja vajuta E / ❤️ nupp / VR-is silita käega – tee pai!'; } } } catch (e) {}
 prog.xp = prog.xp || 0;
 const levelOf = xp => 1 + Math.floor(Math.sqrt(xp / 40));
 const myLevel = () => levelOf(prog.xp);
@@ -1831,9 +1833,13 @@ for (let i = 0; i < 12; i++) { const sp = new THREE.Sprite(new THREE.SpriteMater
 let heartI = 0, petToastT = 0, petStroke = 0;
 function spawnHearts(pos, n) { for (let i = 0; i < n; i++) { const h = hearts[heartI++ % hearts.length]; h.sp.position.set(pos.x + rnd(-0.15, 0.15), pos.y + 0.45, pos.z + rnd(-0.15, 0.15)); h.vx = rnd(-0.3, 0.3); h.vz = rnd(-0.3, 0.3); h.life = 1.3; h.sp.visible = true; } }
 function updateHearts(dt) { for (const h of hearts) { if (h.life <= 0) continue; h.life -= dt; h.sp.position.x += h.vx * dt; h.sp.position.z += h.vz * dt; h.sp.position.y += dt * 0.7; h.sp.material.opacity = Math.min(1, h.life * 1.5); h.sp.scale.setScalar(0.2 + (1.3 - h.life) * 0.15); if (h.life <= 0) h.sp.visible = false; } }
-function nearPet(maxD) {   // lähim lemmik (enda oma eelistatult)
+function nearPet(maxD) {   // lemmik, kellele saab pai teha: seisad paigal ja ta on sinu ees
+  if (Math.hypot(player.vel.x, player.vel.z) > 0.6) return null;
+  camera.getWorldDirection(tmpC); tmpC.y = 0; tmpC.normalize();
   let best = null, bd = maxD;
-  for (const [id, pm] of petMeshes) { const d = Math.hypot(pm.g.position.x - player.pos.x, pm.g.position.z - player.pos.z) - (id === net.id ? 0.3 : 0); if (d < bd && Math.abs(pm.g.position.y - player.pos.y) < 1.5) { bd = d; best = { id, pm }; } }
+  for (const [id, pm] of petMeshes) {
+    const fx = pm.g.position.x - player.pos.x, fz = pm.g.position.z - player.pos.z, fd = Math.hypot(fx, fz) || 1;
+    if ((fx * tmpC.x + fz * tmpC.z) / fd < 0.5) continue; const d = Math.hypot(pm.g.position.x - player.pos.x, pm.g.position.z - player.pos.z) - (id === net.id ? 0.3 : 0); if (d < bd && Math.abs(pm.g.position.y - player.pos.y) < 1.5) { bd = d; best = { id, pm }; } }
   return best;
 }
 function petPet(id) {
@@ -2346,12 +2352,13 @@ function updateGrabs(dt, buttons) {
         if (d < 2.4 && Math.abs(o.pos.y - player.pos.y) < 1.6 && (face > -0.3 || d < 1.1)) { const sc = d - face * 0.6; if (sc < bs) { bs = sc; cand = o; } }
       }
     }
-    const pet = !pcGrab && !cand ? nearPet(1.9) : null;
+    const pet = !pcGrab && !cand ? nearPet(1.7) : null;
     showGrabMark(!pcGrab && cand ? cand.pos : pet ? tmpB.set(pet.pm.g.position.x, pet.pm.g.position.y - 0.85, pet.pm.g.position.z) : null);
     if (grabMark) grabMark.material.color.setHex(pet && !cand ? 0xff3d8b : 0xffe14d);
-    if (isTouch) { const lbl = pet && !cand ? 'PAI ❤️' : 'HAARA'; if ($('tGrab').textContent !== lbl) $('tGrab').textContent = lbl; }
-    if (pressed && !pcGrab && !cand && pet) { petStroke -= dt; if (petStroke <= 0) { petStroke = 0.55; petPet(pet.id); } grabMissT = 1; }
-    else if (!pressed) petStroke = 0;
+    if (isTouch) { const show1 = pet ? 'block' : 'none'; if ($('tPet').style.display !== show1) $('tPet').style.display = show1; }
+    const petPress = (!!keys.KeyE && !isTouch) || touchIn.pet;
+    if (petPress && !pcGrab && !cand && pet) { petStroke -= dt; if (petStroke <= 0) { petStroke = 0.55; petPet(pet.id); } grabMissT = 1; }
+    else if (!petPress) petStroke = 0;
     if (pressed && !pcGrab) {
       if (cand) { pcGrab = cand.id; pcGrabT = 0; sfx('grab'); sendGrab(cand.id, true); }
       else if (!grabMissT) { showToast('Kedagi pole lähedal – mine robotile ligi', 1); grabMissT = 1; }
@@ -3274,7 +3281,7 @@ addEventListener('pointerdown', e => { if (e.pointerType === 'touch' && !isHeads
 addEventListener('touchstart', () => { if (!isHeadset && touchManual !== false && !isTouch) { isTouch = true; updateHud(); } }, { capture: true, passive: true });
 renderer.domElement.addEventListener('click', () => { audioInit(); if (started && !renderer.xr.isPresenting && !isTouch) renderer.domElement.requestPointerLock(); });
 // ---------- telefoni juhtimine ----------
-const touchIn = { mx: 0, my: 0, jump: false, grab: false, duck: false };
+const touchIn = { mx: 0, my: 0, jump: false, grab: false, duck: false, pet: false };
 (function setupTouch() {
   const stick = document.getElementById('stick'), knob = document.getElementById('knob');
   let stickId = null, lookId = null, lx = 0, ly = 0;
@@ -3312,7 +3319,7 @@ const touchIn = { mx: 0, my: 0, jump: false, grab: false, duck: false };
     const up = () => { touchIn[key] = false; };
     b.addEventListener('pointerup', up); b.addEventListener('pointercancel', up); b.addEventListener('pointerleave', up);
   };
-  hold('tJump', 'jump'); hold('tGrab', 'grab'); hold('tDuck', 'duck');
+  hold('tJump', 'jump'); hold('tGrab', 'grab'); hold('tDuck', 'duck'); hold('tPet', 'pet');
   let emoteI = 0;
   document.getElementById('tEmote').addEventListener('pointerdown', e => { e.preventDefault(); if (started) doEmote(emoteI++ % EMOTES.length); });
 })();
@@ -4127,3 +4134,4 @@ renderer.setAnimationLoop(() => {
 </script>
 </body>
 </html>
+)
