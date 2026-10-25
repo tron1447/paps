@@ -1,4 +1,4 @@
-[index (55).html](https://github.com/user-attachments/files/33931484/index.55.html)<!doctype html>
+[index (56).html](https://github.com/user-attachments/files/33931867/index.56.html)<!doctype html>
 <html lang="et">
 <head>
 <meta charset="utf-8">
@@ -127,6 +127,7 @@ small{opacity:.8}
   <details><summary><b>Juhtimine</b></summary>
   <p><b>Arvutis:</b> klõpsa ekraanil või lohista hiirega, WASD liigu, nooled pööra, tühik = hüppa, C = kükita, E (hoia) = haara, lase lahti = viska sõber ette, 1–4 = emotikonid, P = pood, Enter = alusta, R = tagasi ootesaali (ainult juht). Rajaehitajas: F ehita, G kustuta, T tüüp.<br>
   <b>VR kätega:</b> lükka kätega vastu maad ja seinu, vehi hooga, et hüpata. Parem pulk vasak/parem = pööra, <b>üles/alla = maapinna kõrgus</b>. Grip = haara, <b>vehi ja lase lahti = viska sõber</b> (aitab üle aukude). Batuudil saab liikuda ka pulgaga. Käsi üle pea ja lehvita = „Tere!”. Pulgavajutus = emotikon. <b>Y = VR-menüü</b> (nimi, värv, müts, seaded). B (hoia) = tagasi ootesaali.<br>
+  <b>Lemmik:</b> jookseb su kõrval; mine lähedale ja hoia E / PAI ❤️ (VR-is silita käega) – lemmik rõõmustab.<br>
   <b>Tassimine:</b> hoia haaramist kauem – sõber tõstetakse üles (VR-is järgib ta su kätt). Lase hooga lahti = viska.<br>
   <b>Pealtvaatajana:</b> F / nupp / päästik = viska pall rajale.<br>
   <b>VR pulgaga:</b> vasak pulk = liigu, A/X = hüppa, muu sama.</p></details>
@@ -403,6 +404,8 @@ SHOP.push(
   { id: 'p3', type: 'pet', val: 3, name: 'Lemmik: Robotike', price: 80, lv: 3 }, { id: 'p4', type: 'pet', val: 4, name: 'Lemmik: Tibu', price: 50, lv: 2 });
 SHOP.forEach(it => { if (it.type === 'costume') it.lv = it.lv || 3; if (it.id === 'h8') it.lv = 4; });
 if (myPet && !owned.includes('p' + myPet)) myPet = 0;
+let freePetMsg = '';
+try { if (localStorage.getItem('kp_freepet') === null) { localStorage.setItem('kp_freepet', '1'); if (!owned.some(o => o[0] === 'p')) { owned.push('p1'); if (!myPet) myPet = 1; freePetMsg = '🐶 Said tasuta lemmiku: Kutsikas! Mine talle lähedale ja vajuta E / HAARA / VR-is silita – tee pai!'; } } } catch (e) {}
 prog.xp = prog.xp || 0;
 const levelOf = xp => 1 + Math.floor(Math.sqrt(xp / 40));
 const myLevel = () => levelOf(prog.xp);
@@ -431,12 +434,12 @@ function dailyLogin() {   // iga päev järjest mängides kasvab boonus
   coins += bonus; saveProg();
   dailyMsg = '🔥 ' + prog.streak + '. päev järjest! +' + bonus + ' 🪙' + (prog.streak % 7 === 0 ? ' (nädala SUURBOONUS!)' : ' · homme rohkem');
 }
-function showDailyMsg() { if (!dailyMsg) return; const m = dailyMsg; dailyMsg = ''; setTimeout(() => { sfx('fanfare'); showToast(m, 3.5); }, 1200); }
+function showDailyMsg() { if (freePetMsg) { const fm = freePetMsg; freePetMsg = ''; setTimeout(() => showToast(fm, 5), 5200); } if (!dailyMsg) return; const m = dailyMsg; dailyMsg = ''; setTimeout(() => { sfx('fanfare'); showToast(m, 3.5); }, 1200); }
 function dailyDesc() { const d = prog.daily && prog.daily.day === dayKey() ? prog.daily : null; return d ? 'Tänane rekord ' + d.t + ' s – löö see üle!' : 'Iga päev uus rada · esimene läbimine +40 🪙'; }
 const QUEST_POOL = [
   { id: 'coin', text: 'Korja 20 münti', goal: 20 }, { id: 'qual', text: 'Pääse 3 korda edasi', goal: 3 }, { id: 'fin', text: 'Jõua 2 korda finišisse', goal: 2 },
   { id: 'throw', text: 'Viska kedagi 3 korda', goal: 3 }, { id: 'crown', text: 'Võida kroon', goal: 1 },
-  { id: 'carry', text: 'Tassi kedagi 2 korda', goal: 2 }, { id: 'pad', text: 'Vajuta 2 nuppu (boss/värav)', goal: 2 },
+  { id: 'carry', text: 'Tassi kedagi 2 korda', goal: 2 }, { id: 'pai', text: 'Tee lemmikule 10 korda pai', goal: 10 }, { id: 'pad', text: 'Vajuta 2 nuppu (boss/värav)', goal: 2 },
 ];
 function ensureQuests() {
   const today = new Date().toDateString();
@@ -523,6 +526,7 @@ const SFX = {
   fanfare: () => { [523, 659, 784, 1047].forEach((f, i) => tone(f, f, 0.22, 'square', 0.18, i * 0.14)); tone(1047, 1047, 0.7, 'square', 0.18, 0.6); },
   hit: () => { noise(0.15, 0.3, 700); tone(220, 80, 0.15, 'square', 0.18); },
   grab: () => tone(500, 300, 0.1, 'triangle', 0.2),
+  pet: () => { tone(880, 1180, 0.12, 'sine', 0.18); tone(1180, 1480, 0.12, 'sine', 0.14, 0.12); },
   tail: () => tone(600, 1300, 0.25, 'triangle', 0.25),
   pop: () => tone(800, 1600, 0.08, 'sine', 0.2),
   coin: () => { tone(988, 988, 0.08, 'square', 0.12); tone(1319, 1319, 0.18, 'square', 0.12, 0.07); },
@@ -1294,6 +1298,7 @@ function buildLobby() {
   b2.position.set(-7.85, 3.0, 1.5); b2.rotation.y = Math.PI / 2; trackGroup.add(b2);
   const post2 = new THREE.Mesh(new THREE.BoxGeometry(0.2, 3.3, 4.3), mat(0x2f9bff)); post2.position.set(-8.0, 3.0, 1.5); trackGroup.add(post2);
   TR.board2 = { cv: cv2, tex: tex2, key: '' };
+  cyl(-6.2, 0.3, 1.5, 0.7, 0.3, 0xffd43b); const sl = textSprite('SINA', 1.2, '#fff', 'rgba(255,61,139,.95)'); sl.position.set(-6.2, 2.75, 1.5); trackGroup.add(sl); TR.statuePos = new V3(-6.2, 0.3, 1.5);
   TR.spawn = (i, n, out) => out.set(-4 + (i % 5) * 2, 0.3, 3.5 - Math.floor(i / 5) * 1.3);
   // rajaehitaja plats
   box(11, 0, 0, 6.2, 1, 3, 0xffffff);
@@ -1639,6 +1644,73 @@ function addExtras(g, headTop) {
 }
 const BOT_GEO = { body: new RoundedBoxGeometry(0.6, 0.7, 0.5, 3, 0.14), head: new RoundedBoxGeometry(0.55, 0.42, 0.48, 3, 0.12), visor: new RoundedBoxGeometry(0.44, 0.22, 0.04, 2, 0.02), leg: new RoundedBoxGeometry(0.18, 0.18, 0.22, 2, 0.05) };
 const eyeM = new THREE.MeshBasicMaterial({ color: 0x9ffcff });
+const LIMB = { arm: new THREE.CapsuleGeometry(0.065, 0.2, 4, 8), hand: new THREE.SphereGeometry(0.085, 10, 8), leg: new THREE.CapsuleGeometry(0.08, 0.12, 4, 8),
+  foot: new RoundedBoxGeometry(0.17, 0.09, 0.25, 2, 0.04), eyeW: new THREE.SphereGeometry(0.064, 12, 10), pupil: new THREE.SphereGeometry(0.033, 10, 8),
+  shine: new THREE.SphereGeometry(0.012, 6, 5), mouth: new THREE.TorusGeometry(0.06, 0.016, 6, 14, Math.PI), botArm: new RoundedBoxGeometry(0.12, 0.32, 0.12, 2, 0.04), botHand: new THREE.SphereGeometry(0.08, 10, 8) };
+const eyeWhiteM = new THREE.MeshBasicMaterial({ color: 0xffffff }), pupilM = new THREE.MeshBasicMaterial({ color: 0x141428 }), mouthM = new THREE.MeshBasicMaterial({ color: 0x6b1d2e });
+function limbPivot(g, x, y) { const pv = new THREE.Group(); pv.position.set(x, y, 0); g.add(pv); return pv; }
+function humanLimbs(g, color, costume) {   // käed + jalad + silmad (animeeritavad)
+  const r = { seed: Math.random() * 6 };
+  const handC = costume === 2 ? 0xdee2e6 : color, footC = costume === 4 ? 0xff922b : 0x3b3355;
+  if (costume !== 4) [-1, 1].forEach(sd => {
+    const pv = limbPivot(g, sd * 0.3, 0.86);
+    const a = new THREE.Mesh(LIMB.arm, mat(costume === 4 ? 0x222831 : color)); a.position.y = -0.15; pv.add(a);
+    const h = new THREE.Mesh(LIMB.hand, mat(handC)); h.position.y = -0.3; pv.add(h);
+    pv.rotation.z = sd * 0.15; r[sd < 0 ? 'armL' : 'armR'] = pv;
+  });
+  [-1, 1].forEach(sd => {
+    const pv = limbPivot(g, sd * 0.13, 0.3);
+    const l = new THREE.Mesh(LIMB.leg, mat(color)); l.position.y = -0.1; pv.add(l);
+    const f = new THREE.Mesh(LIMB.foot, mat(footC)); f.position.set(0, -0.24, 0.04); pv.add(f);
+    r[sd < 0 ? 'legL' : 'legR'] = pv;
+  });
+  const eyes = new THREE.Group(); eyes.position.set(0, 1.27, 0.25); g.add(eyes);
+  [-1, 1].forEach(sd => {
+    const w = new THREE.Mesh(LIMB.eyeW, eyeWhiteM); w.position.set(sd * 0.08, 0, 0); w.scale.set(1, 1.15, 0.7); eyes.add(w);
+    const pu = new THREE.Mesh(LIMB.pupil, pupilM); pu.position.set(sd * 0.075, -0.005, 0.045); eyes.add(pu);
+    const sh = new THREE.Mesh(LIMB.shine, eyeWhiteM); sh.position.set(sd * 0.075 + 0.012, 0.015, 0.075); eyes.add(sh);
+  });
+  r.eyes = eyes;
+  const m = new THREE.Mesh(LIMB.mouth, mouthM); m.position.set(0, 1.155, 0.285); m.rotation.z = Math.PI; g.add(m); r.mouth = m;
+  g.rotation.order = 'YXZ'; g.userData.rig = r; return r;
+}
+function botLimbs(g) {
+  const r = { seed: Math.random() * 6, bot: true };
+  [-1, 1].forEach(sd => {
+    const pv = limbPivot(g, sd * 0.37, 0.8);
+    const a = new THREE.Mesh(LIMB.botArm, mat(0x495057)); a.position.y = -0.14; pv.add(a);
+    const h = new THREE.Mesh(LIMB.botHand, mat(0xced4da)); h.position.y = -0.32; pv.add(h);
+    pv.rotation.z = sd * 0.12; r[sd < 0 ? 'armL' : 'armR'] = pv;
+  });
+  [-1, 1].forEach(sd => { const pv = limbPivot(g, sd * 0.15, 0.2); const l = new THREE.Mesh(BOT_GEO.leg, mat(0x333344)); l.position.y = -0.11; pv.add(l); r[sd < 0 ? 'legL' : 'legR'] = pv; });
+  g.rotation.order = 'YXZ'; g.userData.rig = r; return r;
+}
+// animatsioon: kõnd, hüpe, kukkumine (vehib kätega), rõõmustamine, lehvitamine, pilgutamine, hingamine
+function animRig(g, sp, onGround, vy, dt, st) {
+  const r = g.userData.rig; if (!r) return;
+  const t = now(), w = Math.min(1, sp / 4), ph = (st.walk || 0) * 2.1;
+  let aL = 0, aR = 0, zL = 0.15, zR = 0.15, lL = 0, lR = 0, bob = 0, lean = 0;
+  if (st.cheer) { aL = -2.7 + Math.sin(t * 11) * 0.3; aR = -2.7 - Math.sin(t * 11) * 0.3; zL = zR = 0.45; lL = Math.sin(t * 11) * 0.3; lR = -lL; }
+  else if (!onGround && vy < -6.5) { aL = -2.5 + Math.sin(t * 24) * 0.7; aR = -2.5 + Math.cos(t * 24) * 0.7; zL = zR = 0.8; lL = Math.sin(t * 19) * 0.6; lR = -lL; }   // kukub: vehib
+  else if (!onGround) { aL = aR = -2.2; zL = zR = 0.45; lL = 0.45; lR = -0.25; }   // hüpe
+  else if (w > 0.06) { aL = Math.sin(ph) * 0.95 * w; aR = -aL; lL = -Math.sin(ph) * 0.85 * w; lR = -lL; bob = Math.abs(Math.cos(ph)) * 0.05 * w; lean = 0.12 * w; zL = zR = 0.12; }
+  else { const br = Math.sin(t * 2.2 + r.seed) * 0.05; aL = br; aR = -br; zL = zR = 0.13 + br; bob = (Math.sin(t * 2.2 + r.seed) + 1) * 0.008; }
+  if (st.wave) { aR = -2.9; zR = 0.35 + Math.sin(t * 13) * 0.45; }
+  const k = Math.min(1, dt * 14);
+  if (r.armL) { r.armL.rotation.x += (aL - r.armL.rotation.x) * k; r.armL.rotation.z += (-zL - r.armL.rotation.z) * k; }
+  if (r.armR) { r.armR.rotation.x += (aR - r.armR.rotation.x) * k; r.armR.rotation.z += (zR - r.armR.rotation.z) * k; }
+  r.legL.rotation.x += (lL - r.legL.rotation.x) * k; r.legR.rotation.x += (lR - r.legR.rotation.x) * k;
+  r.bob = (r.bob || 0) + (bob - (r.bob || 0)) * k; r.lean = (r.lean || 0) + (lean - (r.lean || 0)) * k;
+  g.rotation.x = r.lean;
+  if (r.eyes) {
+    st.blinkT = (st.blinkT === undefined ? Math.random() * 3 : st.blinkT) - dt;
+    if (st.blinkT < 0) { st.blinkT = 2 + Math.random() * 3.5; st.blinkE = 0.13; }
+    st.blinkE = Math.max(0, (st.blinkE || 0) - dt);
+    const happy = st.cheer || st.wave;
+    r.eyes.scale.y = st.blinkE > 0 || (happy && Math.sin(t * 3) > 0.7) ? 0.12 : 1;
+    if (r.mouth) r.mouth.scale.set(happy ? 1.3 : !onGround && vy < -6.5 ? 0.7 : 1, happy ? 1.5 : !onGround && vy < -6.5 ? -1.4 : 1, 1);
+  }
+}
 function makeBot(color, hat) {
   const g = new THREE.Group();
   const body = new THREE.Mesh(BOT_GEO.body, mat(color)); body.position.y = 0.53; g.add(body);
@@ -1646,7 +1718,7 @@ function makeBot(color, hat) {
   const head = new THREE.Mesh(BOT_GEO.head, mat(color)); head.position.y = 1.1; g.add(head);
   const visor = new THREE.Mesh(BOT_GEO.visor, mat(0x1b1b2f)); visor.position.set(0, 1.12, 0.23); g.add(visor);
   [-0.1, 0.1].forEach(x => { const e = new THREE.Mesh(new THREE.CircleGeometry(0.045, 12), eyeM); e.position.set(x, 1.13, 0.255); g.add(e); });
-  [-0.15, 0.15].forEach(x => { const l = new THREE.Mesh(BOT_GEO.leg, mat(0x333344)); l.position.set(x, 0.09, 0); g.add(l); });
+  botLimbs(g);
   if (hat) { const h = makeHat(hat, 1.31); g.add(h); g.userData.hat = h; }
   else { const ant = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.25), mat(0x333344)); ant.position.y = 1.43; g.add(ant); }
   addExtras(g, 1.31);
@@ -1659,10 +1731,11 @@ function makeHuman(color, name, hat, costume = 0) {
   const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.3, 0.5, 6, 14), mat(bodyC)); body.position.y = 0.6; g.add(body);
   addCostume(g, costume, color);
   const head = new THREE.Mesh(new THREE.SphereGeometry(0.27, 16, 12), mat(color)); head.position.y = 1.22; g.add(head);
-  const face = new THREE.Mesh(new THREE.SphereGeometry(0.2, 14, 10), mat(0xffe0c2)); face.position.set(0, 1.22, 0.12); face.scale.set(1, 0.85, 0.6); g.add(face);
-  [-0.07, 0.07].forEach(x => { const e = new THREE.Mesh(new THREE.SphereGeometry(0.03, 8, 6), mat(0x111122)); e.position.set(x, 1.25, 0.25); g.add(e); });
+  const face = new THREE.Mesh(new THREE.SphereGeometry(0.2, 16, 12), mat(0xffe0c2)); face.position.set(0, 1.21, 0.135); face.scale.set(1.05, 0.9, 0.72); g.add(face);
+  const belly = new THREE.Mesh(new THREE.SphereGeometry(0.22, 14, 10), mat(0xffffff)); belly.scale.set(0.95, 1.2, 0.45); belly.position.set(0, 0.55, 0.19); if (costume !== 4 && costume !== 2) { belly.material = mat(new THREE.Color(bodyC).lerp(new THREE.Color(0xffffff), 0.45).getHex()); g.add(belly); }
+  humanLimbs(g, bodyC, costume);
   if (hat) { const h = makeHat(hat, 1.47); g.add(h); g.userData.hat = h; }
-  [-0.1, 0.1].forEach(x => { const c = new THREE.Mesh(new THREE.CircleGeometry(0.035, 10), mat(0xff9fb5)); c.position.set(x * 1.5, 1.17, 0.235); g.add(c); });
+  [-0.1, 0.1].forEach(x => { const c = new THREE.Mesh(new THREE.CircleGeometry(0.035, 10), mat(0xff9fb5)); c.position.set(x * 1.6, 1.18, 0.272); g.add(c); });
   const tag = nameSprite(name, color); tag.position.y = 2.05; g.add(tag);
   addExtras(g, 1.49);
   shadowAll(g, true, false);
@@ -1718,9 +1791,15 @@ function makePet(k) {
     const a = new THREE.Mesh(new THREE.SphereGeometry(0.03, 6, 5), new THREE.MeshBasicMaterial({ color: 0xff3d8b })); a.position.y = 0.42; g.add(a);
   } else {
     const b = new THREE.Mesh(new THREE.CapsuleGeometry(0.1, 0.18, 4, 10), mat(c)); b.rotation.x = Math.PI / 2; b.position.y = 0.16; g.add(b);
-    const h = new THREE.Mesh(new THREE.SphereGeometry(0.11, 12, 10), mat(c)); h.position.set(0, 0.28, 0.17); g.add(h);
-    [-1, 1].forEach(sd => { const e = new THREE.Mesh(k === 2 ? new THREE.ConeGeometry(0.04, 0.09, 4) : new THREE.SphereGeometry(0.045, 6, 5), mat(k === 1 ? 0x6b4226 : c)); e.position.set(sd * 0.07, 0.38, 0.15); if (k === 1) e.scale.set(0.7, 1.4, 0.7); g.add(e); });
-    const tl = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.015, 0.2, 6), mat(c)); tl.position.set(0, 0.22, -0.2); tl.rotation.x = -0.8; g.add(tl);
+    const head = new THREE.Group(); head.position.set(0, 0.28, 0.17); g.add(head); g.userData.head = head;
+    const h = new THREE.Mesh(new THREE.SphereGeometry(0.11, 12, 10), mat(c)); head.add(h);
+    const sn = new THREE.Mesh(new THREE.SphereGeometry(0.05, 8, 6), mat(k === 1 ? 0xe9c9a5 : 0xffffff)); sn.position.set(0, -0.03, 0.09); sn.scale.set(1.1, 0.8, 0.9); head.add(sn);
+    const no = new THREE.Mesh(new THREE.SphereGeometry(0.02, 6, 5), pupilM); no.position.set(0, -0.01, 0.135); head.add(no);
+    [-1, 1].forEach(sd => { const e = new THREE.Mesh(new THREE.SphereGeometry(0.022, 8, 6), pupilM); e.position.set(sd * 0.045, 0.03, 0.095); head.add(e); });
+    [-1, 1].forEach(sd => { const e = new THREE.Mesh(k === 2 ? new THREE.ConeGeometry(0.04, 0.09, 4) : new THREE.SphereGeometry(0.045, 6, 5), mat(k === 1 ? 0x6b4226 : c)); e.position.set(sd * 0.07, 0.1, -0.02); if (k === 1) e.scale.set(0.7, 1.4, 0.7); head.add(e); });
+    [[-0.06, 0.09], [0.06, 0.09], [-0.06, -0.09], [0.06, -0.09]].forEach(([x, z]) => { const l = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.1, 6), mat(c)); l.position.set(x, 0.05, z); g.add(l); });
+    const tp = new THREE.Group(); tp.position.set(0, 0.2, -0.17); g.add(tp); g.userData.tail = tp;
+    const tl = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.015, 0.2, 6), mat(c)); tl.position.set(0, 0.07, -0.06); tl.rotation.x = -0.8; tp.add(tl);
   }
   shadowAll(g, true, false); scene.add(g); return g;
 }
@@ -1729,12 +1808,43 @@ function petFor(id, k, pos, yaw, dt) {
   let pm = petMeshes.get(id);
   if (!k) { if (pm) { scene.remove(pm.g); petMeshes.delete(id); } return; }
   if (!pm || pm.k !== k) { if (pm) scene.remove(pm.g); pm = { k, g: makePet(k), ph: Math.random() * 6 }; pm.g.position.set(pos.x, pos.y, pos.z); petMeshes.set(id, pm); }
-  const tx = pos.x + Math.sin(yaw + 2.4) * 0.9, tz = pos.z + Math.cos(yaw + 2.4) * 0.9;
+  let ang = 2.4, dist = 0.9;
+  if (id === net.id) { pm.still = Math.hypot(player.vel.x, player.vel.z) < 0.4 ? (pm.still || 0) + dt : 0; ang = pm.still > 0.8 ? 0.35 : 0.9; dist = pm.still > 0.8 ? 1.25 : 1.15; }
+  const tx = pos.x + Math.sin(yaw + ang) * dist, tz = pos.z + Math.cos(yaw + ang) * dist;
   const g = pm.g, dx = tx - g.position.x, dz = tz - g.position.z, d = Math.hypot(dx, dz);
   if (d > 6) g.position.set(tx, pos.y, tz);
   else if (d > 0.15) { g.position.x += dx * Math.min(1, dt * 4); g.position.z += dz * Math.min(1, dt * 4); g.rotation.y = Math.atan2(dx, dz); }
   pm.ph += dt * (d > 0.3 ? 14 : 3);
-  g.position.y += ((pos.y + Math.abs(Math.sin(pm.ph)) * (d > 0.3 ? 0.12 : 0.03)) - g.position.y) * Math.min(1, dt * 10);
+  pm.happy = Math.max(0, (pm.happy || 0) - dt);
+  const hop = pm.happy > 0 ? Math.abs(Math.sin(pm.happy * 9)) * 0.35 : 0;
+  g.position.y += ((pos.y + hop + Math.abs(Math.sin(pm.ph)) * (d > 0.3 ? 0.12 : 0.03)) - g.position.y) * Math.min(1, dt * 10);
+  if (pm.happy > 0) g.rotation.y += dt * 9;
+  else if (d <= 0.15 && id === net.id) { const lx = player.pos.x - g.position.x, lz = player.pos.z - g.position.z; g.rotation.y += (Math.atan2(lx, lz) - g.rotation.y) * Math.min(1, dt * 3); }   // vaatab sind
+  const u = g.userData;
+  if (u.tail) u.tail.rotation.y = Math.sin(now() * (pm.happy > 0 ? 28 : d > 0.3 ? 14 : 5)) * (pm.happy > 0 ? 0.9 : 0.4);
+  if (u.head) u.head.rotation.x = pm.happy > 0 ? -0.35 : Math.sin(now() * 1.3 + pm.ph * 0.1) * 0.08;
+}
+// ---- lemmikule pai ----
+const heartTex = (() => { const cv = document.createElement('canvas'); cv.width = cv.height = 64; const x = cv.getContext('2d'); x.fillStyle = '#ff3d8b'; x.font = '54px system-ui'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('❤', 32, 36); const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; return t; })();
+const hearts = [];
+for (let i = 0; i < 12; i++) { const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: heartTex, transparent: true, depthWrite: false })); sp.scale.setScalar(0.28); sp.visible = false; scene.add(sp); hearts.push({ sp, life: 0, vx: 0, vz: 0 }); }
+let heartI = 0, petToastT = 0, petStroke = 0;
+function spawnHearts(pos, n) { for (let i = 0; i < n; i++) { const h = hearts[heartI++ % hearts.length]; h.sp.position.set(pos.x + rnd(-0.15, 0.15), pos.y + 0.45, pos.z + rnd(-0.15, 0.15)); h.vx = rnd(-0.3, 0.3); h.vz = rnd(-0.3, 0.3); h.life = 1.3; h.sp.visible = true; } }
+function updateHearts(dt) { for (const h of hearts) { if (h.life <= 0) continue; h.life -= dt; h.sp.position.x += h.vx * dt; h.sp.position.z += h.vz * dt; h.sp.position.y += dt * 0.7; h.sp.material.opacity = Math.min(1, h.life * 1.5); h.sp.scale.setScalar(0.2 + (1.3 - h.life) * 0.15); if (h.life <= 0) h.sp.visible = false; } }
+function nearPet(maxD) {   // lähim lemmik (enda oma eelistatult)
+  let best = null, bd = maxD;
+  for (const [id, pm] of petMeshes) { const d = Math.hypot(pm.g.position.x - player.pos.x, pm.g.position.z - player.pos.z) - (id === net.id ? 0.3 : 0); if (d < bd && Math.abs(pm.g.position.y - player.pos.y) < 1.5) { bd = d; best = { id, pm }; } }
+  return best;
+}
+function petPet(id) {
+  const pm = petMeshes.get(id); if (!pm) return;
+  pm.happy = 1.4; spawnHearts(pm.g.position, 3); sfx('pet');
+  if (id === net.id) {
+    prog.pets = (prog.pets || 0) + 1; questTick('pai');
+    if (prog.pets % 15 === 0) addCoins(3, 'õnnelik lemmik');
+    if (now() > petToastT) { petToastT = now() + 3; showToast('❤️ ' + (PETS[pm.k] || 'Lemmik') + ' on rõõmus! (pai ' + prog.pets + ')', 1.6); }
+    saveProg();
+  } else if (now() > petToastT) { petToastT = now() + 3; showToast('❤️ Tegid pai: ' + nameOf(id) + ' lemmikule', 1.4); }
 }
 function updatePets(dt) {
   camera.getWorldDirection(fw);
@@ -1764,6 +1874,9 @@ function animateBody(mesh, vel, onGround, dt, st) {
   if (sp > 0.3) mesh.rotation.y = Math.atan2(vel.x, vel.z);
   st.walk = (st.walk || 0) + sp * dt * 3;
   mesh.rotation.z = onGround ? Math.sin(st.walk) * 0.08 * Math.min(1, sp) : 0.15;
+  st.cheer = (st.finished && show.rt === 'race') || (show.stage === 'crown' && show.winner === st.id);
+  st.wave = (mesh.userData.bubT || 0) > 0;
+  animRig(mesh, sp, onGround, vel.y, dt, st);
 }
 function tickExtras(g, id, dt) {
   const u = g.userData;
@@ -2102,6 +2215,7 @@ let emoteCd = 0;
 function doEmote(i) {
   if (emoteCd > 0) return; emoteCd = 1.2;
   sfx('pop'); showToast('Sina: ' + EMOTES[i], 1.5);
+  { const pm = petMeshes.get(net.id); if (pm) { pm.happy = 0.9; spawnHearts(pm.g.position, 1); } }
   if (net.on && net.peers.size) net.emote.send({ e: i });
 }
 function bodyCenter(pos, out) { return out.set(pos.x, pos.y + 0.8, pos.z); }
@@ -2209,6 +2323,13 @@ function updateGrabs(dt, buttons) {
         else if (resend) { sendGrab(grabHold[i], true, null, holdPoint(i)); if (!carryCounted[grabHold[i] + show.rid]) { carryCounted[grabHold[i] + show.rid] = 1; questTick('carry'); } }
       }
     }
+    for (let i = 0; i < 2; i++) {   // VR: lemmiku silitamine käega
+      grips[i].getWorldPosition(tmpA);
+      for (const [id, pm] of petMeshes) {
+        const dd = Math.hypot(tmpA.x - pm.g.position.x, tmpA.y - (pm.g.position.y + 0.22), tmpA.z - pm.g.position.z);
+        if (dd < 0.32 && handVel[i].length() > 0.35) { pm.stroke = (pm.stroke || 0) + dt; buzz(i, 0.15, 15); if (pm.stroke > 0.45) { pm.stroke = 0; petPet(id); } }
+      }
+    }
     let mk = null, md = 1.0;   // näita ✋ märki, kui käsi on kellelegi piisavalt lähedal
     if (!grabHold[0] && !grabHold[1]) for (let i = 0; i < 2; i++) { grips[i].getWorldPosition(tmpA); for (const o of others) { const d = bodyDist(o.pos, tmpA); if (d < md) { md = d; mk = o; } } }
     showGrabMark(mk ? mk.pos : null);
@@ -2225,7 +2346,12 @@ function updateGrabs(dt, buttons) {
         if (d < 2.4 && Math.abs(o.pos.y - player.pos.y) < 1.6 && (face > -0.3 || d < 1.1)) { const sc = d - face * 0.6; if (sc < bs) { bs = sc; cand = o; } }
       }
     }
-    showGrabMark(!pcGrab && cand ? cand.pos : null);
+    const pet = !pcGrab && !cand ? nearPet(1.9) : null;
+    showGrabMark(!pcGrab && cand ? cand.pos : pet ? tmpB.set(pet.pm.g.position.x, pet.pm.g.position.y - 0.85, pet.pm.g.position.z) : null);
+    if (grabMark) grabMark.material.color.setHex(pet && !cand ? 0xff3d8b : 0xffe14d);
+    if (isTouch) { const lbl = pet && !cand ? 'PAI ❤️' : 'HAARA'; if ($('tGrab').textContent !== lbl) $('tGrab').textContent = lbl; }
+    if (pressed && !pcGrab && !cand && pet) { petStroke -= dt; if (petStroke <= 0) { petStroke = 0.55; petPet(pet.id); } grabMissT = 1; }
+    else if (!pressed) petStroke = 0;
     if (pressed && !pcGrab) {
       if (cand) { pcGrab = cand.id; pcGrabT = 0; sfx('grab'); sendGrab(cand.id, true); }
       else if (!grabMissT) { showToast('Kedagi pole lähedal – mine robotile ligi', 1); grabMissT = 1; }
@@ -3091,6 +3217,11 @@ function updatePeers(dt) {
     p.gl.visible = p.gr.visible = !!(d.v && d.l);
     if (d.v && d.l) { p.gl.position.lerp(tmpB.set(d.l[0], d.l[1], d.l[2]), k); p.gr.position.lerp(tmpB.set(d.rr[0], d.rr[1], d.rr[2]), k); }
     p.avatar.userData.duck = !!d.k;
+    { const vy = (p.pos.y - (p.py ?? p.pos.y)) / Math.max(dt, 1e-3); p.py = p.pos.y; p.vy = (p.vy || 0) + (vy - (p.vy || 0)) * 0.3; p.st = p.st || {};
+      p.st.walk = (p.st.walk || 0) + Math.hypot(p.vel.x, p.vel.z) * dt * 3;
+      p.st.cheer = (show.rt === 'race' && show.stage === 'play' && show.q.includes(p.id)) || (show.stage === 'crown' && show.winner === p.id) || show.stage === 'cwin'; p.st.wave = (p.avatar.userData.bubT || 0) > 0;
+      const rg = p.avatar.userData.rig; if (rg) { if (rg.armL) rg.armL.visible = !d.v; if (rg.armR) rg.armR.visible = !d.v; }   // VR-is on päris käed eraldi
+      animRig(p.avatar, Math.hypot(p.vel.x, p.vel.z), Math.abs(p.vy) < 1.2, p.vy, dt, p.st); }
     if (p.avatar.userData.shield) p.avatar.userData.shield.visible = !!d.sh;
     tickExtras(p.avatar, p.id, dt);
   }
@@ -3098,6 +3229,9 @@ function updatePeers(dt) {
     rb.pos.lerp(rb.target, k);
     rb.mesh.position.copy(rb.pos); rb.mesh.rotation.y = rb.yaw;
     rb.st.walk = (rb.st.walk || 0) + rb.sp * dt * 3;
+    { const vy = (rb.pos.y - (rb.py ?? rb.pos.y)) / Math.max(dt, 1e-3); rb.py = rb.pos.y; rb.vy = (rb.vy || 0) + (vy - (rb.vy || 0)) * 0.3;
+      rb.st.cheer = (show.rt === 'race' && show.q.includes(rb.id)) || (show.stage === 'crown' && show.winner === rb.id); rb.st.wave = (rb.mesh.userData.bubT || 0) > 0;
+      animRig(rb.mesh, rb.sp, Math.abs(rb.vy) < 1.2, rb.vy, dt, rb.st); }
     rb.mesh.rotation.z = Math.sin(rb.st.walk) * 0.08 * Math.min(1, rb.sp);
     tickExtras(rb.mesh, rb.id, dt);
   }
@@ -3885,7 +4019,14 @@ renderer.setAnimationLoop(() => {
   if (player.pwT && player.pwT < tnow && player.pw) { player.pw = null; }
   shieldBubble.visible = !vr && false;
   updateRain(dt);
-  updatePets(dt);
+  updatePets(dt); updateHearts(dt);
+  if (TR.statuePos) {   // näed ootesaalis iseennast (värv, müts, kostüüm) – lehvitab
+    const key = myColor + '|' + myHat + '|' + myCostume + '|' + myName;
+    if (!TR.statue || TR.statueKey !== key) { if (TR.statue) trackGroup.remove(TR.statue); TR.statue = makeHuman(myColor, myName, myHat, myCostume); trackGroup.add(TR.statue); TR.statue.position.copy(TR.statuePos); TR.statue.rotation.y = Math.PI / 2; TR.statueKey = key; TR.statueSt = {}; }
+    const tt = now() % 6; TR.statueSt.wave = tt < 1.6; TR.statueSt.cheer = tt > 3.5 && tt < 4.3;
+    if (TR.statueSt.cheer) TR.statue.position.y = TR.statuePos.y + Math.abs(Math.sin(now() * 8)) * 0.3; else TR.statue.position.y = TR.statuePos.y;
+    animRig(TR.statue, 0, !TR.statueSt.cheer, 0, dt, TR.statueSt); tickExtras(TR.statue, net.id, dt);
+  }
   if (show.rt === 'boss') bossVisual(dt, t);
   if (TR.gates.length) gateVisual(dt, t);
   if (show.stage === 'trenn') practiceTick();
